@@ -33,7 +33,9 @@ const config: Config.InitialOptions = {
     '<rootDir>/extensions/',
   ],
   coverageDirectory: '<rootDir>/coverage/unit',
-  coverageReporters: ['json', 'text-summary'],
+  collectCoverage: true,
+  coverageReporters: ['text', 'cobertura'],
+  // coverageReporters: ['json', 'text-summary'],
   coverageProvider:  'v8',
   preset:            'ts-jest',
 };
