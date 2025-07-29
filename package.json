@@ -11,7 +11,7 @@
     "@rancher/shell": "3.0.7",
     "file-saver": "^2.0.5",
     "papaparse": "^5.5.3",
-    "vue": "^3.5.17",
+    "vue": "^3.5.18",
     "vue-router": "^4.5.0",
     "vuex": "^4.1.0"
   },
