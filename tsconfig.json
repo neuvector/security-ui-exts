@@ -49,9 +49,6 @@
     ]
   },
   "include": [
-    "./pkg/benchmark-compliance/**/*.ts",
-    "./pkg/benchmark-compliance/**/*.tsx",
-    "./pkg/benchmark-compliance/**/*.vue",
 
     "./pkg/sbombastic-image-vulnerability-scanner/**/*.ts",
     "./pkg/sbombastic-image-vulnerability-scanner/**/*.tsx",
