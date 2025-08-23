@@ -40,7 +40,6 @@
       "@components/*": [
         "@rancher/components/*"
       ],
-      "@benchmark-compliance/*": ["./*"],
       "@tests/*": ["./tests/*"]
     }
   },
