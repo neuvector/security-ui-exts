@@ -31,7 +31,7 @@
       "@tests/*": [
         "./tests/*"
       ],
-      "@sbombastic-image-vulnerability-scanner/*": ["./pkg/sbombastic-image-vulnerability-scanner/*"],
+      "@pkg/*": ["./pkg/sbombastic-image-vulnerability-scanner/*"],
     },
     "typeRoots": [
       "./node_modules",
