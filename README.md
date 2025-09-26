@@ -25,3 +25,6 @@
 - Pull the code to your local computer
 - Run `yarn` to install dependency packages
 - Run `API=<Rancher UI's URL> yarn dev` to start the Rancher manager UI with security-ui-ext
+
+#### Open the UI on local computer
+https://localhost:8005/
