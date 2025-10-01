@@ -1,6 +1,5 @@
 module.exports = {
-  root: true,
-  env:  {
+  env: {
     browser: true,
     node:    true
   },
@@ -8,36 +7,27 @@ module.exports = {
     NodeJS: true,
     Timer:  true
   },
+  plugins: [
+    'jest',
+    '@typescript-eslint',
+    'local-rules'
+  ],
   extends: [
     'standard',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     '@vue/standard',
+    '@vue/typescript/recommended',
     'plugin:vue/vue3-recommended',
-    'plugin:cypress/recommended'
+    'plugin:cypress/recommended',
+    'plugin:local-rules/all'
   ],
   rules: {
-    'dot-notation':             'off',
-    'generator-star-spacing':   'off',
-    'guard-for-in':             'off',
-    'linebreak-style':          'off',
-    'new-cap':                  'off',
-    'no-empty':                 'off',
-    'no-extra-boolean-cast':    'off',
-    'no-new':                   'off',
-    'no-plusplus':              'off',
-    'no-useless-escape':        'off',
-    'semi-spacing':             'off',
-    'space-in-parens':          'off',
-    strict:                     'off',
-    'unicorn/no-new-buffer':    'off',
-    'vue/html-self-closing':    'off',
-    'vue/no-unused-components': 'warn',
-    'vue/no-v-html':            'error',
-    'wrap-iife':                'off',
-    'array-bracket-spacing':    'warn',
-    'arrow-parens':             'warn',
-    'arrow-spacing':            [
+    'semi-spacing':          'off',
+    'space-in-parens':       'off',
+    'array-bracket-spacing': 'warn',
+    'arrow-parens':          'warn',
+    'arrow-spacing':         [
       'warn',
       {
         before: true,
@@ -56,19 +46,22 @@ module.exports = {
       'warn',
       'only-multiline'
     ],
-    'comma-spacing':     'warn',
-    curly:               'warn',
-    eqeqeq:              'warn',
-    'func-call-spacing': [
-      'warn',
-      'never'
-    ],
-    'implicit-arrow-linebreak': 'warn',
-    indent:                     [
+    'comma-spacing': 'warn',
+    indent:          [
       'warn',
       2
     ],
-    'keyword-spacing':             'warn',
+    'keyword-spacing':          'warn',
+    'newline-per-chained-call': [
+      'warn',
+      { ignoreChainWithDepth: 4 }
+    ],
+    'no-trailing-spaces': 'warn',
+    'func-call-spacing':  [
+      'warn',
+      'never'
+    ],
+    'wrap-iife':                   'off',
     'lines-between-class-members': [
       'warn',
       'always',
@@ -78,22 +71,6 @@ module.exports = {
       'warn',
       'never'
     ],
-    'newline-per-chained-call': [
-      'warn',
-      { ignoreChainWithDepth: 4 }
-    ],
-    'no-caller':      'warn',
-    'no-cond-assign': [
-      'warn',
-      'except-parens'
-    ],
-    'no-console':                    'warn',
-    'no-debugger':                   'warn',
-    'no-eq-null':                    'warn',
-    'no-eval':                       'warn',
-    'no-trailing-spaces':            'warn',
-    'no-undef':                      'warn',
-    'no-unused-vars':                'warn',
     'no-whitespace-before-property': 'warn',
     'object-curly-spacing':          [
       'warn',
@@ -105,11 +82,9 @@ module.exports = {
       'warn',
       'never'
     ],
-    'prefer-arrow-callback': 'warn',
-    'prefer-template':       'warn',
-    'quote-props':           'warn',
-    'rest-spread-spacing':   'warn',
-    semi:                    [
+    'quote-props':         'warn',
+    'rest-spread-spacing': 'warn',
+    semi:                  [
       'warn',
       'always'
     ],
@@ -135,7 +110,7 @@ module.exports = {
           beforeColon: false,
           afterColon:  true,
           on:          'value',
-          mode:        'minimum'
+          mode:        'strict'
         },
         multiLine: {
           beforeColon: false,
@@ -214,29 +189,43 @@ module.exports = {
         nonwords: false
       }
     ],
-    'vue/order-in-components':           'off',
-    'vue/no-lone-template':              'off',
-    'vue/v-slot-style':                  'off',
-    'vue/component-tags-order':          'off',
-    'vue/no-mutating-props':             'off',
-    '@typescript-eslint/no-unused-vars': 'off',
-    'array-callback-return':             'off',
-    'vue/one-component-per-file':        'off',
-    'vue/no-deprecated-slot-attribute':  'off',
-    'vue/require-explicit-emits':        'off',
-    'vue/v-on-event-hyphenation':        'off'
+    'vue/one-component-per-file':       'off',
+    'vue/no-deprecated-slot-attribute': 'off',
+    'vue/require-explicit-emits':       'error',
+    'vue/v-on-event-hyphenation':       'off',
   },
   overrides: [
     {
       files: [
-        '*.js'
+        '**/*.{js,ts,vue}'
       ],
       rules: {
-        'prefer-regex-literals':                'off',
-        'vue/component-definition-name-casing': 'off',
-        'no-unreachable-loop':                  'off',
-        'computed-property-spacing':            'off'
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/ban-types':         'off',
+        'vue/require-toggle-inside-transition': 'off', // Introduced with new linting version 9.32.0
       }
+    },
+    {
+      files: [
+        '**/*.test.{js,ts}',
+        '**/__tests__/**/*.{js,ts}',
+        '**/__mocks__/**/*.{js,ts}'
+      ],
+      rules: {
+        '@typescript-eslint/no-empty-function':              'off',
+        '@typescript-eslint/no-non-null-assertion':          'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        'jest/prefer-expect-assertions':                     'off'
+      },
+      extends: [
+        'plugin:jest/all'
+      ]
+    },
+    {
+      files: [
+        '**/*.{js,vue}'
+      ],
+      rules: { '@typescript-eslint/explicit-module-boundary-types': 'off' }
     }
   ]
 };

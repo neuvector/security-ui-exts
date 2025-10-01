@@ -1,23 +1,11 @@
 <template>
   <div class="page">
-    <h2>{{ content }}</h2>
+    <h2>Network Overview</h2>
   </div>
-
-
 </template>
 
 <script lang="ts">
-
-  export default {
-    name: 'overview',
-  }
-</script>
-
-<script lang="ts" setup>
-  import { ref } from "vue";
-
-  let content = ref("Runtime Process Profile");
-
+export default { name: 'NetworkOverview' };
 </script>
 
 <style scoped>
