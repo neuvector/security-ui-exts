@@ -62,6 +62,7 @@
     "test:ci": "jest --collectCoverage",
     "test:unit": "jest --watch",
     "lint": "./node_modules/.bin/eslint --max-warnings 0 --ext .js,.ts,.vue .",
+    "lint:fix": "./node_modules/.bin/eslint --fix --ext .js,.ts,.vue .",
     "format": "eslint . --fix"
   }
 }
