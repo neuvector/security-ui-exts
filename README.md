@@ -16,7 +16,7 @@
 ##### Rancher manager
 - [Installing/Upgrading Rancher](https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade)
 
-##### SBOMBastic
+##### SBOMScanner
 - [Quickstart](docs/installation/quickstart.md)
 - [Uninstall](docs/installation/uninstall.md)
 
