@@ -30,8 +30,8 @@
           class="btn role-primary"
           aria-label="Download full report"
           type="button"
-          :disabled="rows.length === 0"
-          @click="downloadCSVReport(rows)"
+          :disabled="!rows || rows.length === 0"
+          @click="downloadCSVReport(rows, false)"
         >
           <i class="icon icon-download"></i>
           {{ t('imageScanner.images.downloadReport') }}
@@ -125,7 +125,7 @@
             aria-label="Download custom report"
             :disabled="!(selectedRows && selectedRows.length)"
             type="button"
-            @click="downloadCSVReport(selectedRows)"
+            @click="downloadCSVReport(selectedRows, isGrouped)"
           >
             <i class="icon icon-download"></i>
             {{ t('imageScanner.images.buttons.downloadCustomReport') }}
@@ -375,18 +375,18 @@ export default {
     this.registryCrds = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.REGISTRY });
   },
   methods: {
-    async downloadCSVReport(rows) {
+    async downloadCSVReport(rows, isDataGrouped) {
       try {
-        const imagesData = this.isGrouped ? rows.map((row) => row.images).flat() : rows;
+        const imagesData = isDataGrouped ? rows.map((row) => row.images).flat() : rows;
 
         const imageList = imagesData.map((row) => {
           return {
-            'IMAGE REFERENCE': this.isGrouped ? `${ row.imageMetadata.registryURI }/${ row.imageMetadata.repository }:${ row.imageMetadata.tag }` : row.imageReference,
-            'CVEs(Critical)':  this.isGrouped ? row.scanResult.critical : row.report.summary.critical,
-            'CVEs(High)':      this.isGrouped ? row.scanResult.high : row.report.summary.high,
-            'CVEs(Medium)':    this.isGrouped ? row.scanResult.medium : row.report.summary.medium,
-            'CVEs(Low)':       this.isGrouped ? row.scanResult.low : row.report.summary.low,
-            'CVEs(None)':      this.isGrouped ? row.scanResult.unknown : row.report.summary.unknown,
+            'IMAGE REFERENCE': isDataGrouped ? `${ row.imageMetadata.registryURI }/${ row.imageMetadata.repository }:${ row.imageMetadata.tag }` : row.imageReference,
+            'CVEs(Critical)':  isDataGrouped ? row.scanResult.critical : row.report.summary.critical,
+            'CVEs(High)':      isDataGrouped ? row.scanResult.high : row.report.summary.high,
+            'CVEs(Medium)':    isDataGrouped ? row.scanResult.medium : row.report.summary.medium,
+            'CVEs(Low)':       isDataGrouped ? row.scanResult.low : row.report.summary.low,
+            'CVEs(None)':      isDataGrouped ? row.scanResult.unknown : row.report.summary.unknown,
             'IMAGE ID':        row.imageMetadata.digest,
             REGISTRY:          row.imageMetadata.registry,
             REPOSITORY:        row.imageMetadata.repository,

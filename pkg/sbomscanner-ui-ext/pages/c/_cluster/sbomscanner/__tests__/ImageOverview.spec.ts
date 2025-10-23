@@ -110,7 +110,7 @@ describe('ImageOverview.vue', () => {
     } ];
 
     // Call method
-    await (wrapper.vm as any).downloadCSVReport(rows);
+    await (wrapper.vm as any).downloadCSVReport(rows, false);
 
     expect(Papa.unparse).toHaveBeenCalled();
     expect(fileSaver.saveAs).toHaveBeenCalled();
@@ -154,14 +154,14 @@ describe('ImageOverview.vue', () => {
     const grouped = [ { images: [ { imageMetadata: { registryURI: 'r', repository: 'repo', tag: 't', digest: 'd', registry: 'r', platform: 'p' }, scanResult: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 }, report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } }, imageReference: 'r/repo:t' } ] } ];
 
     // success path
-    await (wrapper.vm as any).downloadCSVReport(grouped);
+    await (wrapper.vm as any).downloadCSVReport(grouped, true);
     expect(Papa.unparse).toHaveBeenCalled();
     expect(fileSaver.saveAs).toHaveBeenCalled();
 
     // simulate saveAs throwing
     fileSaver.saveAs.mockImplementationOnce(() => { throw new Error('disk'); });
     const storeErr = { dispatch: jest.fn(() => Promise.resolve()), getters: {} };
-    const wrapperErr = mountComponent({ global: { mocks: { $store: storeErr, $t: t, t } } });
+    const wrapperErr = mountComponent({ global: { mocks: { $store: storeErr, $t: t, t, $rootGetters: {} } } });
   (wrapperErr.vm as any).isGrouped = true;
     await (wrapperErr.vm as any).downloadCSVReport(grouped);
     expect(storeErr.dispatch).toHaveBeenCalledWith('growl/error', expect.any(Object), { root: true });
@@ -237,7 +237,7 @@ describe('ImageOverview.vue', () => {
     // grouped repo with image that has imageMetadata.registryURI
     const grouped = [ { images: [ { id: 'g1', imageMetadata: { registryURI: 'regX', repository: 'repoG', tag: 'tG', digest: 'dg', registry: 'regX', platform: 'p' }, scanResult: { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 }, report: { summary: { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 } }, imageReference: 'regX/repoG:tG' } ] } ];
 
-    await (wrapper.vm as any).downloadCSVReport(grouped);
+    await (wrapper.vm as any).downloadCSVReport(grouped, true);
 
     // Papa.unparse should be called with rows that include IMAGE REFERENCE using registryURI template
     expect(Papa.unparse).toHaveBeenCalled();
@@ -291,7 +291,7 @@ describe('ImageOverview.vue', () => {
     Papa.unparse.mockImplementationOnce(() => { throw new Error('parse-failed'); });
 
     const storeErr = { dispatch: jest.fn(() => Promise.resolve()), getters: {} };
-    const wrapperErr = mountComponent({ global: { mocks: { $store: storeErr, $t: t, t } } });
+    const wrapperErr = mountComponent({ global: { mocks: { $store: storeErr, $t: t, t, $rootGetters: {} } } });
 
     await (wrapperErr.vm as any).downloadCSVReport(rows);
 
