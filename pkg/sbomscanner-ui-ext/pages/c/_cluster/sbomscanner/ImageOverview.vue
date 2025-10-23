@@ -508,15 +508,11 @@ export default {
 
       vulReports.forEach((report) => {
         let repoRec = {};
-        let imageSeverity = '';
         const mapKey = `${ report.imageMetadata.repository },${ report.imageMetadata.registry }`;
         const currImageScanResult = {};
 
         for (const key of severityKeys) {
           currImageScanResult[key] = report.report.summary[key];
-          if (!imageSeverity) {
-            imageSeverity = (report.report.summary[key] || 0) > 0 ? key : '';
-          }
         }
         if (repoMap.has(mapKey)) {
           const currRepo = repoMap.get(mapKey);
@@ -539,7 +535,7 @@ export default {
             repository:   report.imageMetadata.repository,
             registry:     report.imageMetadata.registry,
             metadata:     { namespace: report.metadata.namespace },
-            cveCntByRepo: currImageScanResult,
+            cveCntByRepo: { ...currImageScanResult },
             images:       [
               {
                 id:            report.id,
