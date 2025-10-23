@@ -31,7 +31,7 @@
       "@tests/*": [
         "./tests/*"
       ],
-      "@pkg/*": ["./pkg/sbomscanner/*"],
+      "@pkg/*": ["./pkg/sbomscanner-ui-ext/*"],
     },
     "typeRoots": [
       "./node_modules",
@@ -50,9 +50,9 @@
   },
   "include": [
 
-    "./pkg/sbomscanner/**/*.ts",
-    "./pkg/sbomscanner/**/*.tsx",
-    "./pkg/sbomscanner/**/*.vue",
+    "./pkg/sbomscanner-ui-ext/**/*.ts",
+    "./pkg/sbomscanner-ui-ext/**/*.tsx",
+    "./pkg/sbomscanner-ui-ext/**/*.vue",
 
     "./pkg/network/**/*.ts",
     "./pkg/network/**/*.tsx",
