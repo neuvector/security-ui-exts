@@ -1,4 +1,12 @@
 export const PRODUCT_NAME = "imageScanner";
+
+//For identifying URL of local dev build, as the head of the reference URL has difference
+// Localhost: Starts with /c/:_cluster...
+// Rancher UI deployed host: Starts with /dashboard/c/:_cluster...
+export const LOCAT_HOST = [
+  'localhost:8005',
+  '127.0.0.1:8005',
+];
 export const SBOMSCANNER = {
   CONTROLLER: "sbomscanner",
   CHART_NAME: "sbomscanner",

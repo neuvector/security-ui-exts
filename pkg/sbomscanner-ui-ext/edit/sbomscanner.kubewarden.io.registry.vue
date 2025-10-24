@@ -11,7 +11,7 @@ import {
   REGISTRY_TYPE_OPTIONS,
   SCAN_INTERVAL_OPTIONS, SCAN_INTERVALS
 } from '@pkg/constants';
-import { PRODUCT_NAME, PAGE } from '@pkg/types';
+import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@pkg/types';
 import { SECRET_TYPES } from '@shell/config/secret';
 
 export default {
@@ -141,9 +141,7 @@ export default {
     secretCreateUrl() {
       const clusterId = this.$route.params.cluster;
 
-      const namespace = this.value.metadata?.namespace ?? 'default';
-
-      return `/c/${ clusterId }/explorer/secret/create?namespace=${ namespace }`;
+      return `${ LOCAT_HOST.includes(window.location.host) ? '' : '/dashboard' }/c/${ clusterId }/explorer/secret/create?scope=namespaced`;
     },
   },
 
