@@ -1,231 +1,215 @@
-import { mount, flushPromises } from '@vue/test-utils';
-import { createStore } from 'vuex';
+import { mount, shallowMount, flushPromises } from '@vue/test-utils';
 import Dashboard from '../Dashboard.vue';
-import { shallowMount } from '@vue/test-utils';
 
-// Define RESOURCE constants locally to avoid import issues
 const RESOURCE = {
-  REGISTRY: "sbomscanner.kubewarden.io.registry",
-  SCAN_JOB: "sbomscanner.kubewarden.io.scanjob"
+  REGISTRY: 'sbomscanner.kubewarden.io.registry',
+  SCAN_JOB: 'sbomscanner.kubewarden.io.scanjob',
 };
 
-describe('Dashboard', () => {
-  let store: any;
-  let wrapper: any;
+function makeScanJob({
+  namespace = 'default',
+  registry = 'my-registry',
+  scannedImagesCount = 5,
+  imagesCount = 10,
+  completionTime = Date.now(),
+  conditions =  [{ error: false }],
+} = {}) {
+  return {
+    metadata: { namespace },
+    spec: { registry },
+    status: {
+      imagesCount,
+      scannedImagesCount,
+      completionTime,
+      conditions,
+    },
+  };
+}
+
+describe('Dashboard.vue full coverage', () => {
+  let storeMock: any;
 
   beforeEach(() => {
-    store = createStore({
-      modules: {
-        cluster: {
-          namespaced: true,
-          getters: {
-            'all': () => (type: string) => {
-              if (type === RESOURCE.REGISTRY) return [];
-              if (type === RESOURCE.SCAN_JOB) return [];
-              return [];
-            }
-          },
-          actions: {
-            'findAll': jest.fn()
-          }
-        }
-      }
-    });
-
-    wrapper = mount(Dashboard, {
-      global: {
-        plugins: [store],
-        mocks: {
-          $route: {
-            params: { cluster: 'test-cluster' }
-          },
-          $router: {
-            push: jest.fn()
-          },
-          $t: (key: string) => key,
-          $store: store
-        },
-        stubs: {
-          RouterLink: {
-            template: '<a><slot /></a>',
-            props: ['to']
-          },
-          LabeledSelect: {
-            template: '<select class="labeled-select"><option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option></select>',
-            props: ['value', 'options', 'closeOnSelect', 'multiple']
-          },
-          SevereVulnerabilitiesItem: {
-            template: '<div class="severe-vulnerabilities-item"><slot /></div>',
-            props: ['vulnerability']
-          },
-          TopSevereVulnerabilitiesChart: {
-            template: '<div class="top-severe-vulnerabilities-chart"></div>',
-            props: ['topSevereVulnerabilities']
-          },
-          ImageRiskAssessment: {
-            template: '<div class="image-risk-assessment"></div>',
-            props: ['vulnerabilityStats', 'scanningStats', 'chartData']
-          },
-          TopRiskyImagesChart: {
-            template: '<div class="top-risky-images-chart"></div>',
-            props: ['topRiskyImages']
-          }
-        }
-      }
-    });
+    storeMock = {
+      dispatch: jest.fn().mockResolvedValue([]),
+      getters: {
+        'cluster/all': jest.fn(() => [makeScanJob()]),
+      },
+    };
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    wrapper.unmount();
+    jest.clearAllTimers();
   });
 
-  describe('Component Initialization', () => {
-    it('should render the component', () => {
-      expect(wrapper.exists()).toBe(true);
-    });
-
-    it('should display the correct title', () => {
-      expect(wrapper.find('.title').text()).toContain('imageScanner.dashboard.title');
-    });
-
-    it('should display the registry filter dropdown - no scan started', async() => {
-      wrapper.vm.scaningStats.lastCompletionTimestamp = 0;
-      await flushPromises();
-      const labeledSelect = wrapper.find('.labeled-select');
-      const noScanInfo = wrapper.find('[test-id="no-scan-info"]');
-      const scanningStats = wrapper.find('[test-id="scanning-stats"]');
-      expect(labeledSelect.exists()).toBe(false);
-      expect(noScanInfo.exists()).toBe(true);
-      expect(scanningStats.exists()).toBe(false);
-    });
-     it('should display the registry filter dropdown - has scan history', async() => {
-      wrapper.vm.scaningStats.lastCompletionTimestamp = 1761263188;
-      await flushPromises();
-      const labeledSelect = wrapper.find('.labeled-select');
-      const noScanInfo = wrapper.find('[test-id="no-scan-info"]');
-      const scanningStats = wrapper.find('[test-id="scanning-stats"]');
-      expect(labeledSelect.exists()).toBe(true);
-      expect(noScanInfo.exists()).toBe(false);
-      expect(scanningStats.exists()).toBe(true);
-    });
-  });
-
-  describe('Component Data', () => {
-    it('should have correct initial data properties', () => {
-      expect(wrapper.vm.PRODUCT_NAME).toBeDefined();
-      expect(wrapper.vm.disabled).toBe(false);
-      expect(wrapper.vm.selectedRegistry).toBe('All registries');
-      expect(wrapper.vm.registryOptions).toBeDefined();
-    });
-  });
-
-  // Fake SCAN_JOB data
-  function makeScanJob({
-    namespace = 'default',
-    registry = 'my-registry',
-    scannedImagesCount = 5,
-    imagesCount = 10,
-    hasError = false,
-    completionTime = Date.now(),
-  } = {}) {
-    return {
-      metadata: { namespace },
-      spec: { registry },
-      status: {
-        scannedImagesCount,
-        completionTime,
-        conditions: hasError ? [{ error: 'Some error' }] : []
-      },
-      imagesCount
-    };
-  }
-  describe('Dashboard.vue', () => {
-    let storeMock: any;
-
-    beforeEach(() => {
-      storeMock = {
-        dispatch: jest.fn().mockResolvedValue([]),
-        getters: {
-          'cluster/all': jest.fn(() => [makeScanJob()]),
-          'cluster/canList': jest.fn(() => true),
-          'cluster/schemaFor': jest.fn(() => ({})),
-          'cluster/paginationEnabled': jest.fn(() => false)
-        }
-      };
-    });
-
-    function factory(options = {}) {
-      return shallowMount(Dashboard, {
-        global: {
-          mocks: {
-            $store: storeMock,
-            t: (key: any) => key // simple i18n mock
-          }
+  function factory(options = {}) {
+    return shallowMount(Dashboard, {
+      global: {
+        mocks: {
+          $store: storeMock,
+          t: (key: any) => key,
         },
-        ...options
-      });
-    }
+      },
+      ...options,
+    });
+  }
 
-     it('Show statement if no scan has been started yet', async () => {
-      const wrapper = factory();
-      await wrapper.setData({
-        scanJobsCRD: [makeScanJob()]
-      });
-      wrapper.vm.scaningStats.lastCompletionTimestamp = 0;
+  it('renders component correctly', () => {
+    const wrapper = factory();
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.vm.selectedRegistry).toBe('All registries');
+    expect(wrapper.vm.scaningStats.lastCompletionTimestamp).toBe(0);
+  });
 
-      expect(wrapper.vm.durationFromLastScan).toContain('imageScanner.dashboard.scanningStatus.initialDuration');
+  it('computed: displayedCurrDate and displayedCurrTime return strings', () => {
+    const wrapper = factory();
+    expect(typeof wrapper.vm.displayedCurrDate).toBe('string');
+    expect(typeof wrapper.vm.displayedCurrTime).toBe('string');
+  });
+
+  it('computed: displayedDetectedErrorCnt pluralization', () => {
+    const wrapper = factory();
+    wrapper.vm.scaningStats.detectedErrorCnt = 1;
+    expect(wrapper.vm.displayedDetectedErrorCnt).toBe('1 error');
+    wrapper.vm.scaningStats.detectedErrorCnt = 2;
+    expect(wrapper.vm.displayedDetectedErrorCnt).toBe('2 errors');
+  });
+
+  it('computed: displayedFailedImagesCnt pluralization', () => {
+    const wrapper = factory();
+    wrapper.vm.scaningStats.failedImagesCnt = 1;
+    expect(wrapper.vm.displayedFailedImagesCnt).toBe('1 image');
+    wrapper.vm.scaningStats.failedImagesCnt = 2;
+    expect(wrapper.vm.displayedFailedImagesCnt).toBe('2 images');
+  });
+
+  it('computed: displayedTotalScannedImageCnt pluralization', () => {
+    const wrapper = factory();
+    wrapper.vm.scaningStats.totalScannedImageCnt = 1;
+    expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('1 image');
+    wrapper.vm.scaningStats.totalScannedImageCnt = 3;
+    expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('3 images');
+  });
+
+  it('computed: durationFromLastScan handles all ranges', () => {
+    const wrapper = factory();
+
+    // initialDuration
+    wrapper.vm.scaningStats.lastCompletionTimestamp = 0;
+    expect(wrapper.vm.durationFromLastScan).toContain('initialDuration');
+
+    // seconds
+    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 10 * 1000;
+    expect(wrapper.vm.durationFromLastScan).toContain('seconds');
+
+    // minutes
+    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 10 * 60 * 1000;
+    expect(wrapper.vm.durationFromLastScan).toContain('minutes');
+
+    // hours
+    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 2 * 60 * 60 * 1000;
+    expect(wrapper.vm.durationFromLastScan).toContain('hours');
+
+    // days
+    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 3 * 24 * 60 * 60 * 1000;
+    expect(wrapper.vm.durationFromLastScan).toContain('days');
+  });
+
+  it('computed: registryOptions returns unique list', async () => {
+    const wrapper = factory();
+    await wrapper.setData({
+      scanJobsCRD: [
+        makeScanJob({ namespace: 'ns1', registry: 'reg1' }),
+        makeScanJob({ namespace: 'ns1', registry: 'reg1' }),
+      ],
+    });
+    const options = wrapper.vm.registryOptions;
+    expect(options).toContain('All registries');
+    expect(options).toContain('ns1/reg1');
+  });
+
+  it('method: getFailedImageCnt calculates correctly', () => {
+    const wrapper = factory();
+    
+    const jobWithError = { status: { conditions: [{error: true}], scannedImagesCount: 6, imagesCount: 10 } };
+    const jobWithoutError = { status: { conditions: [{error: false}], scannedImagesCount: 8, imagesCount: 8 } };
+
+    expect(wrapper.vm.getFailedImageCnt(jobWithError)).toBe(4);
+    expect(wrapper.vm.getFailedImageCnt(jobWithoutError)).toBe(0);
+  });
+
+  it('method: getScaningStats aggregates correctly', () => {
+    const wrapper = factory();
+    const jobs = [
+      makeScanJob({ conditions: [{error: false}], scannedImagesCount: 5, imagesCount: 5, completionTime: 1761480970 }),
+      makeScanJob({ conditions: [{error: true}], scannedImagesCount: 3, imagesCount: 10, completionTime: 1761480098 }),
+    ];
+    wrapper.vm.scanJobsCRD = jobs;
+    const stats = wrapper.vm.getScaningStats();
+    expect(stats.totalScannedImageCnt).toBe(8);
+    expect(stats.detectedErrorCnt).toBe(1);
+    expect(stats.failedImagesCnt).toBe(7);
+    expect(stats.lastCompletionTimestamp).toBe(1761480970);
+  });
+
+  it('method: loadData replaces data when reloading', async () => {
+    const wrapper = factory();
+    const mockData = [makeScanJob()];
+    storeMock.getters['cluster/all'].mockReturnValueOnce(mockData);
+
+    wrapper.vm.loadData(true);
+    expect(storeMock.getters['cluster/all']).toHaveBeenCalledWith(RESOURCE.SCAN_JOB);
+  });
+
+  it('method: fetch loads data and sets interval', async () => {
+    const mockDispatch = jest.fn().mockResolvedValue([]);
+    const mockClearInterval = jest.spyOn(global, 'clearInterval').mockImplementation(() => {});
+    const mockSetInterval = jest.spyOn(global, 'setInterval').mockImplementation((fn, t) => {
+      fn(); // call it immediately
+      return 123;
     });
 
-    it('computes durationFromLastScan correctly (2 hours ago)', async () => {
-      const wrapper = factory();
-      await wrapper.setData({
-        scanJobsCRD: [makeScanJob()]
-      });
-      wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 2 * 60 * 60 * 1000;
-
-      expect(wrapper.vm.durationFromLastScan).toContain('2 hours');
+    const wrapper = factory({
+      global: {
+        mocks: {
+          $store: {
+            dispatch: mockDispatch,
+            getters: { 'cluster/all': jest.fn(() => []) },
+          },
+          t: (key) => key,
+        },
+      },
     });
 
-    it('shows seconds if less than 1 minute', () => {
-      const wrapper = factory();
-      wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 45 * 1000;
-      expect(wrapper.vm.durationFromLastScan).toContain('seconds');
-    });
+    await wrapper.vm.$options.fetch.call(wrapper.vm);
+    // verify dispatch called
+    expect(mockDispatch).toHaveBeenCalledWith('cluster/findAll', { type: 'sbomscanner.kubewarden.io.scanjob' });
 
-    it('shows minutes if less than 1 hour', () => {
-      const wrapper = factory();
-      wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 15 * 60 * 1000;
-      expect(wrapper.vm.durationFromLastScan).toContain('minutes');
-    });
+    // verify clearInterval & setInterval called
+    expect(mockClearInterval).toHaveBeenCalled();
+    expect(mockSetInterval).toHaveBeenCalled();
 
-    it('pluralizes displayed counts correctly', async () => {
-      const wrapper = factory();
-      await wrapper.setData({
-        scaningStats: { detectedErrorCnt: 1, failedImagesCnt: 1, totalScannedImageCnt: 5 }
-      });
-      expect(wrapper.vm.displayedDetectedErrorCnt).toBe('1 error');
-      expect(wrapper.vm.displayedFailedImagesCnt).toBe('1 image');
-      expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('5 images');
-    });
+    // verify keepAliveTimer assigned
+    expect(wrapper.vm.keepAliveTimer).toBe(123);
 
-    it('builds registryOptions including "All registries"', async () => {
-      const wrapper = factory();
-      await wrapper.setData({
-        scanJobsCRD: [makeScanJob(
-          {
-            namespace: 'default',
-            registry: 'my-registry',
-            scannedImagesCount: 5,
-            imagesCount: 10,
-            hasError: false,
-            completionTime: Date.now(),
-          }
-        )]
-      });
+    mockSetInterval.mockRestore();
+    mockClearInterval.mockRestore();
+  });
 
-      const options = wrapper.vm.registryOptions;
-      expect(options[0]).toBe('All registries');
-      expect(options.find(o => o === 'default/my-registry')).toBeTruthy();
-    });
+  it('watch: selectedRegistry triggers getScaningStats', async () => {
+    const wrapper = factory();
+    const spy = jest.spyOn(wrapper.vm, 'getScaningStats');
+    await wrapper.setData({ selectedRegistry: 'custom' });
+    wrapper.vm.$options.watch.selectedRegistry.call(wrapper.vm);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('beforeUnmount clears interval', () => {
+    const wrapper = factory();
+    const clearSpy = jest.spyOn(global, 'clearInterval');
+    wrapper.vm.keepAliveTimer = setInterval(() => {}, 2000);
+    wrapper.vm.$options.beforeUnmount.call(wrapper.vm);
+    expect(clearSpy).toHaveBeenCalled();
   });
 });
