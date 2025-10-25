@@ -316,6 +316,7 @@ export default {
         if (index < 3) {
           return scanjobs[0].conditions[index - 1].type.toLowerCase();
         } else {
+          // For failed scan
           return scanjobs[0].conditions[index - 2].type.toLowerCase();
         }
       } else if (scanjobs && scanjobs[1]) {

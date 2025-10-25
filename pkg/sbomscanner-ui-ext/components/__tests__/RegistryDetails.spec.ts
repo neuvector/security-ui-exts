@@ -153,4 +153,5 @@ describe('RegistryDetails.vue', () => {
     expect(repoMeta.value).toBe(0);
     expect(scheduleMeta?.value).toBe('');
   });
+  
 });

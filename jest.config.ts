@@ -33,6 +33,11 @@ const config: Config.InitialOptions = {
   ],
   coverageDirectory: '<rootDir>/coverage/unit',
   collectCoverage: true,
+  collectCoverageFrom: [
+    'pkg/sbomscanner-ui-ext/**/*.{js,vue}',
+    '!**/node_modules/**',
+    '!**/__tests__/**'
+  ],
   coverageReporters: ['text', 'cobertura'],
   // coverageReporters: ['json', 'text-summary'],
   coverageProvider:  'v8',
