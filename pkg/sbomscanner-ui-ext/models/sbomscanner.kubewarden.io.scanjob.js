@@ -13,7 +13,7 @@ export default class Scanjob extends SteveModel {
       };
     }
 
-    const statusIndex = this.status.conditions?.findIndex((condition) => condition.status === 'True');
+    const statusIndex = this.status.conditions?.findIndex((condition) => condition.status === 'True') || -1;
 
     if (statusIndex > -1) {
       return {
@@ -32,5 +32,4 @@ export default class Scanjob extends SteveModel {
       progress:           0
     };
   }
-
 }

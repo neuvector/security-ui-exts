@@ -52,10 +52,6 @@ export default class Registry extends SteveModel {
     return out;
   }
 
-  set _availableActions(actions) {
-    this._availableActions = actions;
-  }
-
   get listLocation() {
     // if (this.$rootState.targetRoute.params.resource === "sbomscanner.kubewarden.io.registry") {
     //   return this._listLocation;
@@ -89,6 +85,7 @@ export default class Registry extends SteveModel {
       })
       // Take the latest 2 scanjobs
       .slice(0, 2);
+
     const status = scanJobs[0] ? scanJobs[0].statusResult?.type.toLowerCase() || 'pending' : 'none';
     const prevScanStatus = scanJobs[1] ? scanJobs[1].statusResult?.type.toLowerCase() || 'pending' : 'none';
 
@@ -108,8 +105,8 @@ export default class Registry extends SteveModel {
         prevError:          scanJobs[1] && scanJobs[1].statusResult?.type.toLowerCase() === 'failed' ? scanJobs[1].statusResult.message : '',
       },
       previousStatus:     this.getPreviousStatus(scanJobs),
-      lastTransitionTime: scanJobs[0] && scanJobs[0].statusResult?.lastTransitionTime ? scanJobs[0].statusResult?.lastTransitionTime : null,
-      completionTime:     scanJobs[0] && scanJobs[0].status?.completionTime ? scanJobs[0] && scanJobs[0].status?.completionTime : null,
+      lastTransitionTime: scanJobs[0] && scanJobs[0].statusResult?.lastTransitionTime ? scanJobs[0].statusResult.lastTransitionTime : null,
+      completionTime:     scanJobs[0] && scanJobs[0].status?.completionTime ? scanJobs[0] && scanJobs[0].status.completionTime : null,
     };
 
     return scanRec;
@@ -120,12 +117,12 @@ export default class Registry extends SteveModel {
       const index = scanjobs[0].statusResult.statusIndex;
 
       if (index < 3) {
-        return scanjobs[0].status.conditions[index - 1].type.toLowerCase();
+        return scanjobs[0].status?.conditions ? scanjobs[0].status.conditions[index - 1].type.toLowerCase() : 'none';
       } else {
-        return scanjobs[0].status.conditions[index - 2].type.toLowerCase();
+        return scanjobs[0].status?.conditions ? scanjobs[0].status.conditions[index - 2].type.toLowerCase() : 'none';
       }
     } else if (scanjobs && scanjobs[1]) {
-      return scanjobs[1].statusResult.type.toLowerCase();
+      return scanjobs[1].statusResult?.type.toLowerCase();
     } else {
       return 'none';
     }

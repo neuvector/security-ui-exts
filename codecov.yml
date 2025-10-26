@@ -1,0 +1,15 @@
+coverage:
+  status:
+    project: off      # Disable project-level coverage (hides it)
+    patch:
+      default:
+        informational: true  # report but don't block or fail
+
+comment:
+  layout: "diff"
+  behavior: default
+  require_changes: true
+  after_n_builds: 1
+
+github_checks:
+  annotations: false   # Do not show per-line annotations in PRs

@@ -153,6 +153,20 @@ describe('Dashboard.vue full coverage', () => {
     expect(stats.lastCompletionTimestamp).toBe(1761480970);
   });
 
+  it('method: getScaningStats aggregates correctly', () => {
+    const wrapper = factory();
+    const jobs = [
+      { metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{error: false}] }},
+      { metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{error: true}] } },
+    ];
+    wrapper.vm.scanJobsCRD = jobs;
+    const stats = wrapper.vm.getScaningStats();
+    expect(stats.totalScannedImageCnt).toBe(0);
+    expect(stats.detectedErrorCnt).toBe(1);
+    expect(stats.failedImagesCnt).toBe(0);
+    expect(stats.lastCompletionTimestamp).toBe(0);
+  });
+
   it('method: loadData replaces data when reloading', async () => {
     const wrapper = factory();
     const mockData = [makeScanJob()];

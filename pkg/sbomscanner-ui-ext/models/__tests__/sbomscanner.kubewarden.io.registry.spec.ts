@@ -94,6 +94,25 @@ describe('Registry model', () => {
     });
   });
 
+  describe('scanRec - status, statusResult is undefined', () => {
+    const baseScan = (type, time, progress = 50, failed = false) => ({
+      metadata: { namespace: 'ns1' },
+      spec: { registry: 'reg1' },
+    });
+
+    it('returns scan record correctly with 2 scanjobs', () => {
+      registry.$getters.all.mockReturnValue([
+        baseScan('Complete', Date.now() - 10000),
+        baseScan('Failed', Date.now() - 20000, 80, true)
+      ]);
+
+      const rec = registry.scanRec;
+      expect(rec.currStatus).toBe('pending');
+      expect(rec.previousScan.prevScanStatus).toBe('pending');
+      expect(rec.progress.registryName).toBe('reg1');
+    });
+  });
+
   describe('scanRec', () => {
     const baseScan = (type, time, progress = 50, failed = false) => ({
       metadata: { namespace: 'ns1' },
@@ -115,14 +134,31 @@ describe('Registry model', () => {
 
     it('returns scan record correctly with 2 scanjobs', () => {
       registry.$getters.all.mockReturnValue([
-        baseScan('Succeeded', Date.now() - 10000),
-        baseScan('Failed', Date.now() - 20000, 80, true)
+        baseScan('Complete', Date.now() - 10000),
+        baseScan('Failed', Date.now() - 20000, 80, true),
+        baseScan('Complete', Date.now() - 30000),
       ]);
 
       const rec = registry.scanRec;
-      expect(rec.currStatus).toBe('succeeded');
+      expect(rec.currStatus).toBe('complete');
       expect(rec.previousScan.prevScanStatus).toBe('failed');
       expect(rec.progress.registryName).toBe('reg1');
+      expect(rec.progress.error).toBe('');
+      expect(typeof rec.previousStatus).toBe('string');
+    });
+
+     it('returns scan record correctly with 2 scanjobs', () => {
+      registry.$getters.all.mockReturnValue([
+        baseScan('Failed', Date.now() - 10000, 70, true),
+        baseScan('Failed', Date.now() - 20000, 80, true),
+        baseScan('Complete', Date.now() - 30000),
+      ]);
+
+      const rec = registry.scanRec;
+      expect(rec.currStatus).toBe('failed');
+      expect(rec.previousScan.prevScanStatus).toBe('failed');
+      expect(rec.progress.registryName).toBe('reg1');
+      expect(rec.progress.error).toBe('failmsg');
       expect(typeof rec.previousStatus).toBe('string');
     });
 
@@ -141,6 +177,91 @@ describe('Registry model', () => {
       const rec = registry.scanRec;
       expect(rec.currStatus).toBe('none');
     });
+
+     it('get latest 2 scanjobs - without conditions (Cover sorting logic)', () => {
+      const time = new Date();
+      const type = 'none';
+      const progress = 70;
+      registry.$getters.all.mockReturnValue([
+        {
+          metadata: { namespace: 'ns1' },
+          spec: { registry: 'reg1' },
+          status: {
+            scannedImagesCount: 2,
+            imagesCount: 4,
+            completionTime: new Date(time + 1000).toISOString()
+          },
+          statusResult: {
+            type,
+            progress,
+            lastTransitionTime: new Date(time).toISOString(),
+            statusIndex: 1,
+          }
+        },
+        {
+          metadata: { namespace: 'ns1' },
+          spec: { registry: 'reg1' },
+          status: {
+            scannedImagesCount: 2,
+            imagesCount: 4,
+            completionTime: new Date(time + 1000).toISOString(),
+            conditions: [{ type: 'Complete', status: true, lastTransitionTime: new Date(time - 10000).toISOString() }],
+          },
+          statusResult: {
+            type,
+            progress,
+            lastTransitionTime: new Date(time).toISOString(),
+            statusIndex: 1,
+          }
+        },
+        {
+          metadata: { namespace: 'ns1' },
+          spec: { registry: 'reg1' },
+          status: {
+            scannedImagesCount: 2,
+            imagesCount: 4,
+            completionTime: new Date(time + 1000).toISOString()
+          },
+          statusResult: {
+            type,
+            progress,
+            lastTransitionTime: new Date(time).toISOString(),
+            statusIndex: 1,
+          }
+        }
+      ]);
+
+      const rec = registry.scanRec;
+      expect(rec.currStatus).toBe('none');
+      expect(rec.previousScan.prevScanStatus).toBe('none');
+      expect(rec.progress.registryName).toBe('reg1');
+      expect(typeof rec.previousStatus).toBe('string');
+    });
+
+     it('get latest 2 scanjobs - without status and statusResult', () => {
+      const time = new Date();
+      const type = 'none';
+      const progress = 70;
+      registry.$getters.all.mockReturnValue([
+        {
+          metadata: { namespace: 'ns1' },
+          spec: { registry: 'reg1' },
+        },
+        {
+          metadata: { namespace: 'ns1' },
+          spec: { registry: 'reg1' },
+        },
+        {
+          metadata: { namespace: 'ns1' },
+          spec: { registry: 'reg1' },
+        }
+      ]);
+
+      const rec = registry.scanRec;
+      expect(rec.currStatus).toBe('pending');
+      expect(rec.previousScan.prevScanStatus).toBe('pending');
+      expect(rec.progress.registryName).toBe('reg1');
+    });
   });
 
   describe('getPreviousStatus()', () => {
@@ -154,6 +275,18 @@ describe('Registry model', () => {
       const conds = [{ type: 'A' }, { type: 'B' }, { type: 'C' }];
       const scan = [{ status: { conditions: conds }, statusResult: { statusIndex: 3 } }];
       expect(registry.getPreviousStatus(scan)).toBe('b');
+    });
+
+    it('returns earlier condition if index >= 3 - Cover condition is undefined with statusIndex === 3', () => {
+      const conds = [{ type: 'A' }, { type: 'B' }, { type: 'C' }];
+      const scan = [{ status: {}, statusResult: { statusIndex: 3 } }];
+      expect(registry.getPreviousStatus(scan)).toBe('none');
+    });
+
+    it('returns earlier condition if index >= 3 - Cover condition is undefined with statusIndex === 2', () => {
+      const conds = [{ type: 'A' }, { type: 'B' }, { type: 'C' }];
+      const scan = [{ status: {}, statusResult: { statusIndex: 2 } }];
+      expect(registry.getPreviousStatus(scan)).toBe('none');
     });
 
     it('returns from second scan if no statusIndex', () => {

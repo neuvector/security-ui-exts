@@ -25,6 +25,18 @@ describe('Scanjob model', () => {
     });
   });
 
+  it('returns Pending if conditions array is empty - conditions is undefined', () => {
+    scanjob.status = { 
+        imagesCount: 5,
+        scannedImagesCount: 3
+    };
+    const result = scanjob.statusResult;
+
+    expect(result.type).toBe('Pending');
+    expect(result.progress).toBe(0);
+    expect(result.statusIndex).toBe(-1);
+  });
+
   it('returns Pending if conditions array is empty', () => {
     scanjob.status = { 
         conditions: [],
@@ -92,13 +104,26 @@ describe('Scanjob model', () => {
   it('handles missing imagesCount gracefully (no division by zero)', () => {
     scanjob.status = {
       conditions: [
-        { type: 'Running', status: 'True', lastTransitionTime: '2025-10-25T09:00:00Z', message: 'Still going' }
+        { type: 'Pending', status: 'True', lastTransitionTime: '2025-10-25T09:00:00Z', message: 'Still going' }
       ],
       scannedImagesCount: 10
     };
 
     const result = scanjob.statusResult;
     expect(result.progress).toBe(0);
-    expect(result.type).toBe('Running');
+    expect(result.type).toBe('Pending');
+  });
+
+  it('handles missing imagesCount gracefully (denominator is undefined)', () => {
+    scanjob.status = {
+      conditions: [ 
+        { type: 'Pending', status: 'False', lastTransitionTime: '2025-10-25T09:00:00Z', message: 'Still going' },
+        { type: 'Pending', status: 'True', lastTransitionTime: '2025-10-25T09:00:00Z', message: 'Still going' }
+      ],
+    };
+
+    const result = scanjob.statusResult;
+    expect(result.progress).toBe(0);
+    expect(result.type).toBe('Pending');
   });
 });
