@@ -6,7 +6,7 @@ export default class Registry extends SteveModel {
     const out = super._availableActions.filter((action) => !['showConfiguration', 'download', 'downloadYaml'].includes(action.action));
 
     // In details page, we don't want to show the scan action
-    if ((this.$rootState.targetRoute && 'id' in this.$rootState.targetRoute.params)) {
+    if (this.$rootState.targetRoute && this.$rootState.targetRoute.params && 'id' in this.$rootState.targetRoute.params) {
       return out;
     }
 
@@ -89,8 +89,8 @@ export default class Registry extends SteveModel {
       })
       // Take the latest 2 scanjobs
       .slice(0, 2);
-    const status = scanJobs[0] ? scanJobs[0].statusResult.type.toLowerCase() || 'pending' : 'none';
-    const prevScanStatus = scanJobs[1] ? scanJobs[1].statusResult.type.toLowerCase() || 'pending' : 'none';
+    const status = scanJobs[0] ? scanJobs[0].statusResult?.type.toLowerCase() || 'pending' : 'none';
+    const prevScanStatus = scanJobs[1] ? scanJobs[1].statusResult?.type.toLowerCase() || 'pending' : 'none';
 
     // Reform the record for the table
     const scanRec = {
@@ -98,18 +98,18 @@ export default class Registry extends SteveModel {
       progress:   {
         registryName:   this.metadata.name,
         progress:       scanJobs[0]?.statusResult?.progress || 0,
-        progressDetail: `${ this.t('imageScanner.registries.configuration.scanTable.header.imagesScanned') }: ${ scanJobs[0] ? scanJobs[0].status.scannedImagesCount : 0 } / ${ this.t('imageScanner.registries.configuration.scanTable.header.imagesFound') }: ${ scanJobs[0] ? scanJobs[0].status.imagesCount : 0 }`,
-        error:          scanJobs[0] && scanJobs[0].statusResult.type.toLowerCase() === 'failed' ? scanJobs[0].statusResult.message : '',
+        progressDetail: `${ this.t('imageScanner.registries.configuration.scanTable.header.imagesScanned') }: ${ scanJobs[0] ? scanJobs[0].status?.scannedImagesCount : 0 } / ${ this.t('imageScanner.registries.configuration.scanTable.header.imagesFound') }: ${ scanJobs[0] ? scanJobs[0].status?.imagesCount : 0 }`,
+        error:          scanJobs[0] && scanJobs[0].statusResult?.type.toLowerCase() === 'failed' ? scanJobs[0].statusResult.message : '',
       },
       previousScan: {
         prevScanStatus,
         prevProgress:       scanJobs[1]?.statusResult?.progress || 0,
-        prevProgressDetail: `${ this.t('imageScanner.registries.configuration.scanTable.header.imagesScanned') }: ${ scanJobs[1] ? scanJobs[1].status.scannedImagesCount : 0 } / ${ this.t('imageScanner.registries.configuration.scanTable.header.imagesFound') }: ${ scanJobs[1] ? scanJobs[1].status.imagesCount : 0 }`,
-        prevError:          scanJobs[1] && scanJobs[1].statusResult.type.toLowerCase() === 'failed' ? scanJobs[1].statusResult.message : '',
+        prevProgressDetail: `${ this.t('imageScanner.registries.configuration.scanTable.header.imagesScanned') }: ${ scanJobs[1] ? scanJobs[1].status?.scannedImagesCount : 0 } / ${ this.t('imageScanner.registries.configuration.scanTable.header.imagesFound') }: ${ scanJobs[1] ? scanJobs[1].status?.imagesCount : 0 }`,
+        prevError:          scanJobs[1] && scanJobs[1].statusResult?.type.toLowerCase() === 'failed' ? scanJobs[1].statusResult.message : '',
       },
       previousStatus:     this.getPreviousStatus(scanJobs),
-      lastTransitionTime: scanJobs[0] && scanJobs[0].statusResult.lastTransitionTime ? scanJobs[0].statusResult.lastTransitionTime : null,
-      completionTime:     scanJobs[0] && scanJobs[0].status.completionTime ? scanJobs[0] && scanJobs[0].status.completionTime : null,
+      lastTransitionTime: scanJobs[0] && scanJobs[0].statusResult?.lastTransitionTime ? scanJobs[0].statusResult?.lastTransitionTime : null,
+      completionTime:     scanJobs[0] && scanJobs[0].status?.completionTime ? scanJobs[0] && scanJobs[0].status?.completionTime : null,
     };
 
     return scanRec;
