@@ -1,5 +1,5 @@
 <template>
-  <div style="padding-right: 12px;">
+  <div style="padding-right: 32px;">
     <ScoreBadge
       v-if="row.score && row.score.trim()"
       :score="parseFloat(row.score.split(' ')[0])"

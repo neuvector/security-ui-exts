@@ -316,7 +316,8 @@ export const VULNERABILITY_DETAILS_TABLE = [
     value: "cveId",
     formatter: "CveNameLink",
     sort: "cveId",
-    width: 150,
+    width: "16%",
+    // width: 210,
   },
   {
     name: "score",
@@ -324,14 +325,16 @@ export const VULNERABILITY_DETAILS_TABLE = [
     value: "score",
     formatter: "ScoreCell",
     sort: "score",
-    width: 120,
+    width: "12%",
+    // width: 170,
   },
   {
     name: "package",
     labelKey: "imageScanner.imageDetails.table.headers.package",
     value: "package",
     sort: "package",
-    width: 200,
+    width: "12%",
+    // width: 170,
   },
   {
     name: "fixAvailable",
@@ -339,7 +342,8 @@ export const VULNERABILITY_DETAILS_TABLE = [
     value: "fixAvailable",
     formatter: "FixAvailableCell",
     sort: "fixAvailable",
-    width: 120,
+    width: "8%",
+    // width: 120,
   },
   {
     name: "severity",
@@ -369,7 +373,6 @@ export const VULNERABILITY_DETAILS_TABLE = [
     labelKey: "imageScanner.imageDetails.table.headers.packagePath",
     value: "packagePath",
     sort: "packagePath",
-    width: 200,
   },
 ];
 

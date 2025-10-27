@@ -66,6 +66,7 @@ export default {
     align-self: stretch;
     /* style */
     border-radius: 4px;
+    width: 120px;
 
     &.critical {
       background: #850917;

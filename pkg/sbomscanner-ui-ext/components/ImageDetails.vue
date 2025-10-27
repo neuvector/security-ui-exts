@@ -1,113 +1,114 @@
 <template>
   <div class="page">
     <!-- Header Section -->
-    <div class="header-section">
-      <h1 class="title">
-        <RouterLink
-          class="resource-link"
-          :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.IMAGES}`"
-        >
-          {{ t('imageScanner.images.title') }}:
-        </RouterLink>
-        <span class="resource-header-name">
-          {{ displayImageName }}
-        </span>
-        <BadgeState
-          :color="overallSeverity"
-          :label="t(`imageScanner.enum.cve.${overallSeverity}`)"
-          class="severity-badge"
-        />
-      </h1>
-      <div class="header-actions">
-        <!-- Download SBOM Button -->
-        <button
-          class="btn role-secondary"
-          aria-label="Download SBOM"
-          type="button"
-          @click="downloadSBOM"
-        >
-          <i class="icon icon-download"></i>&nbsp;
-          {{ t('imageScanner.images.downloadSBOM') }}
-        </button>
-
-        <!-- Download Full Report Dropdown -->
-        <div class="dropdown-container">
+    <div class="header-meta">
+      <div class="header-section">
+        <h1 class="title">
+          <RouterLink
+            class="resource-link"
+            :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.IMAGES}`"
+          >
+            {{ t('imageScanner.images.title') }}:
+          </RouterLink>
+          <span class="resource-header-name">
+            {{ displayImageName }}
+          </span>
+          <BadgeState
+            :color="overallSeverity"
+            :label="t(`imageScanner.enum.cve.${overallSeverity}`)"
+            class="severity-badge"
+          />
+        </h1>
+        <div class="header-actions">
+          <!-- Download SBOM Button -->
           <button
-            class="btn role-primary dropdown-main"
-            aria-label="Download full report"
+            class="btn role-secondary"
+            aria-label="Download SBOM"
             type="button"
-            @click="downloadFullReport"
+            @click="downloadSBOM"
           >
             <i class="icon icon-download"></i>&nbsp;
-            {{ t('imageScanner.images.downloadReport') }}
-          </button>
-          <button
-            class="btn role-primary dropdown-toggle"
-            aria-label="Download options"
-            type="button"
-            @click="toggleDownloadDropdown"
-          >
-            <i class="icon icon-chevron-down"></i>
+            {{ t('imageScanner.images.downloadSBOM') }}
           </button>
 
-          <!-- Dropdown Menu -->
-          <div
-            v-if="showDownloadDropdown"
-            class="dropdown-menu"
-          >
+          <!-- Download Full Report Dropdown -->
+          <div class="dropdown-container">
             <button
-              class="dropdown-item"
+              class="btn role-primary dropdown-main"
+              aria-label="Download full report"
+              type="button"
               @click="downloadFullReport"
             >
-              <i class="icon icon-download"></i>
-              {{ t('imageScanner.images.downloadImageDetailReport') }}
+              <i class="icon icon-download"></i>&nbsp;
+              {{ t('imageScanner.images.downloadReport') }}
             </button>
             <button
-              class="dropdown-item"
-              @click="downloadVulnerabilityReport"
+              class="btn role-primary dropdown-toggle"
+              aria-label="Download options"
+              type="button"
+              @click="toggleDownloadDropdown"
             >
-              <i class="icon icon-download"></i>
-              {{ t('imageScanner.images.downloadVulnerabilityReport') }}
+              <i class="icon icon-chevron-down"></i>
             </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              v-if="showDownloadDropdown"
+              class="dropdown-menu"
+            >
+              <button
+                class="dropdown-item"
+                @click="downloadFullReport"
+              >
+                <i class="icon icon-download"></i>
+                {{ t('imageScanner.images.downloadImageDetailReport') }}
+              </button>
+              <button
+                class="dropdown-item"
+                @click="downloadVulnerabilityReport"
+              >
+                <i class="icon icon-download"></i>
+                {{ t('imageScanner.images.downloadVulnerabilityReport') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Image Information Section -->
-    <div class="image-info-section">
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.vulnerabilities') }}:</span>
-          <span class="value">{{ (totalVulnerabilities || 0).toLocaleString() }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.repository') }}:</span>
-          <span class="value">{{ imageDetails.repository }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.registry') }}:</span>
-          <span class="value">{{ imageDetails.registry }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.architecture') }}:</span>
-          <span class="value">{{ imageDetails.architecture }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.operatingSystem') }}:</span>
-          <span class="value">{{ imageDetails.operatingSystem }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.created') }}:</span>
-          <span class="value">{{ imageDetails.created }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.imageId') }}:</span>
-          <span class="value">{{ imageDetails.imageId?.split(':')[1] || 'Unknown' }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">{{ t('imageScanner.imageDetails.layers') }}:</span>
-          <span class="value">{{ imageDetails.layers?.length || '0' }}</span>
+      <!-- Image Information Section -->
+      <div class="image-info-section">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.vulnerabilities') }}</span>
+            <span class="value">{{ (totalVulnerabilities || 0).toLocaleString() }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.repository') }}</span>
+            <span class="value">{{ imageDetails.repository }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.registry') }}</span>
+            <span class="value">{{ imageDetails.registry }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.architecture') }}</span>
+            <span class="value">{{ imageDetails.architecture }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.operatingSystem') }}</span>
+            <span class="value">{{ imageDetails.operatingSystem }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.created') }}</span>
+            <span class="value">{{ imageDetails.created }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.imageId') }}</span>
+            <span class="value">{{ imageDetails.imageId?.split(':')[1] || 'Unknown' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ t('imageScanner.imageDetails.layers') }}</span>
+            <span class="value">{{ imageDetails.layers?.length || '0' }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1404,6 +1405,13 @@ export default {
   gap: 24px;
 }
 
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  gap: 16px;
+}
+
 .header-section {
   display: flex;
   flex-direction: row;
@@ -1464,6 +1472,7 @@ export default {
 }
 
 .image-info-section {
+  flex-direction: row;
   padding: 0;
 }
 
@@ -1483,11 +1492,13 @@ export default {
 .label {
   font-weight: 400;
   font-size: 14px;
+  flex: 1 0 0;
   color: var(--disabled-text);
 }
 
 .value {
   font-weight: 400;
+  flex: 2 0 0;
   font-size: 14px;
 }
 
