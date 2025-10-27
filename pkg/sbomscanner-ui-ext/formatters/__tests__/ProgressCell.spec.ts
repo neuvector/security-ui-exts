@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { shallowMount } from '@vue/test-utils';
 import ProgressCell from '../ProgressCell.vue';
-import TextWithPopedDetail from '../../components/common/TextWithPopedDetail.vue';
+import TextWithPoppedDetail from '../../components/common/TextWithPoppedDetail.vue';
 
 describe('ProgressCell.vue', () => {
   const mockT = jest.fn((key) => key);
@@ -33,7 +33,7 @@ describe('ProgressCell.vue', () => {
     expect(span.exists()).toBe(true);
     expect(span.text()).toBe('n/a');
 
-    expect(wrapper.findComponent(TextWithPopedDetail).exists()).toBe(false);
+    expect(wrapper.findComponent(TextWithPoppedDetail).exists()).toBe(false);
   });
 
   it('should render progress and detail when progress is 0', () => {
@@ -46,7 +46,7 @@ describe('ProgressCell.vue', () => {
 
     expect(wrapper.find('.progress-text.none').exists()).toBe(false);
 
-    const detail = wrapper.findComponent(TextWithPopedDetail);
+    const detail = wrapper.findComponent(TextWithPoppedDetail);
 
     expect(detail.exists()).toBe(true);
     expect(detail.props('value')).toBe('0%');
@@ -67,7 +67,7 @@ describe('ProgressCell.vue', () => {
     };
     const wrapper = mountComponent(mockValue);
 
-    const details = wrapper.findAllComponents(TextWithPopedDetail);
+    const details = wrapper.findAllComponents(TextWithPoppedDetail);
 
     expect(details).toHaveLength(1);
 
@@ -90,7 +90,7 @@ describe('ProgressCell.vue', () => {
     };
     const wrapper = mountComponent(mockValue);
 
-    const detail = wrapper.findComponent(TextWithPopedDetail);
+    const detail = wrapper.findComponent(TextWithPoppedDetail);
 
     expect(detail.exists()).toBe(true);
     expect(detail.props('detail').title).toBe('my-registry - 50%');
@@ -105,7 +105,7 @@ describe('ProgressCell.vue', () => {
     };
     const wrapper = mountComponent(mockValue);
 
-    const details = wrapper.findAllComponents(TextWithPopedDetail);
+    const details = wrapper.findAllComponents(TextWithPoppedDetail);
 
     expect(details).toHaveLength(2);
 

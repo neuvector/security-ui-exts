@@ -8,7 +8,7 @@
         </div>
       </div>
       <div
-        v-if="scaningStats.lastCompletionTimestamp > 0"
+        v-if="scanningStats.lastCompletionTimestamp > 0"
         class="filter-dropdown"
       >
         <LabeledSelect
@@ -20,7 +20,7 @@
       </div>
     </div>
     <Banner
-      v-if="scaningStats.lastCompletionTimestamp === 0"
+      v-if="scanningStats.lastCompletionTimestamp === 0"
       test-id="no-scan-info"
       color="info"
     >
@@ -70,7 +70,7 @@
                 {{ durationFromLastScan }}
               </div>
               <div
-                v-if="scaningStats.lastCompletionTimestamp > 0"
+                v-if="scanningStats.lastCompletionTimestamp > 0"
                 class="scan-label"
               >
                 {{ t('imageScanner.dashboard.scanningStatus.durationSubtitle') }}
@@ -163,7 +163,7 @@ export default {
       PRODUCT_NAME,
       PAGE,
       scanJobsCRD:  [],
-      scaningStats: {
+      scanningStats: {
         totalScannedImageCnt:    0,
         detectedErrorCnt:        0,
         failedImagesCnt:         0,
@@ -238,26 +238,26 @@ export default {
       return day(new Date().getTime()).format('h:mm a');
     },
     displayedDetectedErrorCnt() {
-      const suffix = this.scaningStats.detectedErrorCnt > 1 ? 'errors' : 'error';
+      const suffix = this.scanningStats.detectedErrorCnt > 1 ? 'errors' : 'error';
 
-      return `${ this.scaningStats.detectedErrorCnt } ${ suffix }`;
+      return `${ this.scanningStats.detectedErrorCnt } ${ suffix }`;
     },
     displayedFailedImagesCnt() {
-      const suffix = this.scaningStats.failedImagesCnt > 1 ? 'images' : 'image';
+      const suffix = this.scanningStats.failedImagesCnt > 1 ? 'images' : 'image';
 
-      return `${ this.scaningStats.failedImagesCnt } ${ suffix }`;
+      return `${ this.scanningStats.failedImagesCnt } ${ suffix }`;
     },
     displayedTotalScannedImageCnt() {
-      const suffix = this.scaningStats.totalScannedImageCnt > 1 ? 'images' : 'image';
+      const suffix = this.scanningStats.totalScannedImageCnt > 1 ? 'images' : 'image';
 
-      return `${ this.scaningStats.totalScannedImageCnt } ${ suffix }`;
+      return `${ this.scanningStats.totalScannedImageCnt } ${ suffix }`;
     },
     durationFromLastScan() {
-      if (this.scaningStats.lastCompletionTimestamp === 0) {
+      if (this.scanningStats.lastCompletionTimestamp === 0) {
         return this.t('imageScanner.dashboard.scanningStatus.initialDuration');
       }
       const now = Date.now();
-      const diffMs = now - this.scaningStats.lastCompletionTimestamp;
+      const diffMs = now - this.scanningStats.lastCompletionTimestamp;
       const diffSec = Math.floor(diffMs / 1000);
 
       if (Math.abs(diffSec) < 60) {
@@ -319,7 +319,7 @@ export default {
   },
   watch: {
     selectedRegistry() {
-      this.scaningStats = this.getScaningStats();
+      this.scanningStats = this.getScaningStats();
     }
   },
   methods: {
@@ -327,7 +327,7 @@ export default {
       if (isReloading) {
         this.scanJobsCRD = this.$store.getters['cluster/all'](RESOURCE.SCAN_JOB);
       }
-      this.scaningStats = this.getScaningStats();
+      this.scanningStats = this.getScaningStats();
     },
     getScaningStats() {
       let lastCompletionTimestamp = 0;

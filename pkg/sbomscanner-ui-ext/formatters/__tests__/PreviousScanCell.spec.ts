@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { shallowMount } from '@vue/test-utils';
 import PreviousScanCell from '../PreviousScanCell.vue';
 import ProgressCell from '../ProgressCell.vue';
-import TextWithPopedDetail from '../../components/common/TextWithPopedDetail.vue';
+import TextWithPoppedDetail from '../../components/common/TextWithPoppedDetail.vue';
 
 describe('PreviousScanCell.vue', () => {
   const mockT = jest.fn((key) => key);
@@ -36,7 +36,7 @@ describe('PreviousScanCell.vue', () => {
     expect(mockT).toHaveBeenCalledWith('imageScanner.enum.status.complete');
 
     expect(wrapper.findComponent(ProgressCell).exists()).toBe(false);
-    expect(wrapper.findComponent(TextWithPopedDetail).exists()).toBe(false);
+    expect(wrapper.findComponent(TextWithPoppedDetail).exists()).toBe(false);
   });
 
   it('should render "InProgress" status and the ProgressCell', () => {
@@ -63,10 +63,10 @@ describe('PreviousScanCell.vue', () => {
     };
 
     expect(progressCell.props('value')).toEqual(expectedProps);
-    expect(wrapper.findComponent(TextWithPopedDetail).exists()).toBe(false);
+    expect(wrapper.findComponent(TextWithPoppedDetail).exists()).toBe(false);
   });
 
-  it('should render "Failed" status and the TextWithPopedDetail', () => {
+  it('should render "Failed" status and the TextWithPoppedDetail', () => {
     const mockValue = {
       prevScanStatus: 'Failed',
       prevError:      'Scan timed out',
@@ -76,7 +76,7 @@ describe('PreviousScanCell.vue', () => {
     expect(wrapper.find('.dot').classes()).toContain('failed');
     expect(wrapper.find('.status').text()).toBe('imageScanner.enum.status.failed');
 
-    const errorDetail = wrapper.findComponent(TextWithPopedDetail);
+    const errorDetail = wrapper.findComponent(TextWithPoppedDetail);
 
     expect(errorDetail.exists()).toBe(true);
 
@@ -101,7 +101,7 @@ describe('PreviousScanCell.vue', () => {
     expect(wrapper.find('.dot').classes()).toContain('failed');
     expect(wrapper.find('.status').classes()).toContain('failed');
     expect(wrapper.find('.status').text()).toBe('imageScanner.enum.status.failed');
-    expect(wrapper.findComponent(TextWithPopedDetail).exists()).toBe(true);
+    expect(wrapper.findComponent(TextWithPoppedDetail).exists()).toBe(true);
   });
 
   it('should render both progress and error if "failed" and progress exists', () => {
@@ -113,7 +113,7 @@ describe('PreviousScanCell.vue', () => {
     const wrapper = mountComponent(mockValue);
 
     expect(wrapper.findComponent(ProgressCell).exists()).toBe(true);
-    expect(wrapper.findComponent(TextWithPopedDetail).exists()).toBe(true);
+    expect(wrapper.findComponent(TextWithPoppedDetail).exists()).toBe(true);
   });
 
   it('should render an empty state if no status is provided', () => {
@@ -128,6 +128,6 @@ describe('PreviousScanCell.vue', () => {
     expect(statusDiv.text()).toBe('');
 
     expect(wrapper.findComponent(ProgressCell).exists()).toBe(false);
-    expect(wrapper.findComponent(TextWithPopedDetail).exists()).toBe(false);
+    expect(wrapper.findComponent(TextWithPoppedDetail).exists()).toBe(false);
   });
 });

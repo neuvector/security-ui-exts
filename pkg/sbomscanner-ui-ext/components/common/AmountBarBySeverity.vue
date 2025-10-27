@@ -1,7 +1,7 @@
 <template>
   <div v-if="isCollapsed">
     <StackedPercentageBar
-      :percentages="pecentages"
+      :percentages="percentages"
       :primary-colors="['#880E1E','#D32F2F','#FB8C00','#FDD835','#E0E0E0','#F4F5FA']"
       :height="7"
     />
@@ -68,7 +68,7 @@ export default {
     }
   },
   computed: {
-    pecentages() {
+    percentages() {
       const total = this.cveAmount.critical + this.cveAmount.high + this.cveAmount.medium + this.cveAmount.low + this.cveAmount.unknown;
 
       return [

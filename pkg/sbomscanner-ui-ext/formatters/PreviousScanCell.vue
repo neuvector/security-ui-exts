@@ -1,10 +1,10 @@
 <script>
 import ProgressCell from '@pkg/formatters/ProgressCell';
-import TextWithPopedDetail from '@pkg/components/common/TextWithPopedDetail';
+import TextWithPoppedDetail from '@pkg/components/common/TextWithPoppedDetail';
 export default {
   components: {
     ProgressCell,
-    TextWithPopedDetail
+    TextWithPoppedDetail
   },
   name:  'PreviousScanCell',
   props: {
@@ -48,7 +48,7 @@ export default {
     </div>
     <div v-if="value.prevScanStatus?.toLowerCase() === 'failed' && value.prevError">
       <span>|
-        <TextWithPopedDetail
+        <TextWithPoppedDetail
           :value="t('imageScanner.general.error')"
           :detail="{ title: `${row.metadata.name} - ${t('imageScanner.registries.configuration.scanTable.header.error')}`, message: value.prevError, type: 'error' }"
         />

@@ -27,7 +27,7 @@
 <script>
 
 export default {
-  name:  'TextWithPopedDetail',
+  name:  'TextWithPoppedDetail',
   props: {
     value: {
       type:    String,

@@ -59,7 +59,7 @@ describe('Dashboard.vue full coverage', () => {
     const wrapper = factory();
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.vm.selectedRegistry).toBe('All registries');
-    expect(wrapper.vm.scaningStats.lastCompletionTimestamp).toBe(0);
+    expect(wrapper.vm.scanningStats.lastCompletionTimestamp).toBe(0);
   });
 
   it('computed: displayedCurrDate and displayedCurrTime return strings', () => {
@@ -70,25 +70,25 @@ describe('Dashboard.vue full coverage', () => {
 
   it('computed: displayedDetectedErrorCnt pluralization', () => {
     const wrapper = factory();
-    wrapper.vm.scaningStats.detectedErrorCnt = 1;
+    wrapper.vm.scanningStats.detectedErrorCnt = 1;
     expect(wrapper.vm.displayedDetectedErrorCnt).toBe('1 error');
-    wrapper.vm.scaningStats.detectedErrorCnt = 2;
+    wrapper.vm.scanningStats.detectedErrorCnt = 2;
     expect(wrapper.vm.displayedDetectedErrorCnt).toBe('2 errors');
   });
 
   it('computed: displayedFailedImagesCnt pluralization', () => {
     const wrapper = factory();
-    wrapper.vm.scaningStats.failedImagesCnt = 1;
+    wrapper.vm.scanningStats.failedImagesCnt = 1;
     expect(wrapper.vm.displayedFailedImagesCnt).toBe('1 image');
-    wrapper.vm.scaningStats.failedImagesCnt = 2;
+    wrapper.vm.scanningStats.failedImagesCnt = 2;
     expect(wrapper.vm.displayedFailedImagesCnt).toBe('2 images');
   });
 
   it('computed: displayedTotalScannedImageCnt pluralization', () => {
     const wrapper = factory();
-    wrapper.vm.scaningStats.totalScannedImageCnt = 1;
+    wrapper.vm.scanningStats.totalScannedImageCnt = 1;
     expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('1 image');
-    wrapper.vm.scaningStats.totalScannedImageCnt = 3;
+    wrapper.vm.scanningStats.totalScannedImageCnt = 3;
     expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('3 images');
   });
 
@@ -96,23 +96,23 @@ describe('Dashboard.vue full coverage', () => {
     const wrapper = factory();
 
     // initialDuration
-    wrapper.vm.scaningStats.lastCompletionTimestamp = 0;
+    wrapper.vm.scanningStats.lastCompletionTimestamp = 0;
     expect(wrapper.vm.durationFromLastScan).toContain('initialDuration');
 
     // seconds
-    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 10 * 1000;
+    wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 10 * 1000;
     expect(wrapper.vm.durationFromLastScan).toContain('seconds');
 
     // minutes
-    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 10 * 60 * 1000;
+    wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 10 * 60 * 1000;
     expect(wrapper.vm.durationFromLastScan).toContain('minutes');
 
     // hours
-    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 2 * 60 * 60 * 1000;
+    wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 2 * 60 * 60 * 1000;
     expect(wrapper.vm.durationFromLastScan).toContain('hours');
 
     // days
-    wrapper.vm.scaningStats.lastCompletionTimestamp = Date.now() - 3 * 24 * 60 * 60 * 1000;
+    wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 3 * 24 * 60 * 60 * 1000;
     expect(wrapper.vm.durationFromLastScan).toContain('days');
   });
 

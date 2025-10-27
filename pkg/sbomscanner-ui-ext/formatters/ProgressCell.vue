@@ -1,5 +1,5 @@
 <script>
-import TextWithPopedDetail from '@pkg/components/common/TextWithPopedDetail';
+import TextWithPoppedDetail from '@pkg/components/common/TextWithPoppedDetail';
 export default {
   props: {
     value: {
@@ -11,19 +11,19 @@ export default {
       required: true
     }
   },
-  components: { TextWithPopedDetail },
+  components: { TextWithPoppedDetail },
   name:       'ProgressCell',
 };
 </script>
 <template>
   <div class="progress-cell">
     <span v-if="value.progress !== undefined && value.progress !== null">
-      <TextWithPopedDetail
+      <TextWithPoppedDetail
         :value="`${value.progress}%`"
         :detail="{ title: `${value.metadata?.name || value.registryName} - ${value.progress}%`, message: value.progressDetail, type: 'info' }"
       />
       <span v-if="value.error">|
-        <TextWithPopedDetail
+        <TextWithPoppedDetail
           :value="t('imageScanner.general.error')"
           :detail="{title: `${value.metadata?.name} - ${t('imageScanner.registries.configuration.scanTable.header.error')}`, message: value.error, type: 'error' }"
         />
