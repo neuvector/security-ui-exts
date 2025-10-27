@@ -139,28 +139,28 @@ describe('Dashboard.vue full coverage', () => {
     expect(wrapper.vm.getFailedImageCnt(jobWithoutError)).toBe(0);
   });
 
-  it('method: getScaningStats aggregates correctly', () => {
+  it('method: getScanningStats aggregates correctly', () => {
     const wrapper = factory();
     const jobs = [
       makeScanJob({ conditions: [{error: false}], scannedImagesCount: 5, imagesCount: 5, completionTime: 1761480970 }),
       makeScanJob({ conditions: [{error: true}], scannedImagesCount: 3, imagesCount: 10, completionTime: 1761480098 }),
     ];
     wrapper.vm.scanJobsCRD = jobs;
-    const stats = wrapper.vm.getScaningStats();
+    const stats = wrapper.vm.getScanningStats();
     expect(stats.totalScannedImageCnt).toBe(8);
     expect(stats.detectedErrorCnt).toBe(1);
     expect(stats.failedImagesCnt).toBe(7);
     expect(stats.lastCompletionTimestamp).toBe(1761480970);
   });
 
-  it('method: getScaningStats aggregates correctly', () => {
+  it('method: getScanningStats aggregates correctly', () => {
     const wrapper = factory();
     const jobs = [
       { metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{error: false}] }},
       { metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{error: true}] } },
     ];
     wrapper.vm.scanJobsCRD = jobs;
-    const stats = wrapper.vm.getScaningStats();
+    const stats = wrapper.vm.getScanningStats();
     expect(stats.totalScannedImageCnt).toBe(0);
     expect(stats.detectedErrorCnt).toBe(1);
     expect(stats.failedImagesCnt).toBe(0);
@@ -211,9 +211,9 @@ describe('Dashboard.vue full coverage', () => {
     mockClearInterval.mockRestore();
   });
 
-  it('watch: selectedRegistry triggers getScaningStats', async () => {
+  it('watch: selectedRegistry triggers getScanningStats', async () => {
     const wrapper = factory();
-    const spy = jest.spyOn(wrapper.vm, 'getScaningStats');
+    const spy = jest.spyOn(wrapper.vm, 'getScanningStats');
     await wrapper.setData({ selectedRegistry: 'custom' });
     wrapper.vm.$options.watch.selectedRegistry.call(wrapper.vm);
     expect(spy).toHaveBeenCalled();

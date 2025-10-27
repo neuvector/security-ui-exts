@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
 import { shallowMount } from '@vue/test-utils';
-import TextWithPopedDetail from '../TextWithPopedDetail.vue';
+import TextWithPoppedDetail from '../TextWithPoppedDetail.vue';
 
-describe('TextWithPopedDetail.vue', () => {
+describe('TextWithPoppedDetail.vue', () => {
   let wrapper;
   const mockDetail = {
     title:   'Test Title',
@@ -11,7 +11,7 @@ describe('TextWithPopedDetail.vue', () => {
   };
 
   const mountComponent = (props = {}) => {
-    return shallowMount(TextWithPopedDetail, {
+    return shallowMount(TextWithPoppedDetail, {
       propsData: {
         value:  'Test Value',
         detail: mockDetail,

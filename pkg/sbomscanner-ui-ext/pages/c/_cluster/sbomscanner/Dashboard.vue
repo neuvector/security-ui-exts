@@ -319,7 +319,7 @@ export default {
   },
   watch: {
     selectedRegistry() {
-      this.scanningStats = this.getScaningStats();
+      this.scanningStats = this.getScanningStats();
     }
   },
   methods: {
@@ -327,9 +327,9 @@ export default {
       if (isReloading) {
         this.scanJobsCRD = this.$store.getters['cluster/all'](RESOURCE.SCAN_JOB);
       }
-      this.scanningStats = this.getScaningStats();
+      this.scanningStats = this.getScanningStats();
     },
-    getScaningStats() {
+    getScanningStats() {
       let lastCompletionTimestamp = 0;
       let failedImagesCnt = 0;
       let detectedErrorCnt = 0;
