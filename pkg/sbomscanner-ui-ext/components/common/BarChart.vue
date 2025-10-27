@@ -72,6 +72,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../../styles/_variables.scss';
+
   .severity-bar-chart {
     display: flex;
     padding: 8px 0px;
@@ -133,6 +135,7 @@ export default {
         }
 
         .severity-item-value {
+          color: var(--disabled-text);
           width: 50px;
           text-align: right;
           align-items: left;
@@ -141,17 +144,18 @@ export default {
       }
     }
 
-    --cve-critical: #880E1E;
-    --cve-high: #DE2136;
-    --cve-medium: #FF8533;
-    --cve-low: #EEC707;
-    --cve-none: #DCDEE7;
-    --border: #F4F5FA;
-
-    --status-pending: #DCDEE7;
-    --status-scheduled: #0FCFF0;
-    --status-inprogress: #3D98D3;
-    --status-complete: #5BB04F;
-    --status-failed: #DE2136;
+    /* Define CSS variables on the root element of this component so children can inherit them */
+    :global(.severity-bar-chart) {
+      --cve-critical: #{$critical-color};
+      --cve-high: #{$high-color};
+      --cve-medium: #{$medium-color};
+      --cve-low: #{$low-color};
+      --cve-none: #{$na-color};
+      --status-pending: #{$pending-color};
+      --status-scheduled: #{$scheduled-color};
+      --status-inprogress: #{$inprogress-color};
+      --status-complete: #{$completed-color};
+      --status-failed: #{$failed-color};
+    }
   }
 </style>

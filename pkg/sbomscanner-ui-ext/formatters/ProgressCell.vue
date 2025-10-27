@@ -31,7 +31,7 @@ export default {
     </span>
     <span
       v-else
-      class="progress-text text-muted none"
+      class="progress-text none"
     >n/a</span>
   </div>
 </template>
@@ -44,6 +44,7 @@ export default {
   .progress-text {
     margin-left: 8px;
     &.none {
+      color: var(--disabled-text);
       margin-left: 12px;
     }
   }

@@ -118,10 +118,7 @@
       <div class="vulnerabilities-section">
         <div class="summary-title">
           {{ t('imageScanner.imageDetails.mostSevereVulnerabilities.title') }}
-          <i
-            v-clean-tooltip="t('imageScanner.imageDetails.mostSevereVulnerabilities.tooltip')"
-            class="icon icon-question-mark"
-          ></i>
+          <InfoTooltip :tooltip="t('imageScanner.imageDetails.mostSevereVulnerabilities.tooltip')" />
         </div>
         <div class="vulnerabilities-list">
           <div
@@ -150,13 +147,7 @@
               {{ vuln.package }}
             </div>
             <div class="col span-1">
-              <i
-                :class="vuln.fixAvailable ? 'icon icon-confirmation-alt' : 'icon icon-notify-error'"
-                :style="{
-                  color: vuln.fixAvailable ? '#007cba' : '#E2E3EB',
-                  fontSize: '1.5rem'
-                }"
-              ></i>
+              <FixAvailableIcon :fix-available="vuln.fixAvailable" />
             </div>
           </div>
         </div>
@@ -350,7 +341,9 @@ import { VULNERABILITY_DETAILS_TABLE, LAYER_BASED_TABLE } from '@pkg/config/tabl
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
 import day from 'dayjs';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
-import DistributionChart from './DistributionChart.vue';
+import DistributionChart from '@pkg/components/DistributionChart';
+import InfoTooltip from '@pkg/components/common/Tooltip';
+import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
 
 export default {
   name:       'ImageDetails',
@@ -361,6 +354,8 @@ export default {
     ScoreBadge,
     DistributionChart,
     LabeledSelect,
+    InfoTooltip,
+    FixAvailableIcon,
   },
   data() {
     return {
@@ -1105,18 +1100,6 @@ export default {
       }
     },
 
-    getSeverityBarColor(severity) {
-      const colors = {
-        critical: '#850917',
-        high:     '#DE2136',
-        medium:   '#FF8533',
-        low:      '#FDD835',
-        none:     '#E0E0E0'
-      };
-
-      return colors[severity] || colors.none;
-    },
-
     async onSelectionChange(selected) {
       // Handle selection changes for both grouped and ungrouped modes
       try {
@@ -1395,7 +1378,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '../styles/variables.scss';
+
 .page {
   display: flex;
   flex-direction: column;
@@ -1433,32 +1418,32 @@ export default {
   font-size: 12px;
   font-weight: 400;
   &.critical {
-      background: #850917;
+      background: $critical-color;
       color: white !important;
     }
 
     &.high {
-      background: #DE2136;
+      background: $high-color;
       color: white !important;
     }
 
     &.medium {
-      background: #FF8533;
+      background: $medium-color;
       color: white !important;
     }
 
     &.low {
-      background: #EEC707;
-      color: white !important;
+      background: $low-color;
+      color: $low-na-text !important;
     }
 
     &.na{
-      background: #DCDEE7;
-      color: #717179 !important;
+      background: $na-color;
+      color: $low-na-text !important;
     }
 
     &.none{
-      background: #DCDEE7;
+      background: $na-color;
       color: #717179 !important;
     }
 }
@@ -1807,11 +1792,6 @@ export default {
 .dropdown-item:last-child {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
-}
-
-.dropdown-item .icon {
-  font-size: 14px;
-  color: #6c6c76;
 }
 
 /* Overflow handling for long content */

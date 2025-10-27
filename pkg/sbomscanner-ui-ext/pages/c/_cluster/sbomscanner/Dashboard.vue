@@ -53,11 +53,7 @@
         <div class="panel-header">
           <div class="header-left">
             <h3>{{ t('imageScanner.dashboard.scanningStatus.title') }}</h3>
-            <i
-              v-clean-tooltip="tooltip"
-              class="icon icon-question-mark"
-              style="margin-left: .5rem;"
-            ></i>
+            <InfoTooltip :tooltip="tooltip" />
           </div>
           <div class="header-right">
             <span class="total-count">{{ displayedTotalScannedImageCnt }} {{ t('imageScanner.dashboard.scanningStatus.totalImages') }}</span>
@@ -147,6 +143,7 @@ import { RESOURCE, PRODUCT_NAME, PAGE } from '@pkg/types';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import day from 'dayjs';
 import Banner from '@components/Banner/Banner.vue';
+import InfoTooltip from '@pkg/components/common/Tooltip';
 
 export default {
   name:       'Dashboard',
@@ -157,12 +154,13 @@ export default {
     // TopRiskyImagesChart,
     LabeledSelect,
     Banner,
+    InfoTooltip,
   },
   data() {
     return {
       PRODUCT_NAME,
       PAGE,
-      scanJobsCRD:  [],
+      scanJobsCRD:   [],
       scanningStats: {
         totalScannedImageCnt:    0,
         detectedErrorCnt:        0,

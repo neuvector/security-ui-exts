@@ -529,14 +529,6 @@ describe('ImageDetails', () => {
 
   describe('Methods', () => {
 
-    it('should return correct severity bar color', () => {
-      expect(wrapper.vm.getSeverityBarColor('critical')).toBe('#850917');
-      expect(wrapper.vm.getSeverityBarColor('high')).toBe('#DE2136');
-      expect(wrapper.vm.getSeverityBarColor('medium')).toBe('#FF8533');
-      expect(wrapper.vm.getSeverityBarColor('low')).toBe('#FDD835');
-      expect(wrapper.vm.getSeverityBarColor('none')).toBe('#E0E0E0');
-    });
-
     it('should handle selection change', async () => {
       const selected = ['CVE-2017-5337', 'CVE-2018-1000007'];
       await wrapper.vm.onSelectionChange(selected);

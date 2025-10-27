@@ -1,19 +1,16 @@
 <template>
   <div class="fix-available-cell">
-    <i
-      :class="row.fixAvailable ? 'icon icon-confirmation-alt' : 'icon icon-notify-error'"
-      :style="{
-        color: row.fixAvailable ? '#007cba' : '#E2E3EB',
-        fontSize: '1.5rem'
-      }"
-    ></i>
+    <FixAvailableIcon :fix-available="row.fixAvailable" />
     <span v-if="row.fixAvailable && row.fixVersion">{{ row.fixVersion }}</span>
   </div>
 </template>
 
 <script>
+import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
+
 export default {
-  props: {
+  components: { FixAvailableIcon },
+  props:      {
     row: {
       type:     Object,
       required: true

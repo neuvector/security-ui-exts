@@ -38,7 +38,7 @@ export default {
     v-else
     class="scan-error-cell"
   >
-    <div class="status text-muted">
+    <div class="status status-none">
       {{ t('imageScanner.general.none') }}
     </div>
   </div>
@@ -53,6 +53,9 @@ export default {
         font-size: 14px;
         .status {
           font-size: 14px;
+          &.status-none {
+            color: var(--disabled-text);
+          }
         }
         .dot {
             width: 8px;

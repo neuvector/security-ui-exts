@@ -62,12 +62,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../../styles/_variables.scss';
+
    .message-hover-overlay {
         position: absolute;
         top: calc(100% + 10px);
         right: 10px;
-        background: white;
-        border: 1px solid #eee;
+        background: var(--popover-bg);
+        border: 1px solid var(--popover-border);
         padding: 16px;
         z-index: 100;
         width: 360px;
@@ -100,6 +102,14 @@ export default {
       &:hover .message-hover-overlay {
         display: block;
       }
+      /* Define CSS variables on the root element of this component */
+      --status-pending: #{$pending-color};
+      --status-scheduled: #{$scheduled-color};
+      --status-inprogress: #{$inprogress-color};
+      --status-complete: #{$completed-color};
+      --status-failed: #{$failed-color};
+      --status-none: #FFFFFF;
+
       .message-hover-overlay {
         display: none;
       }
@@ -141,13 +151,6 @@ export default {
                 background-color: var(--status-none);
                 border-color: #DCDEE4;
             }
-
-            --status-pending: #DCDEE7;
-            --status-scheduled: #0FCFF0;
-            --status-inprogress: #3D98D3;
-            --status-complete: #5BB04F;
-            --status-failed: #DE2136;
-            --status-none: #FFFFFF;
         }
         .message {
             color: var(--text-secondary);

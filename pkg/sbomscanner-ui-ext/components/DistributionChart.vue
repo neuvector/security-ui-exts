@@ -2,11 +2,7 @@
   <div class="chart-section">
     <div class="title">
       {{ title }}
-      <i
-        v-if="tooltip"
-        v-clean-tooltip="tooltip"
-        class="icon icon-question-mark"
-      ></i>
+      <InfoTooltip :tooltip="tooltip" />
     </div>
     <div class="bar-chart">
       <BarChart
@@ -21,10 +17,11 @@
 
 <script>
 import BarChart from '@pkg/components/common/BarChart';
+import InfoTooltip from '@pkg/components/common/Tooltip';
 
 export default {
   name:       'DistributionChart',
-  components: { BarChart },
+  components: { BarChart, InfoTooltip },
   props:      {
     title: {
       type:     String,
@@ -73,6 +70,7 @@ export default {
             font-style: normal;
             font-weight: 400;
             line-height: 21px; /* 116.667% */
+
         }
         .bar-chart {
             padding: 4px 8px;

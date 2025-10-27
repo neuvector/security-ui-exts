@@ -2,8 +2,8 @@
   <div v-if="isCollapsed">
     <StackedPercentageBar
       :percentages="percentages"
-      :primary-colors="['#880E1E','#D32F2F','#FB8C00','#FDD835','#E0E0E0','#F4F5FA']"
       :height="7"
+      :primary-classes="severityClasses"
     />
   </div>
   <div v-else>
@@ -78,12 +78,22 @@ export default {
         this.cveAmount.low * 100 / total,
         this.cveAmount.unknown * 100 / total,
       ];
+    },
+    severityClasses() {
+      return [
+        'critical',
+        'high',
+        'medium',
+        'low',
+        'unknown'
+      ];
     }
   }
 };
 </script>
-
 <style lang="scss" scoped>
+  @import '../../styles/_variables.scss';
+
   .bar {
     display: flex;
     border-radius: 4px;
@@ -109,28 +119,40 @@ export default {
       line-height: 20px; /* 153.846% */
     }
     .badge.critical {
-      background-color: #880E1E;
+      background-color: $critical-color;
       color: rgba(255, 255, 255, 0.90);
     }
     .badge.high {
-      background-color: #D32F2F;
+      background-color: $high-color;
       color: rgba(255, 255, 255, 0.90);
     }
     .badge.medium {
-      background-color: #FB8C00;
+      background-color: $medium-color;
       color: rgba(255, 255, 255, 0.90);
     }
     .badge.low {
-      background-color: #FDD835;
-      color: rgba(255, 255, 255, 0.90);
+      background-color: $low-color;
+      color: $low-na-text;
     }
     .badge.unknown {
-      background-color: #E0E0E0;
-      color: #717179;
+      background-color: $na-color;
+      color: $low-na-text;
     }
     .badge.zero {
-      background-color: #F4F5FA;
-      color: #BEC1D2;
+      color: $zero-text;
+      // Default to light theme color
+      background-color: $zero-color-light;
+
+      body.theme-dark & {
+        background-color: $zero-color-dark;
+      }
     }
   }
+
+  // Add styles for StackedPercentageBar classes
+  ::v-deep(.critical) { background-color: $critical-color; }
+  ::v-deep(.high) { background-color: $high-color; }
+  ::v-deep(.medium) { background-color: $medium-color; }
+  ::v-deep(.low) { background-color: $low-color; }
+  ::v-deep(.unknown) { background-color: $na-color; }
 </style>

@@ -49,6 +49,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../../styles/_variables.scss';
+
   .badge {
     /* layout */
     display: inline-block;
@@ -58,38 +60,53 @@ export default {
     border-radius: 30px;
 
     &.pending {
-      background: #EDEFF3;
-      color: #6C6C76;
+      background: rgba($pending-color, 0.3);
+      color: rgba(black, 0.65);
+      body.theme-dark & {
+        color: rgba(white, 0.65);
+      }
     }
 
     &.scheduled {
-      background: #CDF5FC;
-      color: #097C90;
+      background: rgba($scheduled-color, 0.3);
+      color: rgba(black, 0.65);
+      body.theme-dark & {
+        color: rgba(white, 0.65);
+      }
     }
 
     &.in-progress {
-      background: #D8EAF6;
-      color: #1C577D;
+      background: rgba($inprogress-color, 0.3);
+      color: rgba(black, 0.65);
+      body.theme-dark & {
+        color: rgba(white, 0.65);
+      }
     }
 
     &.complete {
-      background: #DEEFDC;
-      color: #376930;
+      background: rgba($completed-color, 0.3);
+      color: rgba(black, 0.65);
+      body.theme-dark & {
+        color: rgba(white, 0.65);
+      }
     }
 
     &.failed{
-      background: #DE2136;
-      color: #FFFFFF;
+      background: $failed-color;
+      color: white;
     }
 
     &.disabled{
-      background: #DE2136;
-      color: #FFFFFF;
+      background: $failed-color;
+      color: white;
     }
 
     &.enabled{
-      background: #DEEFDC;
-      color: #376930;
+      background: rgba($completed-color, 0.3);
+      color: rgba(black, 0.65);
+      body.theme-dark & {
+        color: rgba(white, 0.65);
+      }
     }
 
     .text {

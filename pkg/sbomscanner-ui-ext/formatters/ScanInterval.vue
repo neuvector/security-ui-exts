@@ -6,7 +6,7 @@
     >{{ t('imageScanner.general.every') }}&nbsp;{{ value }}</span>
     <span
       v-else
-      class="scan-interval-text text-muted"
+      class="scan-interval-text scan-interval-none"
     >n/a</span>
   </div>
 </template>
@@ -30,6 +30,9 @@ export default {
 
   .scan-interval-text {
     margin-left: 8px;
+    &.scan-interval-none {
+      color: var(--disabled-text);
+    }
   }
 }
 </style>

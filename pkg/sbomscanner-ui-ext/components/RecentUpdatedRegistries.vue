@@ -2,10 +2,7 @@
   <div class="chart-section">
     <div class="title">
       {{ t('imageScanner.registries.recentUpdatedRegistries.title') }}
-      <i
-        v-clean-tooltip="t('imageScanner.registries.recentUpdatedRegistries.tooltip')"
-        class="icon icon-question-mark"
-      ></i>
+      <InfoTooltip :tooltip="t('imageScanner.registries.recentUpdatedRegistries.tooltip')" />
     </div>
     <div class="status-list">
       <RegistryStatusUpdate
@@ -19,10 +16,11 @@
 
 <script>
 import RegistryStatusUpdate from '@pkg/components/common/RegistryStatusUpdate';
+import InfoTooltip from '@pkg/components/common/Tooltip';
 
 export default {
   name:       'RecentUpdatedRegistries',
-  components: { RegistryStatusUpdate },
+  components: { RegistryStatusUpdate, InfoTooltip },
   props:      {
     registryStatusList: {
       type:     Array,

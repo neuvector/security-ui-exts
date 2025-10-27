@@ -291,6 +291,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import '../styles/_variables.scss';
+
 .btn {
   padding: 0 16px;
   gap: 12px;
@@ -481,38 +483,38 @@ export default {
   font-weight: 400;
   margin: auto 0;
   &.critical {
-    background: #850917;
-    color: white !important;
+    background: $critical-color;
+    color:      white !important;
   }
 
   &.high {
-    background: #DE2136;
-    color: white !important;
+    background: $high-color;
+    color:      white !important;
   }
 
   &.medium {
-    background: #FF8533;
-    color: white !important;
+    background: $medium-color;
+    color:      white !important;
   }
 
   &.low {
-    background: #EEC707;
-    color: white !important;
+    background: $low-color;
+    color:      white !important;
   }
 
   &.na{
-    background: #DCDEE7;
-    color: #717179 !important;
+    background: $na-color;
+    color:      #717179 !important;
   }
 
   &.none{
-    background: #DCDEE7;
-    color: #717179 !important;
+    background: $na-color;
+    color:      #717179 !important;
   }
 
   &.unknown{
-    background: #DCDEE7;
-    color: #717179 !important;
+    background: $na-color;
+    color:      #717179 !important;
   }
 }
 

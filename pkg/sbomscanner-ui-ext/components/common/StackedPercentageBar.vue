@@ -9,9 +9,9 @@ export default {
         return value.reduce((curr, sum) => sum + curr, 0) <= 100;
       }
     },
-    primaryColors: {
+    primaryClasses: {
       type:    Array,
-      default: () => ['--primary'],
+      default: () => [],
     },
     secondaryColor: {
       type:    String,
@@ -24,11 +24,10 @@ export default {
   },
   computed: {
     indicatorStyle() {
-      return this.percentages.map((percentage, index) => {
+      return this.percentages.map((percentage) => {
         return {
           width:           `${ percentage }%`,
           height:          `${ this.height }px`,
-          backgroundColor: this.primaryColors[index]
         };
       });
     },
@@ -49,9 +48,10 @@ export default {
     :style="barStyle"
   >
     <div
-      v-for="(percentage, index) in percentages"
+      v-for="(_, index) in percentages"
       :key="index"
       class="indicator"
+      :class="primaryClasses[index]"
       :style="indicatorStyle[index]"
     />
   </div>
@@ -64,7 +64,8 @@ export default {
     position: relative;
 
     .indicator {
-        height: 100%;
+      float: left;
+      height: 100%;
     }
 }
 </style>

@@ -58,6 +58,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+    @import '../styles/_variables.scss';
+
     .previous-scan-cell {
         display: flex;
         align-items: center;
@@ -98,16 +100,15 @@ export default {
                 border-color: var(--status-failed);
             }
             &.none {
-                background-color: var(--status-none);
-                border-color: #DCDEE4;
+                border-color: var(--badge-state-disabled-border);
             }
 
-            --status-pending: #DCDEE7;
-            --status-scheduled: #0FCFF0;
-            --status-inprogress: #3D98D3;
-            --status-complete: #5BB04F;
-            --status-failed: #DE2136;
-            --status-none: #FFFFFF;
         }
+        --status-pending: #{$pending-color};
+        --status-scheduled: #{$scheduled-color};
+        --status-inprogress: #{$inprogress-color};
+        --status-complete: #{$completed-color};
+        --status-failed: #{$failed-color};
+        --status-none: #FFFFFF;
     }
 </style>

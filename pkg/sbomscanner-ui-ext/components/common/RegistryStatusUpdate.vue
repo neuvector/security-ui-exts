@@ -122,6 +122,7 @@ export default {
             flex: 5;
         }
         .update-time {
+            color: var(--disabled-text);
             flex: 6;
             margin-left: 8px;
             font-family: Lato;

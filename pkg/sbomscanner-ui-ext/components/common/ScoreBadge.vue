@@ -57,6 +57,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../../styles/_variables.scss';
+
   .badge {
     /* layout */
     display: flex;
@@ -68,23 +70,23 @@ export default {
     border-radius: 4px;
 
     &.critical {
-      background: #850917;
+      background: $critical-color;
     }
 
     &.high {
-      background: #DE2136;
+      background: $high-color;
     }
 
     &.medium {
-      background: #FF8533;
+      background: $medium-color;
     }
 
     &.low {
-      background: #EEC707;
+      background: $low-color;
     }
 
     &.na{
-      background: #DCDEE7;
+      background: $na-color;
     }
 
     .text {
