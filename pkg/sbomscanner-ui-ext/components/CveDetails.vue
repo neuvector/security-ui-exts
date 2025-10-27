@@ -197,7 +197,7 @@ export default {
             <div class="stat-item">
               <span class="label">Sources</span>
               <span
-                v-if="cveDetail?.sources.length"
+                v-if="cveDetail?.sources?.length"
                 class="value"
               >
                 <span
@@ -216,7 +216,7 @@ export default {
                   <template v-else>
                     {{ source.name }}
                   </template>
-                  <span v-if="index < cveDetail.sources.length - 1">, </span>
+                  <span v-if="index < cveDetail?.sources?.length - 1">, </span>
                 </span>
               </span>
               <span
@@ -229,7 +229,7 @@ export default {
         <div class="column column-2">
           <div class="stat-item">
             <span class="label"> Advisory vendors </span>
-            <span class="value">{{ cveDetail?.advisoryVendors.length || t('imageScanner.general.unknown') }}</span>
+            <span class="value">{{ cveDetail?.advisoryVendors?.length || t('imageScanner.general.unknown') }}</span>
           </div>
           <div
             class="vendor-tags-wrapper"
@@ -270,7 +270,7 @@ export default {
         <div class="column column-3">
           <div class="stat-item">
             <span class="label">CVSS scores</span>
-            <span class="value">{{ cveDetail?.cvssScores.length || t('imageScanner.general.unknown') }}</span>
+            <span class="value">{{ cveDetail?.cvssScores?.length || t('imageScanner.general.unknown') }}</span>
           </div>
           <div class="cvss-list">
             <a

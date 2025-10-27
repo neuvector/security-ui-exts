@@ -6,7 +6,7 @@ export default {
       type:     Array,
       required: true,
       validator(value) {
-        return value.reduce((curr, sum) => sum + curr) <= 100;
+        return value.reduce((curr, sum) => sum + curr, 0) <= 100;
       }
     },
     primaryColors: {
