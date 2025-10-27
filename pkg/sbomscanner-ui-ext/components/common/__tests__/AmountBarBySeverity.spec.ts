@@ -3,7 +3,7 @@ import AmountBarBySeverity from '../AmountBarBySeverity.vue';
 
 const StackedPercentageBar = {
   name:     'StackedPercentageBar',
-  props:    ['percentages', 'primaryColors', 'height'],
+  props:    ['percentages', 'primaryClasses', 'height'],
   template: '<div class="mocked-stacked-bar"></div>',
 };
 
@@ -131,13 +131,12 @@ describe('AmountBarBySeverity.vue', () => {
       const bar = wrapper.findComponent(StackedPercentageBar);
 
       expect(bar.props('height')).toBe(7);
-      expect(bar.props('primaryColors')).toEqual([
-        '#880E1E',
-        '#D32F2F',
-        '#FB8C00',
-        '#FDD835',
-        '#E0E0E0',
-        '#F4F5FA',
+      expect(bar.props('primaryClasses')).toEqual([
+        'critical',
+        'high',
+        'medium',
+        'low',
+        'unknown'
       ]);
     });
 

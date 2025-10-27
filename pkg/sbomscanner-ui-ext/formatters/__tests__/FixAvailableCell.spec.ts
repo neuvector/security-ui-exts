@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import FixAvailableCell from '../FixAvailableCell.vue';
+import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
 
 describe('FixAvailableCell.vue', () => {
   it('should render a success icon and fix version when fix is available', () => {
@@ -10,12 +11,10 @@ describe('FixAvailableCell.vue', () => {
 
     const wrapper = shallowMount(FixAvailableCell, { props: { row: mockRow } });
 
-    const icon = wrapper.find('i');
+    const icon = wrapper.findComponent(FixAvailableIcon);
 
     expect(icon.exists()).toBe(true);
-    expect(icon.classes()).toContain('icon-confirmation-alt');
-    expect(icon.attributes('style')).toContain('color: rgb(0, 124, 186)');
-    expect(icon.attributes('style')).toContain('font-size: 1.5rem');
+    expect(icon.props('fixAvailable')).toBe(true);
 
     const span = wrapper.find('span');
 
@@ -31,10 +30,10 @@ describe('FixAvailableCell.vue', () => {
 
     const wrapper = shallowMount(FixAvailableCell, { props: { row: mockRow } });
 
-    const icon = wrapper.find('i');
+    const icon = wrapper.findComponent(FixAvailableIcon);
 
     expect(icon.exists()).toBe(true);
-    expect(icon.classes()).toContain('icon-confirmation-alt');
+    expect(icon.props('fixAvailable')).toBe(true);
 
     const span = wrapper.find('span');
 
@@ -49,12 +48,10 @@ describe('FixAvailableCell.vue', () => {
 
     const wrapper = shallowMount(FixAvailableCell, { props: { row: mockRow } });
 
-    const icon = wrapper.find('i');
+    const icon = wrapper.findComponent(FixAvailableIcon);
 
     expect(icon.exists()).toBe(true);
-    expect(icon.classes()).toContain('icon-notify-error');
-    expect(icon.attributes('style')).toContain('color: rgb(226, 227, 235)');
-    expect(icon.attributes('style')).toContain('font-size: 1.5rem');
+    expect(icon.props('fixAvailable')).toBe(false);
 
     const span = wrapper.find('span');
 

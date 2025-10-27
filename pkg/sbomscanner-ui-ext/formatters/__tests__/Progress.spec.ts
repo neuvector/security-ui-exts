@@ -24,7 +24,6 @@ describe('Progress.vue', () => {
 
     expect(text.exists()).toBe(true);
     expect(text.text()).toBe('n/a');
-    expect(text.classes()).toContain('text-muted');
     expect(text.classes()).toContain('none');
   });
 });

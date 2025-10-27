@@ -79,7 +79,7 @@ describe('ScanErrorCell.vue', () => {
 
     expect(wrapper.find('.dot.failed').exists()).toBe(false);
 
-    const status = wrapper.find('.status.text-muted');
+    const status = wrapper.find('.status.status-none');
 
     expect(status.exists()).toBe(true);
     expect(status.text()).toBe('imageScanner.general.none');
@@ -101,7 +101,7 @@ describe('ScanErrorCell.vue', () => {
     const wrapper = mountComponent(mockValue);
 
     expect(wrapper.find('.dot.failed').exists()).toBe(false);
-    const status = wrapper.find('.status.text-muted');
+    const status = wrapper.find('.status.status-none');
 
     expect(status.exists()).toBe(true);
     expect(status.text()).toBe('imageScanner.general.none');
@@ -115,7 +115,7 @@ describe('ScanErrorCell.vue', () => {
     const wrapper = mountComponent(mockValue);
 
     expect(wrapper.find('.dot.failed').exists()).toBe(false);
-    const status = wrapper.find('.status.text-muted');
+    const status = wrapper.find('.status.status-none');
 
     expect(status.exists()).toBe(true);
     expect(status.text()).toBe('imageScanner.general.none');

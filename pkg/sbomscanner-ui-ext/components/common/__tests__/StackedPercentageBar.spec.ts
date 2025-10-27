@@ -16,11 +16,9 @@ describe('StackedPercentageBar.vue', () => {
 
     expect(wrapper.vm.indicatorStyle[0].width).toBe('10%');
     expect(wrapper.vm.indicatorStyle[0].height).toBe('15px');
-    expect(wrapper.vm.indicatorStyle[0].backgroundColor).toBe('--primary');
 
     expect(wrapper.vm.indicatorStyle[1].width).toBe('20%');
     expect(wrapper.vm.indicatorStyle[1].height).toBe('15px');
-    expect(wrapper.vm.indicatorStyle[1].backgroundColor).toBeFalsy();
   });
 
   it('renders with custom props', () => {
@@ -46,10 +44,6 @@ describe('StackedPercentageBar.vue', () => {
     expect(wrapper.vm.barStyle.height).toBe('10px');
     expect(wrapper.vm.barStyle.backgroundColor).toBe('var(--grey)');
     expect(wrapper.vm.barStyle.borderRadius).toBe('5px');
-
-    expect(wrapper.vm.indicatorStyle[0].backgroundColor).toBe('--red');
-    expect(wrapper.vm.indicatorStyle[1].backgroundColor).toBe('--green');
-    expect(wrapper.vm.indicatorStyle[2].backgroundColor).toBe('--blue');
   });
 
   it('renders no indicators if percentages array is empty', () => {
@@ -68,7 +62,6 @@ describe('StackedPercentageBar.vue', () => {
     expect(indicators.length).toBe(1);
 
     expect(wrapper.vm.indicatorStyle[0].width).toBe('80%');
-    expect(wrapper.vm.indicatorStyle[0].backgroundColor).toBe('--primary');
   });
 
   it('computes barStyle correctly', () => {
@@ -99,13 +92,11 @@ describe('StackedPercentageBar.vue', () => {
     expect(wrapper.vm.indicatorStyle).toEqual([
       {
         width:           '10%',
-        height:          '10px',
-        backgroundColor: '--color1'
+        height:          '10px'
       },
       {
         width:           '20%',
-        height:          '10px',
-        backgroundColor: '--color2'
+        height:          '10px'
       }
     ]);
   });

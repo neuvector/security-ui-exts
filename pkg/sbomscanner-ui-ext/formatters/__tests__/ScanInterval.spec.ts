@@ -38,7 +38,7 @@ describe('ScanInterval.vue', () => {
     const span = wrapper.find('.scan-interval-text');
 
     expect(span.exists()).toBe(true);
-    expect(span.classes()).toContain('text-muted');
+    expect(span.classes()).toContain('scan-interval-none');
     expect(span.text()).toBe('n/a');
 
     expect(mockT).not.toHaveBeenCalled();
