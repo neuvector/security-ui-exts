@@ -42,14 +42,14 @@ export default {
       this.totalBlocks = total;
       this.filledBlocks = Math.round((this.percentage / 100) * total);
     },
-    debounce(func, delay = 300) {
-      let timeout;
-
-      return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), delay);
-      };
-    }
+    // debounce(func, delay = 300) {
+    //   let timeout;
+    //
+    //   return function(...args) {
+    //     clearTimeout(timeout);
+    //     timeout = setTimeout(() => func.apply(this, args), delay);
+    //   };
+    // }
   },
   watch: {
     percentage() {
@@ -61,9 +61,9 @@ export default {
     // window.addEventListener('resize', this.debounce(this.calculateBlocks, 500));
     this.eventHandler(this.calculateBlocks);
   },
-  onBeforeUnmount() {
-    // window.removeEventListener('resize', this.debounce(this.calculateBlocks, 500));
-  },
+  // onBeforeUnmount() {
+  //   window.removeEventListener('resize', this.debounce(this.calculateBlocks, 500));
+  // },
   beforeUnmount() {
     // window.removeEventListener('resize', this.debounce(this.calculateBlocks, 500));
   },

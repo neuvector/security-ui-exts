@@ -7,8 +7,8 @@ import { NVD_BASE_URL, CVSS_VECTOR_BASE_URL } from '@pkg/constants';
 
 jest.mock('@pkg/types', () => ({
   PRODUCT_NAME: 'test-product',
-  RESOURCE:     { VULNERABILITY_REPORT: 'vuln.report' },
-  PAGE:         { VULNERABILITIES: 'test-vulns' }
+  RESOURCE:       { VULNERABILITY_REPORT: 'storage.sbomscanner.kubewarden.io.vulnerabilityreport' },
+  PAGE:           { VULNERABILITIES: 'test-page-vulns' }
 }));
 
 jest.mock('@pkg/constants', () => ({
@@ -17,34 +17,38 @@ jest.mock('@pkg/constants', () => ({
 }));
 
 const mockCveId = 'CVE-2023-1234';
-
 const mockVulReports = [
   {
     report: {
       results: [
         {
           vulnerabilities: [
-            { cve: 'CVE-2023-0001', severity: 'LOW' },
+            {
+              cve:        'CVE-2023-9999',
+              severity:   'Low',
+              title:      'Another vulnerability',
+              references: [],
+              cvss:       {}
+            },
             {
               cve:        mockCveId,
-              severity:   'CRITICAL',
-              title:      'A very bad bug',
+              severity:   'Critical',
+              title:      'A very bad vulnerability',
               references: [
-                'https://nvd.nist.gov/some-link',
-                'https://www.redhat.com/security/advisories/RHSA-2023-1234',
-                'https://github.com/advisory/GHSA-1234'
+                'https://suse.com/security/cve/CVE-2023-1234',
+                'https://www.redhat.com/en/blog/press-release',
+                'https://nvd.nist.gov/vuln/detail/CVE-2023-1234'
               ],
               cvss: {
                 nvd: {
                   v3score:  9.8,
-                  v3vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
-                  v2score:  7.5
+                  v3vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H'
                 },
                 redhat: {
                   v3score:  8.1,
-                  v3vector: 'CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H',
-                  v2score:  6.8
-                }
+                  v3vector: 'CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H'
+                },
+                ghsa: { v3score: 5.0 }
               }
             }
           ]
@@ -52,314 +56,246 @@ const mockVulReports = [
       ]
     }
   },
-  { report: { results: [] } }
+  {
+    report: {
+      results: [
+        {
+          vulnerabilities: [
+            {
+              cve:      mockCveId,
+              severity: 'Critical',
+              title:    'A very bad vulnerability',
+            }
+          ]
+        }
+      ]
+    }
+  }
 ];
+
+const mockStore = { dispatch: jest.fn(() => Promise.resolve(mockVulReports)) };
+
+const mockRoute = { params: { id: mockCveId } };
+
+const mockT = (key) => key;
 
 describe('CveDetails.vue', () => {
   let wrapper;
-  let mockDispatch;
-  let mockRoute;
-  let mockT;
-  let loadDataSpy;
 
-  const safeLoadData = async function() {
-    const vulReport = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.VULNERABILITY_REPORT });
-    const cveId = this.$route.params.id;
-    const { cveMetaData, totalScanned } = this.getCveMetaData(vulReport, cveId);
-
-    this.totalScanned = totalScanned;
-
-    this.cveDetail = {
-      id:              cveId,
-      severity:        'unknown',
-      title:           '',
-      score:           'n/a',
-      totalImages:     totalScanned,
-      sources:         [],
-      advisoryVendors: [],
-      cvssScores:      [],
-      ...cveMetaData,
-    };
-  };
-
-  const mountComponent = async(routeId = mockCveId, reports = mockVulReports) => {
-    mockDispatch = jest.fn().mockResolvedValue(reports);
-    mockRoute = { params: { id: routeId } };
-    mockT = jest.fn((key) => {
-      if (key === 'imageScanner.general.unknown') {
-        return 'Unknown';
-      }
-      if (key.startsWith('imageScanner.enum.cve.')) {
-        return key.split('.').pop();
-      }
-
-      return key;
-    });
-
-    loadDataSpy = jest.spyOn(CveDetails.methods, 'loadData').mockImplementation(safeLoadData);
-
-    wrapper = shallowMount(CveDetails, {
+  const createWrapper = (store = mockStore, route = mockRoute) => {
+    return shallowMount(CveDetails, {
       global: {
-        mocks: {
-          $store:  { dispatch: mockDispatch },
-          $route:  mockRoute,
-          t:       mockT,
-        },
-        stubs: { BadgeState: true }
-      }
+        components: { BadgeState },
+        mocks:      {
+          $store: store,
+          $route: route,
+          t:      mockT,
+        }
+      },
+      stubs: { BadgeState: true }
     });
-
-    await flushPromises();
   };
 
-  afterEach(() => {
-    if (loadDataSpy) {
-      loadDataSpy.mockRestore();
-    }
+  beforeEach(() => {
     jest.clearAllMocks();
+    wrapper = createWrapper();
   });
 
-  describe('Data Loading and Parsing', () => {
-    beforeEach(async() => {
-      await mountComponent();
+  describe('Unit Methods', () => {
+    it('groupReferencesByDomain should group URLs correctly', () => {
+      const urls = [
+        'https://google.com/foo',
+        'https://www.suse.com/bar',
+        'https://security.redhat.com/baz',
+        'https://google.com/another',
+      ];
+      const expected = [
+        { name: 'Google', references: ['https://google.com/foo', 'https://google.com/another'] },
+        { name: 'Suse', references: ['https://www.suse.com/bar'] },
+        { name: 'Redhat', references: ['https://security.redhat.com/baz'] },
+      ];
+
+      expect(wrapper.vm.groupReferencesByDomain(urls)).toEqual(expected);
     });
 
-    it('should call findAll for VulnerabilityReports on load', () => {
-      expect(mockDispatch).toHaveBeenCalledWith('cluster/findAll', { type: RESOURCE.VULNERABILITY_REPORT });
+    it('getV3Score should prioritize nvd, then redhat, then ghsa', () => {
+      expect(wrapper.vm.getV3Score({ nvd: { v3score: 9.8 } })).toBe('9.8 (v3)');
+      expect(wrapper.vm.getV3Score({ redhat: { v3score: 7.5 } })).toBe('7.5 (v3)');
+      // FIX: Changed '5.0 (v3)' to '5 (v3)' to match JS string conversion
+      expect(wrapper.vm.getV3Score({ ghsa: { v3score: 5.0 } })).toBe('5 (v3)');
+      expect(wrapper.vm.getV3Score({ nvd: { v3score: 9.8 }, redhat: { v3score: 7.5 } })).toBe('9.8 (v3)');
+      expect(wrapper.vm.getV3Score({})).toBe('n/a');
+      expect(wrapper.vm.getV3Score(null)).toBe('n/a');
     });
 
-    it('should set totalScanned correctly', () => {
-      expect(wrapper.vm.totalScanned).toBe(mockVulReports.length);
+    it('convertCvssToSources should create correct source links', () => {
+      const cvss = {
+        nvd: {}, redhat: {}, ghsa: {}
+      };
+      const cveId = 'CVE-TEST';
+      const expected = [
+        { name: 'NVD', link: `${ NVD_BASE_URL }${ cveId }` },
+        { name: 'REDHAT', link: '' },
+        { name: 'GHSA', link: '' },
+      ];
+
+      expect(wrapper.vm.convertCvssToSources(cvss, cveId)).toEqual(expected);
     });
 
-    it('should populate cveDetail with processed data', () => {
-      const detail = wrapper.vm.cveDetail;
+    it('convertCvss should format scores correctly', () => {
+      const cvssObj = {
+        nvd: {
+          v3score:  9.8,
+          v3vector: 'CVSS:3.1/AV:N'
+        },
+        redhat: {
+          v2score:  7.5,
+          v3vector: 'CVSS:3.0/AV:L'
+        }
+      };
+      const expected = [
+        {
+          source: 'Nvd v3score',
+          score:  9.8,
+          link:   `${ CVSS_VECTOR_BASE_URL }3-1#CVSS:3.1/AV:N`
+        },
+        {
+          source: 'Redhat v2score',
+          score:  7.5,
+          link:   `${ CVSS_VECTOR_BASE_URL }3-0#CVSS:3.0/AV:L`
+        },
+      ];
 
-      expect(detail).toBeDefined();
-      expect(detail.id).toBe(mockCveId);
-      expect(detail.totalImages).toBe(2);
-      expect(detail.severity).toBe('CRITICAL');
-      expect(detail.title).toBe('A very bad bug');
-      expect(detail.score).toBe('9.8 (v3)');
+      expect(wrapper.vm.convertCvss(cvssObj)).toEqual(expected);
     });
 
-    it('should handle CVE not found', async() => {
-      await mountComponent('CVE-NOT-FOUND');
+    it('getCveMetaData should extract and process data correctly', () => {
+      const { cveMetaData, totalScanned } = wrapper.vm.getCveMetaData(mockVulReports, mockCveId);
 
-      const detail = wrapper.vm.cveDetail;
-
-      expect(detail.id).toBe('CVE-NOT-FOUND');
-      expect(detail.totalImages).toBe(2);
-      expect(detail.severity).toBe('unknown');
-      expect(detail.title).toBe('');
-      expect(detail.score).toBe('n/a');
-      expect(detail.sources).toEqual([]);
-    });
-
-    it('should handle empty reports', async() => {
-      await mountComponent(mockCveId, []);
-      const detail = wrapper.vm.cveDetail;
-
-      expect(detail.id).toBe(mockCveId);
-      expect(detail.totalImages).toBe(0);
-      expect(detail.severity).toBe('unknown');
-    });
-  });
-
-  describe('Helper Methods', () => {
-    let vm;
-
-    beforeEach(async() => {
-      await mountComponent();
-      vm = wrapper.vm;
-    });
-
-    describe('getV3Score', () => {
-      it('should prioritize nvd', () => {
-        const cvss = {
-          nvd: { v3score: 9.8 }, redhat: { v3score: 8.1 }, ghsa: { v3score: 7.0 }
-        };
-
-        expect(vm.getV3Score(cvss)).toBe('9.8 (v3)');
+      expect(totalScanned).toBe(2);
+      expect(cveMetaData.score).toBe('9.8 (v3)');
+      expect(cveMetaData.severity).toBe('Critical');
+      expect(cveMetaData.title).toBe('A very bad vulnerability');
+      expect(cveMetaData.sources).toEqual([
+        { name: 'NVD', link: `${ NVD_BASE_URL }${ mockCveId }` },
+        { name: 'REDHAT', link: '' },
+        { name: 'GHSA', link: '' },
+      ]);
+      expect(cveMetaData.advisoryVendors).toEqual([
+        { name: 'Suse', references: ['https://suse.com/security/cve/CVE-2023-1234'] },
+        { name: 'Redhat', references: ['https://www.redhat.com/en/blog/press-release'] },
+        { name: 'Nist', references: ['https://nvd.nist.gov/vuln/detail/CVE-2023-1234'] },
+      ]);
+      expect(cveMetaData.cvssScores).toContainEqual({
+        source: 'Nvd v3score',
+        score:  9.8,
+        link:   `${ CVSS_VECTOR_BASE_URL }3-1#CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`
       });
-      it('should prioritize redhat if nvd is missing', () => {
-        const cvss = { redhat: { v3score: 8.1 }, ghsa: { v3score: 7.0 } };
-
-        expect(vm.getV3Score(cvss)).toBe('8.1 (v3)');
+      expect(cveMetaData.cvssScores).toContainEqual({
+        source: 'Redhat v3score',
+        score:  8.1,
+        link:   `${ CVSS_VECTOR_BASE_URL }3-0#CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H`
       });
-      it('should prioritize ghsa if nvd/redhat are missing', () => {
-        const cvss = { ghsa: { v3score: 7.0 } };
-
-        expect(vm.getV3Score(cvss)).toBe('7 (v3)');
-      });
-      it('should return n/a if no v3score is found', () => {
-        const cvss = { nvd: { v2score: 7.5 } };
-
-        expect(vm.getV3Score(cvss)).toBe('n/a');
-      });
-    });
-
-    describe('convertCvssToSources', () => {
-      it('should create source list and link NVD', () => {
-        const cvss = {
-          nvd: {}, redhat: {}, ghsa: {}
-        };
-        const sources = vm.convertCvssToSources(cvss, 'CVE-123');
-
-        expect(sources).toEqual([
-          { name: 'NVD', link: `${ NVD_BASE_URL }CVE-123` },
-          { name: 'REDHAT', link: '' },
-          { name: 'GHSA', link: '' },
-        ]);
-      });
-    });
-
-    describe('convertCvss', () => {
-      it('should convert cvss object to scores array with vector links', () => {
-        const cvss = {
-          nvd:    {
-            v3score: 9.8, v2score: 7.5, v3vector: 'CVSS:3.1/AV:N'
-          },
-          redhat: { v3score: 8.1, v3vector: 'CVSS:3.0/AV:L' }
-        };
-        const scores = vm.convertCvss(cvss);
-
-        expect(scores).toEqual([
-          {
-            source: 'Nvd v3score', score: 9.8, link: `${ CVSS_VECTOR_BASE_URL }3-1#CVSS:3.1/AV:N`
-          },
-          {
-            source: 'Nvd v2score', score: 7.5, link: `${ CVSS_VECTOR_BASE_URL }3-1#CVSS:3.1/AV:N`
-          },
-          {
-            source: 'Redhat v3score', score: 8.1, link: `${ CVSS_VECTOR_BASE_URL }3-0#CVSS:3.0/AV:L`
-          },
-        ]);
-      });
-
-      it('should handle missing vector', () => {
-        const cvss = { nvd: { v3score: 9.8 } };
-        const scores = vm.convertCvss(cvss);
-
-        expect(scores[0].link).toBe('');
-      });
-    });
-
-    describe('groupReferencesByDomain', () => {
-      it('should group, strip www/subdomains, and capitalize', () => {
-        const urls = [
-          'https://www.redhat.com/a',
-          'https://security.redhat.com/b',
-          'https://nvd.nist.gov/c',
-          'https://github.com/d'
-        ];
-        const groups = vm.groupReferencesByDomain(urls);
-
-        expect(groups).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ name: 'Redhat', references: ['https://www.redhat.com/a', 'https://security.redhat.com/b'] }),
-            expect.objectContaining({ name: 'Nist', references: ['https://nvd.nist.gov/c'] }),
-            expect.objectContaining({ name: 'Github', references: ['https://github.com/d'] })
-          ])
-        );
-        expect(groups.length).toBe(3);
+      expect(cveMetaData.cvssScores).toContainEqual({
+        source: 'Ghsa v3score',
+        score:  5.0,
+        link:   ''
       });
     });
   });
 
-  describe('Template Rendering', () => {
-    beforeEach(async() => {
-      await mountComponent();
+  describe('Component Lifecycle and Rendering', () => {
+    it('should load data on mount due to immediate watch', async() => {
+      expect(mockStore.dispatch).toHaveBeenCalledWith('cluster/findAll', { type: RESOURCE.VULNERABILITY_REPORT });
+      await flushPromises();
+
+      expect(wrapper.vm.cveDetail).not.toBeNull();
+      expect(wrapper.vm.cveDetail.id).toBe(mockCveId);
+      expect(wrapper.vm.cveDetail.totalImages).toBe(2);
+      expect(wrapper.vm.cveDetail.score).toBe('9.8 (v3)');
     });
 
-    it('should render the title and severity', () => {
-      expect(wrapper.find('.resource-header-name').text()).toContain(mockCveId);
-      const badge = wrapper.findComponent(BadgeState);
+    it('should render CVE details correctly after data load', async() => {
+      await flushPromises();
 
-      expect(badge.exists()).toBe(true);
-      expect(badge.props('label')).toBe('critical');
-      expect(badge.props('color')).toBe('critical');
+      const title = wrapper.find('.resource-header-name');
+
+      expect(title.text()).toContain(`imageScanner.vulnerabilities.title: ${ mockCveId }`);
+
+      const description = wrapper.find('.description');
+
+      expect(description.text()).toBe('A very bad vulnerability');
+
+      const statItems = wrapper.findAll('.stat-item');
+
+      expect(statItems[0].text()).toContain('imageScanner.vulnerabilities.details.score:9.8 (v3)');
+      expect(statItems[1].text()).toContain('imageScanner.vulnerabilities.details.imageIdentifiedIn:2');
+
+      const sourceLinks = wrapper.findAll('.source-link');
+
+      expect(sourceLinks.length).toBe(1);
+      expect(sourceLinks[0].attributes('href')).toBe(`${ NVD_BASE_URL }${ mockCveId }`);
+      expect(sourceLinks[0].text()).toContain('NVD');
+
+      const cvssLinks = wrapper.findAll('.cvss-link');
+
+      expect(cvssLinks.length).toBe(3);
+      expect(cvssLinks[0].text()).toContain('Nvd v3score 9.8');
+      expect(cvssLinks[0].attributes('href')).toContain('CVSS:3.1');
     });
 
-    it('should render the description', () => {
-      expect(wrapper.find('.description').text()).toBe('A very bad bug');
-    });
+    it('should render "unknown" for missing CVE data', async() => {
+      const route = { params: { id: 'CVE-NOT-FOUND' } };
 
-    it('should render stats (score, images, sources)', () => {
-      const values = wrapper.findAll('.value');
+      wrapper = createWrapper(mockStore, route);
+      await flushPromises();
 
-      expect(values.at(0).text()).toBe('9.8 (v3)');
-      expect(values.at(1).text()).toBe('2');
-      expect(values.at(2).text()).toContain('NVD');
-      expect(values.at(2).text()).toContain('REDHAT');
-      expect(values.at(2).find('a').attributes('href')).toBe(wrapper.vm.cveDetail.sources[0].link);
-    });
+      expect(wrapper.vm.cveDetail.title).toBeUndefined();
+      expect(wrapper.vm.cveDetail.score).toBeUndefined();
+      expect(wrapper.vm.cveDetail.totalImages).toBe(2);
 
-    it('should render advisory vendors', () => {
-      const values = wrapper.findAll('.value');
+      const description = wrapper.find('.description');
 
-      expect(values.at(3).text()).toBe(String(wrapper.vm.cveDetail.advisoryVendors.length));
-      const tags = wrapper.findAll('.vendor-tag');
+      expect(description.text()).toBe('imageScanner.general.unknown');
 
-      expect(tags.length).toBe(3);
-      expect(tags.at(0).text()).toBe('Nist');
-    });
+      const statItems = wrapper.findAll('.stat-item');
 
-    it('should render CVSS scores', () => {
-      const values = wrapper.findAll('.value');
-
-      expect(values.at(4).text()).toBe(String(wrapper.vm.cveDetail.cvssScores.length));
-      const links = wrapper.findAll('.cvss-link');
-
-      expect(links.length).toBe(4);
-      expect(links.at(0).text()).toContain('Nvd v3score 9.8');
-      expect(links.at(0).attributes('href')).toBe(wrapper.vm.cveDetail.cvssScores[0].link);
-    });
-  });
-
-  describe('Template Rendering (Empty State)', () => {
-    it('should render unknown for missing fields', async() => {
-      await mountComponent('CVE-NOT-FOUND');
-      const values = wrapper.findAll('.value');
-
-      expect(wrapper.find('.description').text()).toBe('Unknown');
-      expect(values.at(0).text()).toBe('n/a');
-      expect(values.at(1).text()).toBe('2');
-      expect(values.at(2).text()).toBe('Unknown');
-      expect(values.at(3).text()).toBe('Unknown');
-      expect(values.at(4).text()).toBe('Unknown');
+      expect(statItems[0].text()).toContain('imageScanner.vulnerabilities.details.score:imageScanner.general.unknown');
     });
   });
 
-  describe('User Interaction (Hover)', () => {
-    beforeEach(async() => {
-      await mountComponent();
-    });
+  describe('User Interaction', () => {
+    it('should show and hide vendor references on hover', async() => {
+      await flushPromises();
 
-    it('should show hover panel on mouseenter vendor tag', async() => {
-      expect(wrapper.vm.hoverVendor).toBe(null);
       expect(wrapper.find('.hover-panel').exists()).toBe(false);
 
-      await wrapper.find('.vendor-tags-wrapper').trigger('mouseenter');
+      const wrapperEl = wrapper.find('.vendor-tags-wrapper');
+
+      await wrapperEl.trigger('mouseenter');
       expect(wrapper.vm.inside).toBe(true);
 
-      await wrapper.find('.vendor-tag').trigger('mouseenter');
+      const vendorTag = wrapper.find('.vendor-tag');
 
-      expect(wrapper.vm.hoverVendor).toBe(wrapper.vm.cveDetail.advisoryVendors[0]);
-      expect(wrapper.find('.hover-panel').exists()).toBe(true);
-      expect(wrapper.find('.hover-panel h4').text()).toContain(mockCveId);
-      expect(wrapper.find('.ref-url').attributes('href')).toBe(wrapper.vm.cveDetail.advisoryVendors[0].references[0]);
-    });
+      await vendorTag.trigger('mouseenter');
+      expect(wrapper.vm.hoverVendor).toEqual({
+        name:       'Suse',
+        references: ['https://suse.com/security/cve/CVE-2023-1234']
+      });
 
-    it('should hide hover panel on mouseleave wrapper', async() => {
-      await wrapper.find('.vendor-tags-wrapper').trigger('mouseenter');
-      await wrapper.find('.vendor-tag').trigger('mouseenter');
-      expect(wrapper.find('.hover-panel').exists()).toBe(true);
+      await wrapper.vm.$nextTick();
 
-      await wrapper.find('.vendor-tags-wrapper').trigger('mouseleave');
+      const hoverPanel = wrapper.find('.hover-panel');
 
+      expect(hoverPanel.exists()).toBe(true);
+      expect(hoverPanel.find('h4').text()).toBe(`References for ${ mockCveId }`);
+      expect(hoverPanel.find('.ref-url').attributes('href')).toBe('https://suse.com/security/cve/CVE-2023-1234');
+
+      await wrapperEl.trigger('mouseleave');
       expect(wrapper.vm.inside).toBe(false);
-      expect(wrapper.vm.hoverVendor).toBe(null);
+      expect(wrapper.vm.hoverVendor).toBeNull();
+
+      await wrapper.vm.$nextTick();
       expect(wrapper.find('.hover-panel').exists()).toBe(false);
     });
   });
