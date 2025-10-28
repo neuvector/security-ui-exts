@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { shallowMount, flushPromises } from '@vue/test-utils';
 import CveDetails from '../CveDetails.vue';
 import { BadgeState } from '@components/BadgeState';
-import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
+import { RESOURCE } from '@pkg/types';
 import { NVD_BASE_URL, CVSS_VECTOR_BASE_URL } from '@pkg/constants';
 
 jest.mock('@pkg/types', () => ({

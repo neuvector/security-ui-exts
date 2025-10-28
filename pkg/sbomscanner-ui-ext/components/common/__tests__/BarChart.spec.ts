@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { jest } from '@jest/globals';
 import BarChart from '../BarChart.vue';
 
 const PercentageBar = {

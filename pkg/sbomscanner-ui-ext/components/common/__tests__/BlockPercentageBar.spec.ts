@@ -1,5 +1,7 @@
 
-import { jest } from '@jest/globals';
+import {
+  jest, afterAll, beforeAll, beforeEach, afterEach, describe, it, expect
+} from '@jest/globals';
 import { mount } from '@vue/test-utils';
 import BlockPercentageBar from '../BlockPercentageBar.vue';
 

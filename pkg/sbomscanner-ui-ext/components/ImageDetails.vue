@@ -119,7 +119,10 @@
       <div class="vulnerabilities-section">
         <div class="summary-title">
           {{ t('imageScanner.imageDetails.mostSevereVulnerabilities.title') }}
-          <InfoTooltip :tooltip="t('imageScanner.imageDetails.mostSevereVulnerabilities.tooltip')" />
+          <InfoTooltip
+            style="margin-left: 8px;"
+            :tooltip="t('imageScanner.imageDetails.mostSevereVulnerabilities.tooltip')"
+          />
         </div>
         <div class="vulnerabilities-list">
           <div
@@ -262,7 +265,6 @@
 
     <!-- Vulnerability Table -->
     <SortableTable
-      v-if="safeTableData && safeTableData.length > 0"
       :key="`table-${isGrouped ? 'grouped' : 'ungrouped'}`"
       :rows="isGrouped ? layerData : safeTableData"
       :headers="isGrouped ? LAYER_BASED_TABLE : VULNERABILITY_DETAILS_TABLE"
@@ -324,12 +326,6 @@
         <!-- Disable search -->
       </template>
     </SortableTable>
-    <div
-      v-else
-      class="no-data-message"
-    >
-      <p>No vulnerability data available</p>
-    </div>
   </div>
 </template>
 
@@ -548,7 +544,7 @@ export default {
         score:            vuln.cvss?.nvd?.v3score ? `${ vuln.cvss.nvd.v3score } (CVSS v3)` : vuln.cvss?.redhat?.v3score ? `${ vuln.cvss.redhat.v3score } (CVSS v3)` : vuln.cvss?.ghsa?.v3score ? `${ vuln.cvss.ghsa.v3score } (CVSS v3)` : '',
         package:          vuln.packageName,
         packageVersion:   vuln.installedVersion,
-        packagePath:      vuln.purl || vuln.diffID, // Use purl if available, fallback to diffID
+        packagePath:      this.getPackagePath(vuln.purl),
         fixAvailable:     vuln.fixedVersions && vuln.fixedVersions.length > 0,
         fixVersion:       vuln.fixedVersions ? vuln.fixedVersions.join(', ') : '',
         severity:         vuln.severity?.toLowerCase() || this.t('imageScanner.general.unknown'),
@@ -1374,6 +1370,11 @@ export default {
       } catch (error) {
         return [];
       }
+    },
+    getPackagePath(purl) {
+      const packagePaths = typeof purl === 'string' ? purl.match(/(?<=:)([^@]+?)(?=@)/) : [];
+
+      return packagePaths && Array.isArray(packagePaths) ? packagePaths[0] : '';
     },
   },
 };

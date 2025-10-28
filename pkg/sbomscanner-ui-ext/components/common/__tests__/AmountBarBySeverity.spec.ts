@@ -10,10 +10,7 @@ const StackedPercentageBar = {
 const factory = (propsData) => {
   return shallowMount(AmountBarBySeverity, {
     propsData,
-    global: {
-      stubs: { StackedPercentageBar, // Stub the child component
-      },
-    },
+    global: { stubs: { StackedPercentageBar } }, // Stub the child component
   });
 };
 

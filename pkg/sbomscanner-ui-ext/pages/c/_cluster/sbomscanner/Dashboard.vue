@@ -53,7 +53,10 @@
         <div class="panel-header">
           <div class="header-left">
             <h3>{{ t('imageScanner.dashboard.scanningStatus.title') }}</h3>
-            <InfoTooltip :tooltip="tooltip" />
+            <InfoTooltip
+              style="margin-left: 8px;"
+              :tooltip="tooltip"
+            />
           </div>
           <div class="header-right">
             <span class="total-count">{{ displayedTotalScannedImageCnt }} {{ t('imageScanner.dashboard.scanningStatus.totalImages') }}</span>
