@@ -392,7 +392,7 @@ export default {
         fixAvailable:     vuln.fixedVersions && vuln.fixedVersions.length > 0,
         fixVersion:       vuln.fixedVersions ? vuln.fixedVersions.join(', ') : '',
         severity:         vuln.severity?.toLowerCase() || this.t('imageScanner.general.unknown'),
-        exploitability:   vuln.suppressed ? this.t('imageDetails.suppressed') : this.t('imageDetails.affected'),
+        exploitability:   vuln.suppressed ? this.t('imageScanner.imageDetails.suppressed') : this.t('imageScanner.imageDetails.affected'),
         description:      vuln.description,
         title:            vuln.title,
         references:       vuln.references || [],
