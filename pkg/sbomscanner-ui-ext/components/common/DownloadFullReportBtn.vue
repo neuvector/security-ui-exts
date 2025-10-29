@@ -122,12 +122,12 @@ export default {
           `"${ vuln.cveId || '' }"`,
           `"${ vuln.score || '' }"`,
           `"${ vuln.package || '' }"`,
-          `"${ vuln.fixVersion }"`,
+          `"${ vuln.fixVersion || '' }"`,
           `"${ vuln.severity || '' }"`,
           `"${ vuln.exploitability || '' }"`,
           `"${ vuln.installedVersion || '' }"`,
           `"${ vuln.packagePath || '' }"`,
-          `"${ vuln.description.replace(/\"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
+          `"${ (vuln.description || '').replace(/\"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
         ];
 
         csvRows.push(row.join(','));
@@ -174,7 +174,6 @@ export default {
     },
 
     handleClickOutside(event) {
-      console.log('blur');
       // Close dropdown if clicking outside
       if (this.showDownloadDropdown && !event.target.closest('.dropdown-container')) {
         this.closeDownloadDropdown();
