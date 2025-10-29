@@ -237,6 +237,9 @@ imageScanner:
     no-vex-data: No VEX data
     noVexData: No VEX data
     selected: selected
+    selection:
+      vulnerability: vulnerability selected
+      vulnerabilities: vulnerabilities selected
     table:
       headers:
         cveId: CVE ID

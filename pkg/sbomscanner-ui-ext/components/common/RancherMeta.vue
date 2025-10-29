@@ -37,5 +37,9 @@ export default {
     row-gap: 4px;
     column-gap: 24px;
     align-self: stretch;
+    > * {
+      min-width: 0;
+      word-break: break-word;
+    }
   }
 </style>

@@ -1,4 +1,4 @@
-import { imageDetailsToCSV } from '../csv';
+import { imageDetailsToCSV } from '../report';
 
 describe('csv util', () => {
   test('handles empty or null input', () => {

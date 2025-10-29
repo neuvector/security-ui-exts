@@ -21,141 +21,26 @@
         </h1>
         <div class="header-actions">
           <!-- Download SBOM Button -->
-          <button
-            class="btn role-secondary"
-            aria-label="Download SBOM"
-            type="button"
-            @click="downloadSBOM"
-          >
-            <i class="icon icon-download"></i>&nbsp;
-            {{ t('imageScanner.images.downloadSBOM') }}
-          </button>
-
+          <DownloadSBOMBtn
+            :sbom="sbom"
+            :image-name="imageName"
+          />
           <!-- Download Full Report Dropdown -->
-          <div class="dropdown-container">
-            <button
-              class="btn role-primary dropdown-main"
-              aria-label="Download full report"
-              type="button"
-              @click="downloadFullReport"
-            >
-              <i class="icon icon-download"></i>&nbsp;
-              {{ t('imageScanner.images.downloadReport') }}
-            </button>
-            <button
-              class="btn role-primary dropdown-toggle"
-              aria-label="Download options"
-              type="button"
-              @click="toggleDownloadDropdown"
-            >
-              <i class="icon icon-chevron-down"></i>
-            </button>
-
-            <!-- Dropdown Menu -->
-            <div
-              v-if="showDownloadDropdown"
-              class="dropdown-menu"
-            >
-              <button
-                class="dropdown-item"
-                @click="downloadFullReport"
-              >
-                <i class="icon icon-download"></i>
-                {{ t('imageScanner.images.downloadImageDetailReport') }}
-              </button>
-              <button
-                class="dropdown-item"
-                @click="downloadVulnerabilityReport"
-              >
-                <i class="icon icon-download"></i>
-                {{ t('imageScanner.images.downloadVulnerabilityReport') }}
-              </button>
-            </div>
-          </div>
+          <DownloadFullReportBtn
+            :image-name="imageName"
+            :vulnerability-details="vulnerabilityDetails"
+            :vulnerability-report="vulnerabilityReport"
+          />
         </div>
       </div>
       <!-- Image Information Section -->
-      <div class="image-info-section">
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.vulnerabilities') }}</span>
-            <span class="value">{{ (totalVulnerabilities || 0).toLocaleString() }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.repository') }}</span>
-            <span class="value">{{ imageDetails.repository }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.registry') }}</span>
-            <span class="value">{{ imageDetails.registry }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.architecture') }}</span>
-            <span class="value">{{ imageDetails.architecture }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.operatingSystem') }}</span>
-            <span class="value">{{ imageDetails.operatingSystem }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.created') }}</span>
-            <span class="value">{{ imageDetails.created }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.imageId') }}</span>
-            <span class="value">{{ imageDetails.imageId?.split(':')[1] || 'Unknown' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">{{ t('imageScanner.imageDetails.layers') }}</span>
-            <span class="value">{{ imageDetails.layers?.length || '0' }}</span>
-          </div>
-        </div>
-      </div>
+      <RancherMeta :properties="imageDetails" />
     </div>
 
     <!-- Summary Section -->
     <div class="summary-section">
       <!-- Most Severe Vulnerabilities Section -->
-      <div class="vulnerabilities-section">
-        <div class="summary-title">
-          {{ t('imageScanner.imageDetails.mostSevereVulnerabilities.title') }}
-          <InfoTooltip
-            style="margin-left: 8px;"
-            :tooltip="t('imageScanner.imageDetails.mostSevereVulnerabilities.tooltip')"
-          />
-        </div>
-        <div class="vulnerabilities-list">
-          <div
-            v-for="vuln in mostSevereVulnerabilities"
-            :key="vuln.cveId"
-            class="row"
-          >
-            <div class="col span-4">
-              <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.VULNERABILITIES}/${vuln.cveId}`">
-                {{ vuln.cveId }}
-              </RouterLink>
-            </div>
-            <div class="col span-3">
-              <ScoreBadge
-                v-if="vuln.score && vuln.score.trim()"
-                :score="parseFloat(vuln.score.split(' ')[0]) || 0"
-                :score-type="vuln.score.split(' ')[1] ? vuln.score.split(' ')[1].replace(/[()]/g, '') : 'CVSS'"
-                :severity="vuln.severity"
-              />
-              <span
-                v-else
-                class="na-badge"
-              >n/a</span>
-            </div>
-            <div class="col span-4">
-              {{ vuln.package }}
-            </div>
-            <div class="col span-1">
-              <FixAvailableIcon :fix-available="vuln.fixAvailable" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <MostServereVulnerabilities :vulnerability-report="loadedVulnerabilityReport" />
 
       <!-- Severity Distribution Section -->
       <DistributionChart
@@ -264,106 +149,44 @@
     </div>
 
     <!-- Vulnerability Table -->
-    <SortableTable
-      :key="`table-${isGrouped ? 'grouped' : 'ungrouped'}`"
-      :rows="isGrouped ? layerData : safeTableData"
-      :headers="isGrouped ? LAYER_BASED_TABLE : VULNERABILITY_DETAILS_TABLE"
-      :has-advanced-filtering="false"
-      :namespaced="false"
-      :row-actions="false"
-      :search="false"
-      :paging="true"
-      :key-field="'id'"
-      :sub-expandable="isGrouped"
-      :sub-rows="isGrouped"
-      :sub-expand-column="isGrouped"
-      @selection="onSelectionChange"
-    >
-      <template #header-left>
-        <div class="table-header-actions">
-          <button
-            class="btn role-primary"
-            :disabled="selectedVulnerabilityCount === 0"
-            @click="downloadCustomReport"
-          >
-            <i class="icon icon-download"></i>&nbsp;
-            {{ t('imageScanner.images.buttons.downloadCustomReport') }}
-          </button>
-          <span
-            v-if="selectedVulnerabilityCount > 0"
-            class="selected-count"
-          >
-            {{ selectedVulnerabilityCount }} vulnerabilities selected
-          </span>
-        </div>
-      </template>
-      <template #header-right>
-        <Checkbox
-          v-model:value="isGrouped"
-          style="margin: auto 0;"
-          label-key="imageScanner.imageDetails.groupByLayer"
-        />
-      </template>
-      <template
-        v-if="isGrouped"
-        #sub-row="{ row, fullColspan }"
-      >
-        <tr class="sub-row">
-          <td :colspan="fullColspan">
-            <SortableTable
-              class="sub-table"
-              :rows="(row.vulnerabilityList || []).filter(vuln => vuln && typeof vuln === 'object' && vuln.id)"
-              :headers="VULNERABILITY_DETAILS_TABLE"
-              :search="false"
-              :row-actions="false"
-              :table-actions="false"
-              :key-field="'id'"
-            />
-          </td>
-        </tr>
-      </template>
-      <template #search>
-        <!-- Disable search -->
-      </template>
-    </SortableTable>
+    <VulnerabilityTable
+      :cached-filtered-vulnerabilities="cachedFilteredVulnerabilities"
+      :image-name="imageName"
+    />
   </div>
 </template>
 
 <script>
-import SortableTable from '@shell/components/SortableTable';
 import { BadgeState } from '@components/BadgeState';
-import { Checkbox } from '@components/Form/Checkbox';
-import ScoreBadge from '@pkg/components/common/ScoreBadge';
-import { VULNERABILITY_DETAILS_TABLE, LAYER_BASED_TABLE } from '@pkg/config/table-headers';
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
 import day from 'dayjs';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import DistributionChart from '@pkg/components/DistributionChart';
-import InfoTooltip from '@pkg/components/common/Tooltip';
-import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
+import RancherMeta from './common/RancherMeta.vue';
+import MostServereVulnerabilities from './common/MostServereVulnerabilities';
+import VulnerabilityTable from './common/VulnerabilityTable';
+import DownloadSBOMBtn from './common/DownloadSBOMBtn';
+import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 
 export default {
   name:       'ImageDetails',
   components: {
-    SortableTable,
     BadgeState,
-    Checkbox,
-    ScoreBadge,
     DistributionChart,
     LabeledSelect,
-    InfoTooltip,
-    FixAvailableIcon,
+    RancherMeta,
+    MostServereVulnerabilities,
+    VulnerabilityTable,
+    DownloadSBOMBtn,
+    DownloadFullReportBtn,
   },
   data() {
     return {
       imageName:                     '',
-      selectedVulnerabilities:       [],
-      // Store the loaded resources directly
       loadedVulnerabilityReport:     null,
       loadedSbom:                    null,
       // Cache filtered results to prevent selection issues
       cachedFilteredVulnerabilities: [],
-      layerData:                     [],
       // Download dropdown state
       showDownloadDropdown:          false,
       filters:                       {
@@ -393,9 +216,6 @@ export default {
         { label: this.t('imageScanner.imageDetails.affected'), value: 'affected' },
         { label: this.t('imageScanner.imageDetails.suppressed'), value: 'suppressed' },
       ],
-      isGrouped: false,
-      VULNERABILITY_DETAILS_TABLE,
-      LAYER_BASED_TABLE,
       PRODUCT_NAME,
       RESOURCE,
       PAGE,
@@ -451,22 +271,50 @@ export default {
 
     // Get image details from the current image resource
     imageDetails() {
-      if (!this.currentImage) return {};
+      if (!this.currentImage) return [];
 
-      return {
-        repository:      this.currentImage.imageMetadata?.repository || this.t('imageScanner.general.unknown'),
-        registry:        this.currentImage.imageMetadata?.registry || this.t('imageScanner.general.unknown'),
-        architecture:    this.currentImage.imageMetadata?.platform.split('/')[0] || this.t('imageScanner.general.unknown'),
-        operatingSystem: this.currentImage.imageMetadata?.platform.split('/')[1] || this.t('imageScanner.general.unknown'),
-        size:            this.currentImage.imageMetadata?.size || this.t('imageScanner.general.unknown'),
-        author:          this.currentImage.imageMetadata?.author || this.t('imageScanner.general.unknown'),
-        dockerVersion:   this.currentImage.imageMetadata?.dockerVersion || this.t('imageScanner.general.unknown'),
-        created:         this.currentImage.metadata ? `${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('MMM D, YYYY') } ${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('h:mm a') }` : this.t('imageScanner.general.unknown'),
-        imageId:         this.currentImage.imageMetadata?.digest || this.t('imageScanner.general.unknown'),
-        layers:          this.currentImage.layers || this.currentImage.spec?.layers || this.t('imageScanner.general.unknown'),
-        tag:             this.currentImage.imageMetadata?.tag || this.t('imageScanner.general.unknown'),
-        registryURI:     this.currentImage.imageMetadata?.registryURI || this.t('imageScanner.general.unknown')
-      };
+      return [
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.vulnerabilities'),
+          value: this.totalVulnerabilities
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.repository'),
+          value: this.currentImage.imageMetadata?.repository || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.registry'),
+          value: this.currentImage.imageMetadata?.registry || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.architecture'),
+          value: this.currentImage.imageMetadata?.platform?.split('/')[0] || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.operatingSystem'),
+          value: this.currentImage.imageMetadata?.platform?.split('/')[1] || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.created'),
+          value: this.currentImage.metadata ? `${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('MMM D, YYYY') } ${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('h:mm a') }` : this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.imageId'),
+          value: this.currentImage.imageMetadata?.digest || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.layers'),
+          value: this.currentImage.layers?.length || this.currentImage.spec?.layers?.length || this.t('imageScanner.general.unknown'),
+        }
+      ];
     },
 
     // Get severity distribution from vulnerability report
@@ -533,10 +381,6 @@ export default {
         vulnerabilities = this.vulnerabilityReport.vulnerabilities || [];
       }
 
-      if (!Array.isArray(vulnerabilities)) {
-        return [];
-      }
-
       // Transform the vulnerability data to match the expected format
       return vulnerabilities.map((vuln, index) => ({
         id:               `${ vuln.cve }-${ vuln.packageName }-${ index }`, // Create unique ID
@@ -548,62 +392,13 @@ export default {
         fixAvailable:     vuln.fixedVersions && vuln.fixedVersions.length > 0,
         fixVersion:       vuln.fixedVersions ? vuln.fixedVersions.join(', ') : '',
         severity:         vuln.severity?.toLowerCase() || this.t('imageScanner.general.unknown'),
-        exploitability:   vuln.suppressed ? 'Suppressed' : 'Affected',
+        exploitability:   vuln.suppressed ? this.t('imageDetails.suppressed') : this.t('imageDetails.affected'),
         description:      vuln.description,
         title:            vuln.title,
         references:       vuln.references || [],
         // Add diffID for layer grouping
         diffID:           vuln.diffID,
         installedVersion: vuln.installedVersion
-      }));
-    },
-
-    // Get most severe vulnerabilities
-    mostSevereVulnerabilities() {
-      if (!this.vulnerabilityReport) return [];
-
-      // Try to get vulnerabilities directly from the report data
-      let vulnerabilities = [];
-
-      if (this.vulnerabilityReport.report && this.vulnerabilityReport.report.results) {
-        this.vulnerabilityReport.report.results.forEach((result) => {
-          if (result && result.vulnerabilities) {
-            vulnerabilities = vulnerabilities.concat(result.vulnerabilities);
-          }
-        });
-      }
-
-      // Fallback to model's computed property
-      if (vulnerabilities.length === 0) {
-        vulnerabilities = this.vulnerabilityReport.vulnerabilities || [];
-      }
-
-      // Sort by severity (critical > high > medium > low > none) and then by score
-      const severityOrder = {
-        critical: 5, high: 4, medium: 3, low: 2, none: 1
-      };
-
-      const sortedVulnerabilities = vulnerabilities
-        .sort((a, b) => {
-          const severityDiff = (severityOrder[b.severity?.toLowerCase()] || 0) - (severityOrder[a.severity?.toLowerCase()] || 0);
-
-          if (severityDiff !== 0) return severityDiff;
-
-          // If same severity, sort by score (higher score first)
-          const scoreA = parseFloat(a.cvss?.nvd?.v3score) || 0;
-          const scoreB = parseFloat(b.cvss?.nvd?.v3score) || 0;
-
-          return scoreB - scoreA;
-        })
-        .slice(0, 5);
-
-      // Transform to match the expected format for the UI
-      return sortedVulnerabilities.map((vuln, index) => ({
-        cveId:        vuln.cve,
-        score:        vuln.cvss?.nvd?.v3score ? `${ vuln.cvss.nvd.v3score } (CVSS v3)` : vuln.cvss?.redhat?.v3score ? `${ vuln.cvss.redhat.v3score } (CVSS v3)` : vuln.cvss?.ghsa?.v3score ? `${ vuln.cvss.ghsa.v3score } (CVSS v3)` : '',
-        severity:     vuln.severity?.toLowerCase() || null,
-        package:      vuln.packageName,
-        fixAvailable: vuln.fixedVersions && vuln.fixedVersions.length > 0
       }));
     },
 
@@ -643,47 +438,6 @@ export default {
 
       return 'none';
     },
-
-    severityDistributionWithPercentages() {
-      const total = this.totalVulnerabilities;
-      const distribution = {};
-
-      Object.keys(this.severityDistribution).forEach((severity) => {
-        const count = this.severityDistribution[severity];
-
-        distribution[severity] = {
-          count,
-          percentage: total > 0 ? ((count / total) * 100).toFixed(1) : 0
-        };
-      });
-
-      return distribution;
-    },
-
-    filteredVulnerabilities() {
-      // Return cached results to prevent selection issues
-      return this.cachedFilteredVulnerabilities;
-    },
-
-    // Safe data for SortableTable
-    safeTableData() {
-      if (this.isGrouped) {
-        this.layerData = this.vulnerabilitiesByLayer(this.cachedFilteredVulnerabilities) || [];
-        const layerData = this.vulnerabilitiesByLayer(this.cachedFilteredVulnerabilities) || [];
-
-        return layerData.filter((item) => item && typeof item === 'object' && item.id);
-      } else {
-        const vulnData = this.filteredVulnerabilities || [];
-
-        return vulnData.filter((item) => item && typeof item === 'object' && item.id);
-      }
-    },
-
-    // Get the count of selected vulnerabilities for display
-    selectedVulnerabilityCount() {
-      return this.selectedVulnerabilities ? this.selectedVulnerabilities.length : 0;
-    },
-
   },
 
   watch: {
@@ -706,266 +460,15 @@ export default {
       },
       deep: true
     },
-    // Watch for isGrouped changes
-    isGrouped(newVal, oldVal) {
-      // Clear selections when switching modes
-      if (newVal !== oldVal) {
-        this.selectedVulnerabilities = [];
-      }
-    }
   },
 
   methods: {
-    // Decode layer ID to show meaningful layer information
-    decodeLayerId(layerId) {
-      if (!layerId || layerId === this.t('imageScanner.general.unknown')) {
-        return 'Unknown Layer';
-      }
-
-      // If it's a SHA256 hash, try to decode it or show a truncated version
-      if (layerId.startsWith('sha256:')) {
-        const hash = layerId.substring(7); // Remove 'sha256:' prefix
-        const shortHash = hash.substring(0, 12); // Show first 12 characters
-
-        // Try to get layer information from image data
-        if (this.currentImage && this.currentImage.layers) {
-          // Look for layer information in the image data
-          const layers = this.currentImage.layers;
-
-          if (Array.isArray(layers)) {
-            const layerInfo = layers.find((layer) => layer.diffID === layerId ||
-              layer.digest === layerId ||
-              (layer.command && layer.command.includes(hash.substring(0, 8)))
-            );
-
-            if (layerInfo && layerInfo.command) {
-              // Return the decoded command
-              return this.decodeBase64(layerInfo.command) || layerInfo.command;
-            }
-          }
-        }
-
-        // Fallback: show truncated hash with layer number
-        return `Layer ${ shortHash }...`;
-      }
-
-      // If it's a package path (purl), extract meaningful info
-      if (layerId.includes('pkg:')) {
-        const parts = layerId.split('@');
-
-        if (parts.length > 1) {
-          const packageInfo = parts[0].split('/').pop();
-          const version = parts[1].split('?')[0];
-
-          return `${ packageInfo }@${ version }`;
-        }
-      }
-
-      // Default fallback
-      return layerId.length > 50 ? `${ layerId.substring(0, 50) }...` : layerId;
-    },
-
-    // Format vulnerability counts for display (returns object for IdentifiedCVEsCell)
-    formatVulnerabilityCounts(severityCounts) {
-      if (!severityCounts) {
-        return {
-          critical: 0, high: 0, medium: 0, low: 0, none: 0
-        };
-      }
-
-      return {
-        critical: severityCounts.critical || 0,
-        high:     severityCounts.high || 0,
-        medium:   severityCounts.medium || 0,
-        low:      severityCounts.low || 0,
-        unknown:     severityCounts.none || 0
-      };
-    },
-
-    // Get layer updated time
-    getLayerUpdatedTime(layerId) {
-      // Try to get from image metadata
-      if (this.currentImage && this.currentImage.metadata) {
-        return `${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('MMM D, YYYY') } ${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('h:mm a') }` || this.t('imageScanner.general.unknown');
-      }
-
-      return this.t('imageScanner.general.unknown');
-    },
-
-    // Get layer size
-    getLayerSize(layerId) {
-      // Since individual layer sizes aren't available in the current data structure,
-      // we'll show a placeholder or calculate an estimated size
-
-      // Try to get from image layers data first
-      if (this.currentImage && this.currentImage.layers) {
-        const layers = this.currentImage.layers;
-
-        if (Array.isArray(layers)) {
-          const layerInfo = layers.find((layer) => layer.diffID === layerId ||
-            layer.digest === layerId ||
-            (layer.diffID && layer.diffID.includes(layerId.substring(0, 12)))
-          );
-
-          if (layerInfo && layerInfo.size) {
-            // Convert bytes to MB if needed
-            if (typeof layerInfo.size === 'number') {
-              return `${ (layerInfo.size / 1024 / 1024).toFixed(2) } MB`;
-            }
-
-            return layerInfo.size;
-          }
-        }
-      }
-
-      // Calculate estimated size based on total image size and number of layers
-      if (this.currentImage && this.currentImage.imageMetadata) {
-        const totalSize = this.currentImage.imageMetadata.size;
-
-        if (totalSize && totalSize !== this.t('imageScanner.general.unknown')) {
-          // Get total number of layers
-          const totalLayers = this.vulnerabilitiesByLayer?.length || 1;
-
-          if (typeof totalSize === 'number') {
-            const estimatedSize = totalSize / totalLayers;
-
-            return `${ (estimatedSize / 1024 / 1024).toFixed(2) } MB`;
-          }
-        }
-      }
-
-      // Return placeholder since individual layer sizes aren't available
-      return 'N/A';
-    },
-
-    // Download dropdown methods
-    toggleDownloadDropdown() {
-      this.showDownloadDropdown = !this.showDownloadDropdown;
-    },
-
-    closeDownloadDropdown() {
-      this.showDownloadDropdown = false;
-    },
-
-    handleClickOutside(event) {
-      // Close dropdown if clicking outside
-      if (this.showDownloadDropdown && !event.target.closest('.dropdown-container')) {
-        this.closeDownloadDropdown();
-      }
-    },
-
-    // Utility method to decode base64 strings
-    decodeBase64(str) {
-      try {
-        return atob(str);
-      } catch (error) {
-        return str; // Return original string if decoding fails
-      }
-    },
-
-    // Download methods
-    downloadSBOM() {
-      try {
-        if (!this.sbom) {
-          this.$store.dispatch('growl/error', {
-            title:   'Error',
-            message: 'No SBOM data available for download'
-          }, { root: true });
-
-          return;
-        }
-
-        // Generate SBOM download
-        const sbomData = JSON.stringify(this.sbom.spdx, null, 2);
-
-        this.downloadJSON(sbomData, `${ this.imageName }-sbom_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.spdx.json`);
-
-        this.$store.dispatch('growl/success', {
-          title:   'Success',
-          message: 'SBOM downloaded successfully'
-        }, { root: true });
-
-        this.closeDownloadDropdown();
-      } catch (error) {
-        this.$store.dispatch('growl/error', {
-          title:   'Error',
-          message: 'Failed to download SBOM'
-        }, { root: true });
-      }
-    },
-
-    downloadImageDetailReport() {
-      try {
-        if (!this.vulnerabilityReport || !this.sbom) {
-          this.$store.dispatch('growl/error', {
-            title:   'Error',
-            message: 'No vulnerability report or SBOM data available for download'
-          }, { root: true });
-
-          return;
-        }
-
-        // Generate CSV from vulnerability report data
-        const csvData = this.generateCSVFromVulnerabilityReport();
-
-        this.downloadCSV(csvData, `${ this.imageName }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`);
-
-        this.$store.dispatch('growl/success', {
-          title:   'Success',
-          message: 'Image detail report downloaded successfully'
-        }, { root: true });
-
-        this.closeDownloadDropdown();
-      } catch (error) {
-        this.$store.dispatch('growl/error', {
-          title:   'Error',
-          message: 'Failed to download image detail report'
-        }, { root: true });
-      }
-    },
-
-    downloadVulnerabilityReport() {
-      try {
-        if (!this.vulnerabilityReport) {
-          this.$store.dispatch('growl/error', {
-            title:   'Error',
-            message: 'No vulnerability report data available for download'
-          }, { root: true });
-
-          return;
-        }
-
-        // Generate JSON vulnerability report
-        const reportData = JSON.stringify(this.vulnerabilityReport.report, null, 2);
-
-        this.downloadJSON(reportData, `${ this.imageName }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`);
-
-        this.$store.dispatch('growl/success', {
-          title:   'Success',
-          message: 'Vulnerability report downloaded successfully'
-        }, { root: true });
-
-        this.closeDownloadDropdown();
-      } catch (error) {
-        this.$store.dispatch('growl/error', {
-          title:   'Error',
-          message: 'Failed to download vulnerability report'
-        }, { root: true });
-      }
-    },
 
     filterBySeverity(severity) {
       this.filters.severity = severity;
     },
 
     updateFilteredVulnerabilities() {
-      // Defensive check to prevent errors
-      if (!this.vulnerabilityDetails || !Array.isArray(this.vulnerabilityDetails)) {
-        this.cachedFilteredVulnerabilities = [];
-
-        return;
-      }
-
       let filtered = [...this.vulnerabilityDetails];
 
       // CVE search filter
@@ -1006,9 +509,8 @@ export default {
 
       // Exploitability filter
       if (this.filters.exploitability !== 'any') {
-        filtered = filtered.filter((v) => v.exploitability === this.filters.exploitability);
+        filtered = filtered.filter((v) => v.exploitability.toLowerCase() === this.filters.exploitability.toLowerCase());
       }
-
       this.cachedFilteredVulnerabilities = filtered;
     },
 
@@ -1058,37 +560,6 @@ export default {
           await this.$nextTick();
           this.$forceUpdate();
         }
-
-        // Approach 2: If not found, try direct API call
-        if (!foundImage) {
-          try {
-            await this.$store.dispatch('cluster/find', {
-              type: RESOURCE.IMAGE,
-              id:   this.imageName,
-              opt:  { force: true, namespace: 'sbomscanner' }
-            });
-          } catch (error) {
-            // Ignore error if image not found
-          }
-        }
-
-        // Load associated vulnerability report if it exists
-        if (this.currentImage?.vulnerabilityReport) {
-          await this.$store.dispatch('cluster/find', {
-            type: RESOURCE.VULNERABILITY_REPORT,
-            id:   this.currentImage.vulnerabilityReport.metadata.name,
-            opt:  { force: true, namespace: 'sbomscanner' }
-          });
-        }
-
-        // Load associated SBOM if it exists
-        if (this.currentImage?.sbom) {
-          await this.$store.dispatch('cluster/find', {
-            type: RESOURCE.SBOM,
-            id:   this.currentImage.sbom.metadata.name,
-            opt:  { force: true, namespace: 'sbomscanner' }
-          });
-        }
       } catch (error) {
         this.$store.dispatch('growl/error', {
           title:   'Error',
@@ -1097,280 +568,6 @@ export default {
       }
     },
 
-    async onSelectionChange(selected) {
-      // Handle selection changes for both grouped and ungrouped modes
-      try {
-        await this.$nextTick();
-        if (this.isGrouped) {
-          // When grouped, selected items are layer objects
-          // We need to extract all vulnerabilities from selected layers
-          const allVulnerabilities = [];
-
-          if (Array.isArray(selected)) {
-            selected.forEach((layer) => {
-              if (layer && layer.vulnerabilityList && Array.isArray(layer.vulnerabilityList)) {
-                allVulnerabilities.push(...layer.vulnerabilityList);
-              }
-            });
-          }
-          this.selectedVulnerabilities = allVulnerabilities;
-        } else {
-          // When not grouped, selected items are individual vulnerabilities
-          this.selectedVulnerabilities = Array.isArray(selected) ? selected : [];
-        }
-      } catch (error) {
-        this.selectedVulnerabilities = [];
-      }
-    },
-
-    async onSubTableSelectionChange(selected) {
-      // Handle selection from sub-tables (individual vulnerabilities within layers)
-      try {
-        await this.$nextTick();
-
-        if (this.isGrouped) {
-          // When grouped, we need to merge sub-table selections with layer selections
-          // For now, we'll replace the selection with sub-table selections
-          // This allows selecting individual vulnerabilities within layers
-          this.selectedVulnerabilities = Array.isArray(selected) ? selected : [];
-        }
-      } catch (error) {
-        this.selectedVulnerabilities = [];
-      }
-    },
-
-    downloadFullReport() {
-      try {
-        if (!this.vulnerabilityReport || !this.sbom) {
-          this.$store.dispatch('growl/error', {
-            title:   'Error',
-            message: 'No vulnerability report or SBOM data available for download'
-          }, { root: true });
-
-          return;
-        }
-
-        // Generate CSV from vulnerability report data
-        const csvData = this.generateCSVFromVulnerabilityReport();
-
-        this.downloadCSV(csvData, `${ this.imageName }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`);
-
-        this.$store.dispatch('growl/success', {
-          title:   'Success',
-          message: 'Full report downloaded successfully'
-        }, { root: true });
-      } catch (error) {
-        this.$store.dispatch('growl/error', {
-          title:   'Error',
-          message: `Failed to download full report: ${ error.message }`
-        }, { root: true });
-      }
-    },
-
-    downloadCustomReport() {
-      try {
-        if (!this.vulnerabilityReport) {
-          this.$store.dispatch('growl/error', {
-            title:   'Error',
-            message: 'No vulnerability report data available for download'
-          }, { root: true });
-
-          return;
-        }
-
-        // Generate CSV from filtered vulnerability data
-        const csvData = this.generateCSVFromFilteredVulnerabilities();
-
-        this.downloadCSV(csvData, `${ this.imageName }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`);
-
-        this.$store.dispatch('growl/success', {
-          title:   'Success',
-          message: 'Custom report downloaded successfully'
-        }, { root: true });
-      } catch (error) {
-        this.$store.dispatch('growl/error', {
-          title:   'Error',
-          message: `Failed to download custom report: ${ error.message }`
-        }, { root: true });
-      }
-    },
-
-    generateCSVFromVulnerabilityReport() {
-      const vulnerabilities = this.vulnerabilityDetails;
-      const headers = [
-        'CVE_ID',
-        'SCORE',
-        'PACKAGE',
-        'FIX AVAILABLE',
-        'SEVERITY',
-        'EXPLOITABILITY',
-        'PACKAGE VERSION',
-        'PACKAGE PATH',
-        'DESCRIPTION',
-      ];
-
-      const csvRows = [headers.join(',')];
-
-      vulnerabilities.forEach((vuln) => {
-        const row = [
-          `"${ vuln.cveId || '' }"`,
-          `"${ vuln.score || '' }"`,
-          `"${ vuln.package || '' }"`,
-          `"${ vuln.fixVersion }"`,
-          `"${ vuln.severity || '' }"`,
-          `"${ vuln.exploitability || '' }"`,
-          `"${ vuln.installedVersion || '' }"`,
-          `"${ vuln.packagePath || '' }"`,
-          `"${ vuln.description.replace(/\"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
-        ];
-
-        csvRows.push(row.join(','));
-      });
-
-      return csvRows.join('\n');
-    },
-
-    generateCSVFromFilteredVulnerabilities() {
-      // Use selected vulnerabilities if any are selected, otherwise use all filtered vulnerabilities
-      const vulnerabilities = this.selectedVulnerabilities && this.selectedVulnerabilities.length > 0 ? this.selectedVulnerabilities : this.filteredVulnerabilities;
-
-      const headers = [
-        'CVE_ID',
-        'SCORE',
-        'PACKAGE',
-        'FIX AVAILABLE',
-        'SEVERITY',
-        'EXPLOITABILITY',
-        'PACKAGE VERSION',
-        'PACKAGE PATH',
-        'DESCRIPTION',
-      ];
-
-      const csvRows = [headers.join(',')];
-
-      vulnerabilities.forEach((vuln) => {
-        const row = [
-          `"${ vuln.cveId || '' }"`,
-          `"${ vuln.score || '' }"`,
-          `"${ vuln.package || '' }"`,
-          `"${ vuln.fixVersion }"`,
-          `"${ vuln.severity || '' }"`,
-          `"${ vuln.exploitability || '' }"`,
-          `"${ vuln.installedVersion || '' }"`,
-          `"${ vuln.packagePath || '' }"`,
-          `"${ vuln.description.replace(/\"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
-        ];
-
-        csvRows.push(row.join(','));
-      });
-
-      return csvRows.join('\n');
-    },
-
-    downloadCSV(csvContent, filename) {
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    },
-
-    downloadJSON(jsonContent, filename) {
-      const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
-      const link = document.createElement('a');
-
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    },
-
-    // Group vulnerabilities by layer (diffID) - following ImageOverview pattern
-    vulnerabilitiesByLayer(vulnerabilityReport) {
-      try {
-        // Group vulnerabilities by diffID (layer identifier)
-        const layerMap = new Map();
-
-        vulnerabilityReport.forEach((vuln) => {
-          if (!vuln || typeof vuln !== 'object') {
-            return; // Skip invalid vulnerabilities
-          }
-
-          const layerId = vuln.diffID || vuln.packagePath || this.t('imageScanner.general.unknown');
-          const mapKey = layerId;
-
-          if (layerMap.has(mapKey)) {
-            const layer = layerMap.get(mapKey);
-
-            if (layer && layer.vulnerabilities && Array.isArray(layer.vulnerabilities)) {
-              layer.vulnerabilities.push(vuln);
-              // Count severity
-              const severity = vuln.severity?.toLowerCase() || 'none';
-
-              if (layer.severityCounts && layer.severityCounts[severity] !== undefined) {
-                layer.severityCounts[severity]++;
-              }
-            }
-          } else {
-            const severityCounts = {
-              critical: 0, high: 0, medium: 0, low: 0, none: 0
-            };
-            const severity = vuln.severity?.toLowerCase() || 'none';
-
-            if (severityCounts[severity] !== undefined) {
-              severityCounts[severity]++;
-            }
-
-            layerMap.set(mapKey, {
-              id:                mapKey,
-              layerId:           this.decodeLayerId(layerId), // Decode layer ID to show meaningful information
-              vulnerabilities:   this.formatVulnerabilityCounts(severityCounts),
-              updated:           this.getLayerUpdatedTime(layerId),
-              size:              this.getLayerSize(layerId),
-              severityCounts,
-              vulnerabilityList: [vuln]
-            });
-          }
-        });
-
-        // Create severity breakdown and sort
-        const result = Array.from(layerMap.values()).map((layer) => {
-          if (!layer || !layer.severityCounts || !layer.vulnerabilityList || !Array.isArray(layer.vulnerabilityList)) {
-            return null;
-          }
-
-          const counts = layer.severityCounts;
-
-          layer.vulnerabilities = this.formatVulnerabilityCounts(counts);
-          layer.updated = this.getLayerUpdatedTime(layer.id);
-          layer.size = this.getLayerSize(layer.id);
-
-          return layer;
-        }).filter((layer) => layer !== null && layer !== undefined).sort((a, b) => {
-          if (!a || !b) return 0;
-
-          return (b.vulnerabilityList?.length || 0) - (a.vulnerabilityList?.length || 0);
-        });
-
-        return result;
-      } catch (error) {
-        return [];
-      }
-    },
     getPackagePath(purl) {
       const packagePaths = typeof purl === 'string' ? purl.match(/(?<=:)([^@]+?)(?=@)/) : [];
 
@@ -1457,37 +654,6 @@ export default {
     }
 }
 
-.image-info-section {
-  flex-direction: row;
-  padding: 0;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px 32px;
-}
-
-.info-item {
-  display: flex;
-  justify-content: flex-start;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-.label {
-  font-weight: 400;
-  font-size: 14px;
-  flex: 1 0 0;
-  color: var(--disabled-text);
-}
-
-.value {
-  font-weight: 400;
-  flex: 2 0 0;
-  font-size: 14px;
-}
-
 .show-properties-link {
   margin-top: 0;
   padding-top: 0;
@@ -1537,7 +703,6 @@ export default {
   border: solid var(--border-width) var(--input-border);
 }
 
-.vulnerabilities-section,
 .severity-section {
   display: flex;
   padding: 16px;
@@ -1546,36 +711,6 @@ export default {
   gap: 12px;
   flex: 1;
   min-width: 0;
-}
-
-.vulnerabilities-section {
-  border-right: solid var(--border-width) var(--input-border);
-}
-
-.summary-title {
-  font-family: Lato;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  margin-bottom: 8px;
-}
-
-.vulnerabilities-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
-
-.vulnerabilities-list .row {
-  width: 100%;
-  margin: 0;
-}
-
-.vulnerabilities-list .col {
-  padding: 0 16px;
-  min-height: 24px;
 }
 
 .cve-id {
@@ -1722,22 +857,6 @@ export default {
   border-top: 1px solid #DCDEE7;
 }
 
-.selected-count {
-  font-weight: 400;
-}
-
-.table-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.table-top-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
 /* Download Dropdown Styles */
 .header-actions {
   margin-left: 16px;
@@ -1812,45 +931,5 @@ export default {
   overflow-wrap: break-word;
   max-width: 100%;
   display: block;
-}
-
-/* Group by layer control styling */
-.group-by-layer-control {
-  display: flex;
-  align-items: center;
-  position: relative;
-  z-index: 10;
-}
-
-.group-by-layer-control label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0;
-  padding: 4px;
-}
-
-.group-by-layer-control input[type="checkbox"] {
-  margin-right: 8px;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.na-badge {
-  display: inline-block;
-  background-color: #F4F5FA;
-  color: #6C6C76;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 400;
-  width: 100%;
-  height: 24px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>
