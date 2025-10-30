@@ -21,7 +21,7 @@
         <div class="col span-3">
           <ScoreBadge
             v-if="vuln.score && vuln.score.trim()"
-            :score="parseFloat(vuln.score.split(' ')[0]) || 0"
+            :score="(parseFloat(vuln.score.split(' ')[0]) || 0).toString()"
             :score-type="vuln.score.split(' ')[1] ? vuln.score.split(' ')[1].replace(/[()]/g, '') : 'CVSS'"
             :severity="vuln.severity"
           />
@@ -47,7 +47,7 @@ import InfoTooltip from '@pkg/components/common/Tooltip';
 import { PRODUCT_NAME, PAGE } from '@pkg/types';
 import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
 export default {
-  name:       'MostServereVulnerabilities',
+  name:       'MostSevereVulnerabilities',
   components: {
     ScoreBadge,
     InfoTooltip,

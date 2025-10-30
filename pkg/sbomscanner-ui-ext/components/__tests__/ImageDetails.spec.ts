@@ -8,7 +8,7 @@ jest.mock('@components/BadgeState', () => ({ BadgeState: { template: '<div class
 jest.mock('../DistributionChart', () => ({ default: { template: '<div class="distribution-chart" />' } }));
 jest.mock('@shell/components/form/LabeledSelect', () => ({ default: { template: '<select class="labeled-select"></select>' } }));
 jest.mock('../common/RancherMeta.vue', () => ({ default: { template: '<div class="rancher-meta" />' } }));
-jest.mock('../common/MostServereVulnerabilities', () => ({ default: { template: '<div class="most-severe" />' } }));
+jest.mock('../common/MostSevereVulnerabilities.vue', () => ({ default: { template: '<div class="most-severe" />' } }));
 jest.mock('../common/VulnerabilityTable', () => ({ default: { template: '<div class="vulnerability-table" />' } }));
 jest.mock('../common/DownloadSBOMBtn', () => ({ default: { template: '<button class="download-sbom" />' } }));
 jest.mock('../common/DownloadFullReportBtn.vue', () => ({ default: { template: '<button class="download-report" />' } }));

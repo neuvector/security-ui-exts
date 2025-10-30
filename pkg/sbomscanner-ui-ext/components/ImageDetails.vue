@@ -40,7 +40,7 @@
     <!-- Summary Section -->
     <div class="summary-section">
       <!-- Most Severe Vulnerabilities Section -->
-      <MostServereVulnerabilities :vulnerability-report="loadedVulnerabilityReport" />
+      <MostSevereVulnerabilities :vulnerability-report="loadedVulnerabilityReport" />
 
       <!-- Severity Distribution Section -->
       <DistributionChart
@@ -163,7 +163,7 @@ import day from 'dayjs';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import DistributionChart from '@pkg/components/DistributionChart';
 import RancherMeta from './common/RancherMeta.vue';
-import MostServereVulnerabilities from './common/MostServereVulnerabilities';
+import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import VulnerabilityTable from './common/VulnerabilityTable';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
@@ -175,7 +175,7 @@ export default {
     DistributionChart,
     LabeledSelect,
     RancherMeta,
-    MostServereVulnerabilities,
+    MostSevereVulnerabilities,
     VulnerabilityTable,
     DownloadSBOMBtn,
     DownloadFullReportBtn,
