@@ -153,15 +153,18 @@ export default {
 
       try {
         await this.save(event);
-        this.$router.push({
-          name:   `c-cluster-${ PRODUCT_NAME }-${ PAGE.REGISTRIES }`,
-          params: {
-            cluster: this.$route.params.cluster,
-            product: PRODUCT_NAME
-          }
-        });
       } catch (e) {
         this.errors = [e];
+      } finally {
+        if (!this.errors || this.errors.length === 0) {
+          this.$router.push({
+            name:   `c-cluster-${ PRODUCT_NAME }-${ PAGE.REGISTRIES }`,
+            params: {
+              cluster: this.$route.params.cluster,
+              product: PRODUCT_NAME
+            }
+          });
+        }
       }
     },
 
