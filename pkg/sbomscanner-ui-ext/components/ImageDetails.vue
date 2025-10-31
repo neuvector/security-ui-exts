@@ -152,6 +152,7 @@
     <VulnerabilityTable
       :cached-filtered-vulnerabilities="cachedFilteredVulnerabilities"
       :image-name="imageName"
+      :current-image="currentImage"
     />
   </div>
 </template>
