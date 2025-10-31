@@ -502,7 +502,7 @@ export const LAYER_BASED_TABLE = [
     labelKey: "imageScanner.imageDetails.table.headers.vulnerabilities",
     value: "vulnerabilities",
     formatter: "IdentifiedCVEsCell",
-    sort: "vulnerabilities",
+    sort: ["vulnerabilities.critical","vulnerabilities.high","vulnerabilities.medium","vulnerabilities.low","vulnerabilities.unknown"],
     width: 300,
   },
   {
