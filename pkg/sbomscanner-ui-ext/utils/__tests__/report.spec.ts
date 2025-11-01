@@ -1,4 +1,4 @@
-import { imageDetailsToCSV, downloadCSV, downloadJSON } from '../report';
+import { imageDetailsToCSV, downloadCSV, downloadJSON, getScore } from '../report';
 
 describe('imageDetailsToCSV', () => {
   test('handles empty or null input', () => {
@@ -20,7 +20,7 @@ describe('imageDetailsToCSV', () => {
 
     expect(rows[0]).toEqual({
       CVE_ID: 'CVE-1',
-      SCORE: '9.8 (CVSS v3)',
+      SCORE: '9.8 (v3)',
       PACKAGE: 'pkg',
       "FIX AVAILABLE": '1.0, 1.1',
       SEVERITY: 'critical',
@@ -32,7 +32,7 @@ describe('imageDetailsToCSV', () => {
 
     expect(rows[1]).toEqual({
       CVE_ID: 'CVE-2',
-      SCORE: '7.0 (CVSS v3)',
+      SCORE: '7.0 (v3)',
       PACKAGE: 'pkg2',
       "FIX AVAILABLE": '',
       SEVERITY: 'high',
@@ -44,7 +44,7 @@ describe('imageDetailsToCSV', () => {
 
     expect(rows[2]).toEqual({
       CVE_ID: 'CVE-3',
-      SCORE: '5.0 (CVSS v3)',
+      SCORE: '5.0 (v3)',
       PACKAGE: 'pkg3',
       "FIX AVAILABLE": '',
       SEVERITY: 'low',
@@ -171,5 +171,106 @@ describe('download utils', () => {
     expect(appendChildSpy).not.toHaveBeenCalled();
     expect(unsupportedLink.click).not.toHaveBeenCalled();
     expect(removeChildSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('getScore', () => {
+  it('returns empty string when cvss is null or undefined', () => {
+    expect(getScore(null as any, 'high')).toBe('');
+    expect(getScore(undefined as any, 'low')).toBe('');
+  });
+
+  it('returns empty string when cvss is not an object', () => {
+    expect(getScore('string' as any, 'medium')).toBe('');
+    expect(getScore(123 as any, 'medium')).toBe('');
+  });
+
+  it('returns empty string when severity is missing or falsy', () => {
+    expect(getScore({}, '')).toBe('');
+    expect(getScore({}, undefined as any)).toBe('');
+  });
+
+  it('returns empty string for unknown severity values', () => {
+    const cvss = { nvd: { v3score: 5.0 } };
+    expect(getScore(cvss, 'unknown')).toBe('');
+  });
+
+  it('returns correct score for "none" severity (0.0)', () => {
+    const cvss = { source1: { v3score: 0.0 } };
+    expect(getScore(cvss, 'none')).toBe('0 (v3)');
+  });
+
+  it('returns score that matches the "low" range (0.1–3.9)', () => {
+    const cvss = {
+      srcA: { v3score: 3.5 },
+      srcB: { v3score: 6.0 },
+    };
+    expect(getScore(cvss, 'low')).toBe('3.5 (v3)');
+  });
+
+  it('returns score that matches the "medium" range (4.0–6.9)', () => {
+    const cvss = {
+      srcA: { v3score: '4.2' },
+      srcB: { v3score: 8.5 },
+    };
+    expect(getScore(cvss, 'medium')).toBe('4.2 (v3)');
+  });
+
+  it('returns score that matches the "high" range (7.0–8.9)', () => {
+    const cvss = {
+      srcA: { v3score: 7.1 },
+      srcB: { v3score: 9.5 },
+    };
+    expect(getScore(cvss, 'high')).toBe('7.1 (v3)');
+  });
+
+  it('returns score that matches the "critical" range (9.0–10.0)', () => {
+    const cvss = {
+      srcA: { v3score: 9.9 },
+      srcB: { v3score: 5.0 },
+    };
+    expect(getScore(cvss, 'critical')).toBe('9.9 (v3)');
+  });
+
+  it('skips NaN and invalid v3score values', () => {
+    const cvss = {
+      srcA: { v3score: 'NaN' },
+      srcB: { v3score: 'invalid' },
+      srcC: { v3score: 6.5 },
+    };
+    expect(getScore(cvss, 'medium')).toBe('6.5 (v3)');
+  });
+
+  it('returns fallback first score if no score fits the range', () => {
+    const cvss = {
+      srcA: { v3score: 1.0 },
+      srcB: { v3score: 2.0 },
+    };
+    expect(getScore(cvss, 'high')).toBe('1 (v3)');
+  });
+
+  it('returns empty string if cvss object has no valid v3score', () => {
+    const cvss = {
+      srcA: { v2score: 4.0 },
+      srcB: { irrelevant: true },
+    };
+    expect(getScore(cvss, 'low')).toBe('');
+  });
+
+  it('handles mixed types (string and number) and ensures correct numeric parsing', () => {
+    const cvss = {
+      srcA: { v3score: '8.5' },
+      srcB: { v3score: 5.5 },
+    };
+    expect(getScore(cvss, 'high')).toBe('8.5 (v3)');
+  });
+
+  it('normalizes severity case (e.g., "HIGH", "Medium")', () => {
+    const cvss = {
+      srcA: { v3score: 8.5 },
+      srcB: { v3score: 4.5 },
+    };
+    expect(getScore(cvss, 'HIGH')).toBe('8.5 (v3)');
+    expect(getScore(cvss, 'Medium')).toBe('4.5 (v3)');
   });
 });

@@ -168,6 +168,7 @@ import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import VulnerabilityTable from './common/VulnerabilityTable';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
+import { getScore } from '../utils/report';
 
 export default {
   name:       'ImageDetails',
@@ -386,7 +387,7 @@ export default {
       return vulnerabilities.map((vuln, index) => ({
         id:               `${ vuln.cve }-${ vuln.packageName }-${ index }`, // Create unique ID
         cveId:            vuln.cve,
-        score:            vuln.cvss?.nvd?.v3score ? `${ vuln.cvss.nvd.v3score } (CVSS v3)` : vuln.cvss?.redhat?.v3score ? `${ vuln.cvss.redhat.v3score } (CVSS v3)` : vuln.cvss?.ghsa?.v3score ? `${ vuln.cvss.ghsa.v3score } (CVSS v3)` : '',
+        score:            getScore(vuln.cvss, vuln.severity),
         package:          vuln.packageName,
         packageVersion:   vuln.installedVersion,
         packagePath:      this.getPackagePath(vuln.purl),
