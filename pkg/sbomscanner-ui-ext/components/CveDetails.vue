@@ -3,6 +3,7 @@ import { BadgeState } from '@components/BadgeState';
 
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
 import { NVD_BASE_URL, CVSS_VECTOR_BASE_URL } from '@pkg/constants';
+import { getScore } from '@pkg/utils/report';
 
 export default {
   name:       'CveDetails',
@@ -48,7 +49,7 @@ export default {
                 const hasCvss = !!vuln.cvss;
 
                 cveMetaData = {
-                  score:           hasCvss ? this.getV3Score(vuln.cvss) : 'n/a',
+                  score:           hasCvss ? getScore(vuln.cvss, vuln.severity) : 'n/a',
                   sources:         hasCvss ? this.convertCvssToSources(vuln.cvss, cveId) : [],
                   severity:        vuln.severity,
                   cvssScores:      hasCvss ? this.convertCvss(vuln.cvss) : [],
@@ -127,18 +128,6 @@ export default {
       });
 
       return cvssScores;
-    },
-
-    getV3Score(cvss) {
-      if (cvss && cvss.nvd && cvss.nvd.v3score) {
-        return `${ cvss.nvd.v3score } (v3)`;
-      } else if (cvss && cvss.redhat && cvss.redhat.v3score) {
-        return `${ cvss.redhat.v3score } (v3)`;
-      } else if (cvss && cvss.ghsa && cvss.ghsa.v3score) {
-        return `${ cvss.ghsa.v3score } (v3)`;
-      }
-
-      return 'n/a';
     },
 
     convertCvssToSources(cvss, cveId) {
