@@ -470,7 +470,7 @@ export default {
           <template #install>
             <div v-if="!hasCnpgSchema && !isSkipped">
               <h2
-                class="mt-20 mb-10"
+                class="mt-20 mb-10 text-center"
                 data-testid="sb-app-install-title"
               >
                 {{ t("imageScanner.installationWizard.install4Cnpg.title") }}
@@ -481,7 +481,7 @@ export default {
             </div>
             <div v-else-if="!hasSbomscannerSchema">
               <h2
-                class="mt-20 mb-10"
+                class="mt-20 mb-10 text-center"
                 data-testid="sb-app-install-title"
               >
                 {{ t("imageScanner.installationWizard.install4Sbomscanner.title") }}

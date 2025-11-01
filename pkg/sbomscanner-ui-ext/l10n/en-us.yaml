@@ -55,7 +55,7 @@ imageScanner:
       totalVulns: total vulnerabilities
     appInstall:
       title: Install SBOMScanner
-      description: Get a comprehensive view of your container image vulnerabilities and risk assessment across all your registries.
+      description: Get a comprehensive view of your container image vulnerabilities and focus on risks that truly matter.
       button4Entry: Start installation
       button4Cnpg: Install CloudNativePG
       button4Sbomscanner: Install SBOMScanner

@@ -93,7 +93,6 @@ export default {
               <h2 class="mb-0">
                 {{ t("imageScanner.dashboard.appInstall.title") }}
               </h2>
-              <span class="subtext">{{ t("imageScanner.dashboard.appInstall.button") }}</span>
             </div>
           </div>
         </template>
