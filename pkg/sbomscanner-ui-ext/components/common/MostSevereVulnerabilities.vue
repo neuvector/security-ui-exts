@@ -11,30 +11,39 @@
       <div
         v-for="vuln in mostSevereVulnerabilities"
         :key="vuln.cveId"
-        class="row"
       >
-        <div class="col span-4">
-          <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.VULNERABILITIES}/${vuln.cveId}`">
-            {{ vuln.cveId }}
-          </RouterLink>
+        <div
+          v-if="vuln.cveId"
+          class="row"
+        >
+          <div class="col span-4">
+            <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.VULNERABILITIES}/${vuln.cveId}`">
+              {{ vuln.cveId }}
+            </RouterLink>
+          </div>
+          <div class="col span-3">
+            <ScoreBadge
+              v-if="vuln.score && vuln.score.trim()"
+              :score="(parseFloat(vuln.score.split(' ')[0]) || 0).toString()"
+              :score-type="vuln.score.split(' ')[1] ? vuln.score.split(' ')[1].replace(/[()]/g, '') : 'CVSS'"
+              :severity="vuln.severity"
+            />
+            <span
+              v-else
+              class="na-badge"
+            >n/a</span>
+          </div>
+          <div class="col span-4">
+            {{ vuln.package }}
+          </div>
+          <div class="col span-1">
+            <FixAvailableIcon :fix-available="vuln.fixAvailable" />
+          </div>
         </div>
-        <div class="col span-3">
-          <ScoreBadge
-            v-if="vuln.score && vuln.score.trim()"
-            :score="(parseFloat(vuln.score.split(' ')[0]) || 0).toString()"
-            :score-type="vuln.score.split(' ')[1] ? vuln.score.split(' ')[1].replace(/[()]/g, '') : 'CVSS'"
-            :severity="vuln.severity"
-          />
-          <span
-            v-else
-            class="na-badge"
-          >n/a</span>
-        </div>
-        <div class="col span-4">
-          {{ vuln.package }}
-        </div>
-        <div class="col span-1">
-          <FixAvailableIcon :fix-available="vuln.fixAvailable" />
+        <div
+          v-else
+          class="row"
+        >
         </div>
       </div>
     </div>
@@ -105,16 +114,31 @@ export default {
 
           return scoreB - scoreA;
         })
-        .slice(0, 5);
+        .slice(0, 5)
+        .map((vuln, index) => ({
+          cveId:        vuln.cve,
+          score:        vuln.cvss?.nvd?.v3score ? `${ vuln.cvss.nvd.v3score } (CVSS v3)` : vuln.cvss?.redhat?.v3score ? `${ vuln.cvss.redhat.v3score } (CVSS v3)` : vuln.cvss?.ghsa?.v3score ? `${ vuln.cvss.ghsa.v3score } (CVSS v3)` : '',
+          severity:     vuln.severity?.toLowerCase() || null,
+          package:      vuln.packageName,
+          fixAvailable: vuln.fixedVersions && vuln.fixedVersions.length > 0
+        }));
+
+      if (sortedVulnerabilities.length < 5) {
+        const placeholdersToAdd = 5 - sortedVulnerabilities.length;
+
+        for (let i = 0; i < placeholdersToAdd; i++) {
+          sortedVulnerabilities.push({
+            cveId:        '',
+            score:        '',
+            severity:     null,
+            package:      '',
+            fixAvailable: null
+          });
+        }
+      }
 
       // Transform to match the expected format for the UI
-      return sortedVulnerabilities.map((vuln, index) => ({
-        cveId:        vuln.cve,
-        score:        vuln.cvss?.nvd?.v3score ? `${ vuln.cvss.nvd.v3score } (CVSS v3)` : vuln.cvss?.redhat?.v3score ? `${ vuln.cvss.redhat.v3score } (CVSS v3)` : vuln.cvss?.ghsa?.v3score ? `${ vuln.cvss.ghsa.v3score } (CVSS v3)` : '',
-        severity:     vuln.severity?.toLowerCase() || null,
-        package:      vuln.packageName,
-        fixAvailable: vuln.fixedVersions && vuln.fixedVersions.length > 0
-      }));
+      return sortedVulnerabilities;
     },
   }
 };
@@ -154,6 +178,7 @@ export default {
 .vulnerabilities-list .row {
   width: 100%;
   margin: 0;
+  min-height: 24px;
 }
 
 .vulnerabilities-list .col {
