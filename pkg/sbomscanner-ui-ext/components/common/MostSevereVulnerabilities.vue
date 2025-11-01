@@ -55,6 +55,7 @@ import ScoreBadge from '@pkg/components/common/ScoreBadge';
 import InfoTooltip from '@pkg/components/common/Tooltip';
 import { PRODUCT_NAME, PAGE } from '@pkg/types';
 import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
+import { getScore } from '@pkg/utils/report';
 export default {
   name:       'MostSevereVulnerabilities',
   components: {
@@ -117,7 +118,7 @@ export default {
         .slice(0, 5)
         .map((vuln, index) => ({
           cveId:        vuln.cve,
-          score:        vuln.cvss?.nvd?.v3score ? `${ vuln.cvss.nvd.v3score } (CVSS v3)` : vuln.cvss?.redhat?.v3score ? `${ vuln.cvss.redhat.v3score } (CVSS v3)` : vuln.cvss?.ghsa?.v3score ? `${ vuln.cvss.ghsa.v3score } (CVSS v3)` : '',
+          score:        getScore(vuln.cvss, vuln.severity),
           severity:     vuln.severity?.toLowerCase() || null,
           package:      vuln.packageName,
           fixAvailable: vuln.fixedVersions && vuln.fixedVersions.length > 0

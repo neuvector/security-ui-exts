@@ -171,7 +171,7 @@ describe('MostSevereVulnerabilities.vue', () => {
       expect(computed.length).toBe(5);
       expect(computed[0].cveId).toBe('CVE-FB-1');
       expect(computed[0].package).toBe('pkg-fb-1');
-      expect(computed[0].score).toBe('8.8 (CVSS v3)');
+      expect(computed[0].score).toBe('8.8 (v3)');
       expect(computed[0].fixAvailable).toBe(true);
 
       expect(computed[1].cveId).toBe('');
@@ -208,7 +208,7 @@ describe('MostSevereVulnerabilities.vue', () => {
 
       expect(firstVuln).toEqual({
         cveId:        'CVE-CRIT-1',
-        score:        '9.8 (CVSS v3)',
+        score:        '9.8 (v3)',
         severity:     'critical',
         package:      'pkg-crit-1',
         fixAvailable: true
@@ -227,9 +227,9 @@ describe('MostSevereVulnerabilities.vue', () => {
       const wrapper = createWrapper({ vulnerabilityReport: mockReport });
       const computed = wrapper.vm.mostSevereVulnerabilities;
 
-      expect(computed[0].score).toBe('9.8 (CVSS v3)');
-      expect(computed[3].score).toBe('8.0 (CVSS v3)');
-      expect(computed[4].score).toBe('5.0 (CVSS v3)');
+      expect(computed[0].score).toBe('9.8 (v3)');
+      expect(computed[3].score).toBe('8.0 (v3)');
+      expect(computed[4].score).toBe('5.0 (v3)');
     });
 
     it('should return an empty score string if no score is present', () => {
@@ -308,7 +308,7 @@ describe('MostSevereVulnerabilities.vue', () => {
 
       expect(scoreBadge.exists()).toBe(true);
       expect(scoreBadge.props('score')).toBe('9.8');
-      expect(scoreBadge.props('scoreType')).toBe('CVSS');
+      expect(scoreBadge.props('scoreType')).toBe('v3');
       expect(scoreBadge.props('severity')).toBe('critical');
     });
 

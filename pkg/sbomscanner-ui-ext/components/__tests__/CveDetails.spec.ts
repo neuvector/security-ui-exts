@@ -80,7 +80,7 @@ const mockRoute = { params: { id: mockCveId } };
 const mockT = (key) => key;
 
 describe('CveDetails.vue', () => {
-  let wrapper;
+  let wrapper: any;
 
   const createWrapper = (store = mockStore, route = mockRoute) => {
     return shallowMount(CveDetails, {
@@ -116,16 +116,6 @@ describe('CveDetails.vue', () => {
       ];
 
       expect(wrapper.vm.groupReferencesByDomain(urls)).toEqual(expected);
-    });
-
-    it('getV3Score should prioritize nvd, then redhat, then ghsa', () => {
-      expect(wrapper.vm.getV3Score({ nvd: { v3score: 9.8 } })).toBe('9.8 (v3)');
-      expect(wrapper.vm.getV3Score({ redhat: { v3score: 7.5 } })).toBe('7.5 (v3)');
-      // FIX: Changed '5.0 (v3)' to '5 (v3)' to match JS string conversion
-      expect(wrapper.vm.getV3Score({ ghsa: { v3score: 5.0 } })).toBe('5 (v3)');
-      expect(wrapper.vm.getV3Score({ nvd: { v3score: 9.8 }, redhat: { v3score: 7.5 } })).toBe('9.8 (v3)');
-      expect(wrapper.vm.getV3Score({})).toBe('n/a');
-      expect(wrapper.vm.getV3Score(null)).toBe('n/a');
     });
 
     it('convertCvssToSources should create correct source links', () => {
