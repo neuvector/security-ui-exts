@@ -82,22 +82,102 @@ describe('MostSevereVulnerabilities.vue', () => {
 
       const wrapperEmpty = createWrapper({ vulnerabilityReport: {} });
 
-      expect(wrapperEmpty.vm.mostSevereVulnerabilities).toEqual([]);
+      expect(wrapperEmpty.vm.mostSevereVulnerabilities).toEqual(
+        [
+          {
+            cveId:        '',
+            fixAvailable: null,
+            package:      '',
+            score:        '',
+            severity:     null,
+          },
+          {
+            cveId:        '',
+            fixAvailable: null,
+            package:      '',
+            score:        '',
+            severity:     null,
+          },
+          {
+            cveId:        '',
+            fixAvailable: null,
+            package:      '',
+            score:        '',
+            severity:     null,
+          },
+          {
+            cveId:        '',
+            fixAvailable: null,
+            package:      '',
+            score:        '',
+            severity:     null,
+          },
+          {
+            cveId:        '',
+            fixAvailable: null,
+            package:      '',
+            score:        '',
+            severity:     null,
+          },
+
+        ]
+      );
 
       const wrapperEmptyResults = createWrapper({ vulnerabilityReport: { report: { results: [] } } });
 
-      expect(wrapperEmptyResults.vm.mostSevereVulnerabilities).toEqual([]);
+      expect(wrapperEmptyResults.vm.mostSevereVulnerabilities).toEqual([
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+      ]);
     });
 
     it('should use fallback vulnerabilities if report.results is empty', () => {
       const wrapper = createWrapper({ vulnerabilityReport: fallbackReport });
       const computed = wrapper.vm.mostSevereVulnerabilities;
 
-      expect(computed.length).toBe(1);
+      expect(computed.length).toBe(5);
       expect(computed[0].cveId).toBe('CVE-FB-1');
       expect(computed[0].package).toBe('pkg-fb-1');
       expect(computed[0].score).toBe('8.8 (CVSS v3)');
       expect(computed[0].fixAvailable).toBe(true);
+
+      expect(computed[1].cveId).toBe('');
+      expect(computed[2].cveId).toBe('');
+      expect(computed[3].cveId).toBe('');
+      expect(computed[4].cveId).toBe('');
     });
 
     it('should sort vulnerabilities by severity and then by score', () => {
@@ -164,14 +244,50 @@ describe('MostSevereVulnerabilities.vue', () => {
 
       expect(wrapper.vm.vulnerabilityReport).toEqual({});
 
-      expect(wrapper.vm.mostSevereVulnerabilities).toEqual([]);
+      expect(wrapper.vm.mostSevereVulnerabilities).toEqual([
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+        {
+          cveId:        '',
+          fixAvailable: null,
+          package:      '',
+          score:        '',
+          severity:     null,
+        },
+      ]);
 
-      expect(wrapper.findAll('.row').length).toBe(0);
+      expect(wrapper.findAll('.row').length).toBe(5);
     });
   });
 
   describe('rendering', () => {
-    let wrapper;
+    let wrapper: any;
 
     beforeEach(() => {
       wrapper = createWrapper({ vulnerabilityReport: mockReport });
@@ -223,6 +339,20 @@ describe('MostSevereVulnerabilities.vue', () => {
       expect(row.find('score-badge-stub').exists()).toBe(false);
       expect(row.find('.na-badge').exists()).toBe(true);
       expect(row.find('.na-badge').text()).toBe('n/a');
+    });
+
+    it('should render for severity is null', () => {
+      const noScoreWrapper = createWrapper({
+        vulnerabilityReport: {report: {
+    results: [{
+      vulnerabilities: [{
+          cve: 'CVE-CRIT-3', packageName: 'pkg-crit-3', cvss: { nvd: { v3score: '9.0' } }, fixedVersions: []
+        }]}]
+      }}});
+      const row = noScoreWrapper.find('.row');
+
+      expect(row.find('score-badge-stub').exists()).toBe(true);
+      expect(row.find('.na-badge').exists()).toBe(false);
     });
   });
 });

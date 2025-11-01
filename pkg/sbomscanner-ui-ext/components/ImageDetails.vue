@@ -38,7 +38,10 @@
     </div>
 
     <!-- Summary Section -->
-    <div class="summary-section">
+    <div
+      v-if="vulnerabilityDetails.length > 0"
+      class="summary-section"
+    >
       <!-- Most Severe Vulnerabilities Section -->
       <MostSevereVulnerabilities :vulnerability-report="loadedVulnerabilityReport" />
 
