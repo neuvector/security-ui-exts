@@ -97,3 +97,15 @@ export function getScore(cvss: any, severity: string): string {
 
   return '';
 }
+
+export function getSeverityNum(severity: string): number {
+  const severityOrder: Record<string, number> = {
+    'critical': 5,
+    'high': 4,
+    'medium': 3,
+    'low': 2,
+    'none': 1,
+  };
+
+  return severityOrder[severity?.toLowerCase()] || 0;
+}

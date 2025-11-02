@@ -55,7 +55,7 @@ import ScoreBadge from '@pkg/components/common/ScoreBadge';
 import InfoTooltip from '@pkg/components/common/Tooltip';
 import { PRODUCT_NAME, PAGE } from '@pkg/types';
 import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
-import { getScore } from '@pkg/utils/report';
+import { getScore, getSeverityNum } from '@pkg/utils/report';
 export default {
   name:       'MostSevereVulnerabilities',
   components: {
@@ -98,22 +98,22 @@ export default {
         vulnerabilities = this.vulnerabilityReport.vulnerabilities || [];
       }
 
-      // Sort by severity (critical > high > medium > low > none) and then by score
-      const severityOrder = {
-        critical: 5, high: 4, medium: 3, low: 2, none: 1
-      };
-
       const sortedVulnerabilities = vulnerabilities
         .sort((a, b) => {
-          const severityDiff = (severityOrder[b.severity?.toLowerCase()] || 0) - (severityOrder[a.severity?.toLowerCase()] || 0);
+          const scoreA = parseFloat(getScore(a.cvss, a.severity).split(' ')[0]) || 0;
+          const scoreB = parseFloat(getScore(b.cvss, b.severity).split(' ')[0]) || 0;
 
-          if (severityDiff !== 0) return severityDiff;
+          if ((scoreA > 0 || scoreB > 0) && scoreA !== scoreB) {
+            return scoreB - scoreA;
+          } else {
+            // If same score or none, sort by severity (higher severity first)
+            const severityA = getSeverityNum(a.severity);
+            const severityB = getSeverityNum(b.severity);
 
-          // If same severity, sort by score (higher score first)
-          const scoreA = parseFloat(a.cvss?.nvd?.v3score) || 0;
-          const scoreB = parseFloat(b.cvss?.nvd?.v3score) || 0;
-
-          return scoreB - scoreA;
+            if (severityA !== severityB) {
+              return severityB - severityA;
+            }
+          }
         })
         .slice(0, 5)
         .map((vuln, index) => ({

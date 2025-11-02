@@ -188,8 +188,8 @@ describe('MostSevereVulnerabilities.vue', () => {
       expect(cveIds).toEqual([
         'CVE-CRIT-1',
         'CVE-CRIT-3',
-        'CVE-CRIT-2',
         'CVE-HIGH',
+        'CVE-CRIT-2',
         'CVE-MED'
       ]);
     });
@@ -216,7 +216,7 @@ describe('MostSevereVulnerabilities.vue', () => {
 
       const secondVuln = wrapper.vm.mostSevereVulnerabilities[2];
 
-      expect(secondVuln.fixAvailable).toBe(false);
+      expect(secondVuln.fixAvailable).toBe(true);
 
       const thirdVuln = wrapper.vm.mostSevereVulnerabilities[4];
 
@@ -228,7 +228,7 @@ describe('MostSevereVulnerabilities.vue', () => {
       const computed = wrapper.vm.mostSevereVulnerabilities;
 
       expect(computed[0].score).toBe('9.8 (v3)');
-      expect(computed[3].score).toBe('8.0 (v3)');
+      expect(computed[3].score).toBe('7.5 (v3)');
       expect(computed[4].score).toBe('5.0 (v3)');
     });
 
@@ -327,7 +327,7 @@ describe('MostSevereVulnerabilities.vue', () => {
 
     it('should render FixAvailableIcon with fixAvailable=false', () => {
       const allIcons = wrapper.findAllComponents('fix-available-icon-stub');
-      const icon = allIcons.at(2);
+      const icon = allIcons.at(3);
 
       expect(icon.props('fixAvailable')).toBe(false);
     });
@@ -351,8 +351,8 @@ describe('MostSevereVulnerabilities.vue', () => {
       }}});
       const row = noScoreWrapper.find('.row');
 
-      expect(row.find('score-badge-stub').exists()).toBe(true);
-      expect(row.find('.na-badge').exists()).toBe(false);
+      expect(row.find('score-badge-stub').exists()).toBe(false);
+      expect(row.find('.na-badge').exists()).toBe(true);
     });
   });
 });

@@ -107,12 +107,12 @@
           </div>
         </div>
         <div class="filter-item">
-          <label>{{ t('imageScanner.imageDetails.searchByName') }}</label>
+          <label>{{ t('imageScanner.imageDetails.table.headers.package') }}</label>
           <div class="filter-input-wrapper">
             <input
               v-model="filters.packageSearch"
               type="text"
-              :placeholder="t('imageScanner.imageDetails.searchByNamePlaceholder')"
+              :placeholder="t('imageScanner.imageDetails.searchByName')"
               class="filter-input"
             />
             <i
@@ -171,7 +171,7 @@ import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import VulnerabilityTable from './common/VulnerabilityTable';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
-import { getScore } from '../utils/report';
+import { getScore, getSeverityNum } from '../utils/report';
 
 export default {
   name:       'ImageDetails',
@@ -397,6 +397,7 @@ export default {
         fixAvailable:     vuln.fixedVersions && vuln.fixedVersions.length > 0,
         fixVersion:       vuln.fixedVersions ? vuln.fixedVersions.join(', ') : '',
         severity:         vuln.severity?.toLowerCase() || this.t('imageScanner.general.unknown'),
+        severityNum:      getSeverityNum(vuln.severity),
         exploitability:   vuln.suppressed ? this.t('imageScanner.imageDetails.suppressed') : this.t('imageScanner.imageDetails.affected'),
         description:      vuln.description,
         title:            vuln.title,

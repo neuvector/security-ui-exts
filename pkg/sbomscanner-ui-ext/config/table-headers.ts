@@ -324,7 +324,7 @@ export const VULNERABILITY_DETAILS_TABLE = [
     labelKey: "imageScanner.imageDetails.table.headers.score",
     value: "score",
     formatter: "ScoreCell",
-    sort: "score",
+    sort: ["score", "severityNum"],
     width: "12%",
     // width: 170,
   },

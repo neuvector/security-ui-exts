@@ -250,10 +250,6 @@ export default {
         value: 'unknown',
         label: this.t('imageScanner.enum.cve.unknown')
       },
-      {
-        value: 'suppressed',
-        label: this.t('imageScanner.enum.cve.suppressed')
-      }
     ];
 
     return {

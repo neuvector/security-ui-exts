@@ -1,4 +1,4 @@
-import { imageDetailsToCSV, downloadCSV, downloadJSON, getScore } from '../report';
+import { imageDetailsToCSV, downloadCSV, downloadJSON, getScore, getSeverityNum } from '../report';
 
 describe('imageDetailsToCSV', () => {
   test('handles empty or null input', () => {
@@ -272,5 +272,35 @@ describe('getScore', () => {
     };
     expect(getScore(cvss, 'HIGH')).toBe('8.5 (v3)');
     expect(getScore(cvss, 'Medium')).toBe('4.5 (v3)');
+  });
+});
+
+describe('getSeverityNum', () => {
+  it('returns correct number for critical severity', () => {
+    expect(getSeverityNum('critical')).toBe(5);
+    expect(getSeverityNum('CRITICAL')).toBe(5); // case-insensitive
+  });
+
+  it('returns correct number for high severity', () => {
+    expect(getSeverityNum('high')).toBe(4);
+  });
+
+  it('returns correct number for medium severity', () => {
+    expect(getSeverityNum('medium')).toBe(3);
+  });
+
+  it('returns correct number for low severity', () => {
+    expect(getSeverityNum('low')).toBe(2);
+  });
+
+  it('returns correct number for none severity', () => {
+    expect(getSeverityNum('none')).toBe(1);
+  });
+
+  it('returns 0 for unknown or undefined severity', () => {
+    expect(getSeverityNum('unknown')).toBe(0);
+    expect(getSeverityNum('')).toBe(0);
+    expect(getSeverityNum(undefined as unknown as string)).toBe(0);
+    expect(getSeverityNum(null as unknown as string)).toBe(0);
   });
 });
