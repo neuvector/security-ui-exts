@@ -298,7 +298,6 @@ export default {
             :options="value.spec.repositories || []"
             :disabled="mode==='view'"
             :required="value.spec.catalogType === REGISTRY_TYPE.NO_CATALOG"
-            @update:value="update"
           />
         </div>
         <div class="col span-3">
