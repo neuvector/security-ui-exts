@@ -321,12 +321,12 @@ export const VULNERABILITY_DETAILS_TABLE = [
     // width: 210,
   },
   {
-    name: "score",
-    labelKey: "imageScanner.imageDetails.table.headers.score",
-    value: "score",
-    formatter: "ScoreCell",
-    sort: ["score", "severityNum"],
-    width: "12%",
+    name:      'score',
+    labelKey:  'imageScanner.imageDetails.table.headers.score',
+    value:     'score',
+    formatter: 'ScoreCell',
+    sort:      ['score', 'severityNum'],
+    width:     '12%',
     // width: 170,
   },
   {

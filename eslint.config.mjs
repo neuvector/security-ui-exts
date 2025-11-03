@@ -7,10 +7,6 @@ import jest from "eslint-plugin-jest";
 import globals from "globals";
 import vueParser from "vue-eslint-parser";
 
-// If you have local custom rules under ./eslint-local-rules or ./local-rules,
-// uncomment this and register below:
-// import localRules from "./eslint-local-rules/index.js";
-
 export default [
   // Base ESLint recommended rules
   js.configs.recommended,
@@ -40,7 +36,6 @@ export default [
       "@typescript-eslint": typescript,
       cypress,
       jest,
-      // "local-rules": localRules,
     },
 
     rules: {

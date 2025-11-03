@@ -7,15 +7,15 @@ export function imageDetailsToCSV(vuls: ImageVulnerability[]): Object[] {
 
   return vuls.map((vul) => {
     return {
-      CVE_ID: vul.cve,
-      SCORE: getScore(vul.cvss, vul.severity),
-      PACKAGE: vul.packageName,
-      "FIX AVAILABLE": vul.fixedVersions ? vul.fixedVersions.join(', ') : '',
-      SEVERITY: vul.severity,
-      EXPLOITABILITY: vul.suppressed ? 'Suppressed' : 'Affected',
-      "PACKAGE VERSION": vul.installedVersion,
-      "PACKAGE PATH": vul.purl,
-      DESCRIPTION: vul.description.replace(/\"/g, "'").replace(/[\r\n]+/g, ' '),
+      CVE_ID:            vul.cve,
+      SCORE:             getScore(vul.cvss, vul.severity),
+      PACKAGE:           vul.packageName,
+      'FIX AVAILABLE':   vul.fixedVersions ? vul.fixedVersions.join(', ') : '',
+      SEVERITY:          vul.severity,
+      EXPLOITABILITY:    vul.suppressed ? 'Suppressed' : 'Affected',
+      'PACKAGE VERSION': vul.installedVersion,
+      'PACKAGE PATH':    vul.purl,
+      DESCRIPTION:       vul.description.replace(/\"/g, "'").replace(/[\r\n]+/g, ' '),
     };
   });
 }
@@ -101,10 +101,10 @@ export function getScore(cvss: any, severity: string): string {
 export function getSeverityNum(severity: string): number {
   const severityOrder: Record<string, number> = {
     'critical': 5,
-    'high': 4,
-    'medium': 3,
-    'low': 2,
-    'none': 1,
+    'high':     4,
+    'medium':   3,
+    'low':      2,
+    'none':     1,
   };
 
   return severityOrder[severity?.toLowerCase()] || 0;

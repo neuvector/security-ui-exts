@@ -1,4 +1,6 @@
-import { imageDetailsToCSV, downloadCSV, downloadJSON, getScore, getSeverityNum } from '../report';
+import {
+  imageDetailsToCSV, downloadCSV, downloadJSON, getScore, getSeverityNum
+} from '../report';
 
 describe('imageDetailsToCSV', () => {
   test('handles empty or null input', () => {
@@ -27,39 +29,39 @@ describe('imageDetailsToCSV', () => {
     expect(rows.length).toBe(4);
 
     expect(rows[0]).toEqual({
-      CVE_ID: 'CVE-1',
-      SCORE: '9.8 (v3)',
-      PACKAGE: 'pkg',
-      "FIX AVAILABLE": '1.0, 1.1',
-      SEVERITY: 'critical',
-      EXPLOITABILITY: 'Affected',
-      "PACKAGE VERSION": '0.9',
-      "PACKAGE PATH": 'purl-1',
-      DESCRIPTION: "desc 'quote' new line",
+      CVE_ID:            'CVE-1',
+      SCORE:             '9.8 (v3)',
+      PACKAGE:           'pkg',
+      'FIX AVAILABLE':   '1.0, 1.1',
+      SEVERITY:          'critical',
+      EXPLOITABILITY:    'Affected',
+      'PACKAGE VERSION': '0.9',
+      'PACKAGE PATH':    'purl-1',
+      DESCRIPTION:       "desc 'quote' new line",
     });
 
     expect(rows[1]).toEqual({
-      CVE_ID: 'CVE-2',
-      SCORE: '7.0 (v3)',
-      PACKAGE: 'pkg2',
-      "FIX AVAILABLE": '',
-      SEVERITY: 'high',
-      EXPLOITABILITY: 'Suppressed',
-      "PACKAGE VERSION": '2.0',
-      "PACKAGE PATH": 'purl-2',
-      DESCRIPTION: 'another',
+      CVE_ID:            'CVE-2',
+      SCORE:             '7.0 (v3)',
+      PACKAGE:           'pkg2',
+      'FIX AVAILABLE':   '',
+      SEVERITY:          'high',
+      EXPLOITABILITY:    'Suppressed',
+      'PACKAGE VERSION': '2.0',
+      'PACKAGE PATH':    'purl-2',
+      DESCRIPTION:       'another',
     });
 
     expect(rows[2]).toEqual({
-      CVE_ID: 'CVE-3',
-      SCORE: '5.0 (v3)',
-      PACKAGE: 'pkg3',
-      "FIX AVAILABLE": '',
-      SEVERITY: 'low',
-      EXPLOITABILITY: 'Affected',
-      "PACKAGE VERSION": '3.0',
-      "PACKAGE PATH": 'purl-3',
-      DESCRIPTION: 'ok',
+      CVE_ID:            'CVE-3',
+      SCORE:             '5.0 (v3)',
+      PACKAGE:           'pkg3',
+      'FIX AVAILABLE':   '',
+      SEVERITY:          'low',
+      EXPLOITABILITY:    'Affected',
+      'PACKAGE VERSION': '3.0',
+      'PACKAGE PATH':    'purl-3',
+      DESCRIPTION:       'ok',
     });
 
     expect(rows[3]).toEqual({
@@ -204,11 +206,13 @@ describe('getScore', () => {
 
   it('returns empty string for unknown severity values', () => {
     const cvss = { nvd: { v3score: 5.0 } };
+
     expect(getScore(cvss, 'unknown')).toBe('');
   });
 
   it('returns correct score for "none" severity (0.0)', () => {
     const cvss = { source1: { v3score: 0.0 } };
+
     expect(getScore(cvss, 'none')).toBe('0 (v3)');
   });
 
@@ -217,6 +221,7 @@ describe('getScore', () => {
       srcA: { v3score: 3.5 },
       srcB: { v3score: 6.0 },
     };
+
     expect(getScore(cvss, 'low')).toBe('3.5 (v3)');
   });
 
@@ -225,6 +230,7 @@ describe('getScore', () => {
       srcA: { v3score: '4.2' },
       srcB: { v3score: 8.5 },
     };
+
     expect(getScore(cvss, 'medium')).toBe('4.2 (v3)');
   });
 
@@ -233,6 +239,7 @@ describe('getScore', () => {
       srcA: { v3score: 7.1 },
       srcB: { v3score: 9.5 },
     };
+
     expect(getScore(cvss, 'high')).toBe('7.1 (v3)');
   });
 
@@ -241,6 +248,7 @@ describe('getScore', () => {
       srcA: { v3score: 9.9 },
       srcB: { v3score: 5.0 },
     };
+
     expect(getScore(cvss, 'critical')).toBe('9.9 (v3)');
   });
 
@@ -250,6 +258,7 @@ describe('getScore', () => {
       srcB: { v3score: 'invalid' },
       srcC: { v3score: 6.5 },
     };
+
     expect(getScore(cvss, 'medium')).toBe('6.5 (v3)');
   });
 
@@ -258,6 +267,7 @@ describe('getScore', () => {
       srcA: { v3score: 1.0 },
       srcB: { v3score: 2.0 },
     };
+
     expect(getScore(cvss, 'high')).toBe('1 (v3)');
   });
 
@@ -266,6 +276,7 @@ describe('getScore', () => {
       srcA: { v2score: 4.0 },
       srcB: { irrelevant: true },
     };
+
     expect(getScore(cvss, 'low')).toBe('');
   });
 
@@ -274,6 +285,7 @@ describe('getScore', () => {
       srcA: { v3score: '8.5' },
       srcB: { v3score: 5.5 },
     };
+
     expect(getScore(cvss, 'high')).toBe('8.5 (v3)');
   });
 
@@ -282,6 +294,7 @@ describe('getScore', () => {
       srcA: { v3score: 8.5 },
       srcB: { v3score: 4.5 },
     };
+
     expect(getScore(cvss, 'HIGH')).toBe('8.5 (v3)');
     expect(getScore(cvss, 'Medium')).toBe('4.5 (v3)');
   });

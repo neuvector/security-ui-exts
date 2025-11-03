@@ -8596,10 +8596,6 @@ eslint-plugin-jest@^29.0.1:
   dependencies:
     "@typescript-eslint/utils" "^8.0.0"
 
-"eslint-plugin-local-rules@link:./eslint-plugin-local-rules":
-  version "0.0.0"
-  uid ""
-
 eslint-plugin-n@15.2.0:
   version "15.2.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-15.2.0.tgz#fd378274bdf1c3ca11af84e7a4b5cb524b63ae1c"
