@@ -71,37 +71,38 @@ describe('ImageDetails.vue', () => {
     await flushPromises();
   });
 
-  it('calls loadImageData when route param id exists', async () => {
+  it('calls loadImageData when route param id exists', async() => {
     const mockLoadImageData = jest.fn();
 
     // Override the component method so we can spy on it
     wrapper.vm.loadImageData = mockLoadImageData;
     // Run the fetch method
-    await wrapper.vm.$options.fetch.call(wrapper.vm)
+    await wrapper.vm.$options.fetch.call(wrapper.vm);
 
     // Assertions
     expect(wrapper.vm.imageName).toBe('test-image-route');
     expect(mockLoadImageData).toHaveBeenCalledTimes(1);
   });
 
-  it('does not call loadImageData when no route param id', async () => {
+  it('does not call loadImageData when no route param id', async() => {
     const mockLoadImageData = jest.fn();
     const wrapper = shallowMount(ImageDetails, {
-        global: {
-          mocks: {
-            $t:     mockT,
-            t:      mockT,
-            $store: mockStore,
-            $route: { params: { cluster: 'test-cluster' } },
-          },
+      global: {
+        mocks: {
+          $t:     mockT,
+          t:      mockT,
+          $store: mockStore,
+          $route: { params: { cluster: 'test-cluster' } },
         },
-        data() {
-          return { imageName: 'test-image' };
-        },
-      });
+      },
+      data() {
+        return { imageName: 'test-image' };
+      },
+    });
+
     wrapper.vm.loadImageData = mockLoadImageData;
     // Run the fetch method
-    await wrapper.vm.$options.fetch.call(wrapper.vm)
+    await wrapper.vm.$options.fetch.call(wrapper.vm);
 
     expect(wrapper.vm.imageName).toBeUndefined();
     expect(mockLoadImageData).not.toHaveBeenCalled();
@@ -183,9 +184,7 @@ describe('ImageDetails.vue', () => {
     wrapper.vm.loadedVulnerabilityReport = {
       report: {
         results: [
-          {
-            vulnerabilities: [],
-          },
+          { vulnerabilities: [] },
         ],
       },
     };

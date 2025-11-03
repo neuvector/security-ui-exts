@@ -18,55 +18,51 @@ const vexhub = props.value;
 const defaultMastheadProps = computed(() => {
   return {
     titleBarProps: {
-      resource: vexhub,
-      resourceName: vexhub.metadata.name,
+      resource:          vexhub,
+      resourceName:      vexhub.metadata.name,
       resourceTypeLabel: t('imageScanner.vexManagement.title'),
-      resourceTo: vexhub.listLocation,
-      description: t('imageScanner.vexManagement.detail.description'),
-      badge: {
+      resourceTo:        vexhub.listLocation,
+      description:       t('imageScanner.vexManagement.detail.description'),
+      badge:             {
         color: vexhub.spec.enabled ? ('bg-success' as 'bg-success') : ('bg-error' as 'bg-error'),
         label: t(`imageScanner.enum.status.${vexhub.spec.enabled ? 'enabled' : 'disabled'}`)
       },
       actionMenuResource: vexhub,
-      showViewOptions: false
+      showViewOptions:    false
     },
     metadataProps: {
-      resource: vexhub,
+      resource:               vexhub,
       identifyingInformation: [
         {
-          label: 'URI',
-          value: vexhub.spec.url,
+          label:         'URI',
+          value:         vexhub.spec.url,
           valueOverride: {
             component: UriExternalLink,
-            props: {
-              value: vexhub.spec.url,
-            }
+            props:     { value: vexhub.spec.url }
           }
         },
         {
           label: 'Created by',
-          value: Number(vexhub.metadata.generation) === 1 ? "Rancher" : "Manual entry"
+          value: Number(vexhub.metadata.generation) === 1 ? 'Rancher' : 'Manual entry'
         },
         {
           label: 'Last sync',
           value: undefined, // TODO: Add last sync time when backend supports it
         },
         {
-          label: 'Updated',
-          value: vexhub.metadata.creationTimestamp,
+          label:         'Updated',
+          value:         vexhub.metadata.creationTimestamp,
           valueOverride: {
             component: Date,
-            props: {
-              value: vexhub.metadata.creationTimestamp,
-            }
+            props:     { value: vexhub.metadata.creationTimestamp }
           }
         }
       ],
       annotations: [],
-      labels: []
+      labels:      []
     }
   };
-}) 
+});
 </script>
 
 <template>

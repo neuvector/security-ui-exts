@@ -7,11 +7,11 @@ export interface AmountBySeverity {
 }
 
 export const SEVERITY = {
-  CRITICAL: "critical",
-  HIGH: "high",
-  MEDIUM: "medium",
-  LOW: "low",
-  NONE: "none",
+  CRITICAL: 'critical',
+  HIGH:     'high',
+  MEDIUM:   'medium',
+  LOW:      'low',
+  NONE:     'none',
 };
 
 export interface CVSSScore {

@@ -69,7 +69,7 @@ export default {
       install:                false,
       initStepIndex:          0,
       isSkipped:              false,
-      maxStepNum:                1,
+      maxStepNum:             1,
     };
   },
 

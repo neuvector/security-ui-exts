@@ -26,8 +26,8 @@ export default {
     indicatorStyle() {
       return this.percentages.map((percentage) => {
         return {
-          width:           `${ percentage }%`,
-          height:          `${ this.height }px`,
+          width:  `${ percentage }%`,
+          height: `${ this.height }px`,
         };
       });
     },

@@ -1,5 +1,5 @@
-import { Chart } from "@pkg/types";
-import { handleGrowl } from "@pkg/utils/handle-growl";
+import { Chart } from '@pkg/types';
+import { handleGrowl } from '@pkg/utils/handle-growl';
 import isEmpty from 'lodash/isEmpty';
 import semver from 'semver';
 import { SHOW_PRE_RELEASE } from '@shell/store/prefs';
@@ -49,7 +49,7 @@ export async function refreshCharts(
   let retry = config.retry ?? 0;
 
   while (retry < 3) {
-    const rawCharts = store.getters["catalog/rawCharts"];
+    const rawCharts = store.getters['catalog/rawCharts'];
     const chart = (Object.values(rawCharts) as Chart[])?.find(
       (c) => c?.chartName === chartName
     );
@@ -58,7 +58,7 @@ export async function refreshCharts(
       try {
         // TODO: Add Custom VueX store for neuvector: { refreshingCharts: false }
         // store.dispatch("neuvector/updateRefreshingCharts", true);
-        await store.dispatch("catalog/refresh");
+        await store.dispatch('catalog/refresh');
       } catch (e) {
         handleGrowl({ error: e as any, store });
       } finally {
@@ -96,8 +96,8 @@ export function getLatestVersion(store: any, versions: any[]) {
 }
 
 export function getLatestStableVersion(versions: any[]): string | undefined {
-  const allVersions = versions.map(v => v.version);
-  const stableVersions = versions.filter(v => !v.version.includes('b'));
+  const allVersions = versions.map((v) => v.version);
+  const stableVersions = versions.filter((v) => !v.version.includes('b'));
 
   if ( isEmpty(stableVersions) && !isEmpty(allVersions) ) {
     return semver.rsort(allVersions)[0];
@@ -109,10 +109,10 @@ export function getLatestStableVersion(versions: any[]): string | undefined {
 
     for ( let i = 0; i < Math.max(versionA.length, versionB.length); i++ ) {
       if ( versionA[i] === undefined || versionA[i] < versionB[i] ) {
-          return 1;
+        return 1;
       }
       if ( versionB[i] === undefined || versionA[i] > versionB[i] ) {
-          return -1;
+        return -1;
       }
     }
 

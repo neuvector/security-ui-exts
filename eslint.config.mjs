@@ -130,13 +130,24 @@ export default [
 
   // --- Jest test overrides ---
   {
-    files: ["**/*.test.{js,ts}", "**/__tests__/**/*.{js,ts}", "**/__mocks__/**/*.{js,ts}"],
+    files: [
+      "**/__tests__/**/*.{js,ts,vue}",
+      "**/*.spec.{js,ts}",
+      "**/*.test.{js,ts}",
+      "jest.setup.{js,ts}",
+    ],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
     plugins: { jest },
     rules: {
       "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "jest/prefer-expect-assertions": "off",
+      "no-undef": "off",
     },
   },
 

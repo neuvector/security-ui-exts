@@ -78,7 +78,7 @@ export default {
       vexHub:         null,
       vexHubStatus:   null,
       vexHubMetadata: [],
-      canEdit:          getPermissions(this.$store.getters).canEdit,
+      canEdit:        getPermissions(this.$store.getters).canEdit,
       VEX_STATUS,
     };
   },

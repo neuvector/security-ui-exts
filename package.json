@@ -66,8 +66,8 @@
     "parse-tag-name": "./node_modules/@rancher/shell/scripts/extension/parse-tag-name",
     "test:ci": "jest --collectCoverage",
     "test:unit": "jest --watch --collectCoverage",
-    "lint": "./node_modules/.bin/eslint --max-warnings 0 --ext .js,.ts,.vue .",
-    "lint:fix": "./node_modules/.bin/eslint --fix --ext .js,.ts,.vue .",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "format": "eslint . --fix"
   }
 }

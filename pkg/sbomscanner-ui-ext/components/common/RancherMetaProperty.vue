@@ -31,14 +31,14 @@ import { MetadataProperty } from '@pkg/types';
 import { PropType } from 'vue';
 
 export default {
-  name: 'RancherMetaProperty',
+  name:  'RancherMetaProperty',
   props: {
     property: {
-      type: Object as PropType<MetadataProperty>,
+      type:     Object as PropType<MetadataProperty>,
       required: true
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -52,7 +52,7 @@ export default {
     display: flex;
     align-items: flex-start;
     align-self: stretch;
-    
+
     /* typography */
     font-family: Lato;
     font-size: 14px;
@@ -86,7 +86,7 @@ export default {
     }
   }
 
-  
+
 
   .tags {
     display: flex;

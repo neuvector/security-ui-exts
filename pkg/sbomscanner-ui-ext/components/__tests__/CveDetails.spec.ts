@@ -7,8 +7,8 @@ import { NVD_BASE_URL, CVSS_VECTOR_BASE_URL } from '@pkg/constants';
 
 jest.mock('@pkg/types', () => ({
   PRODUCT_NAME: 'test-product',
-  RESOURCE:       { VULNERABILITY_REPORT: 'storage.sbomscanner.kubewarden.io.vulnerabilityreport' },
-  PAGE:           { VULNERABILITIES: 'test-page-vulns' }
+  RESOURCE:     { VULNERABILITY_REPORT: 'storage.sbomscanner.kubewarden.io.vulnerabilityreport' },
+  PAGE:         { VULNERABILITIES: 'test-page-vulns' }
 }));
 
 jest.mock('@pkg/constants', () => ({

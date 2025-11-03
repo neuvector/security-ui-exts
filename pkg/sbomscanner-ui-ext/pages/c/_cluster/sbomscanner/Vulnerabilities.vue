@@ -82,7 +82,7 @@ export default {
 
     return {
       VULNERABILITIES_TABLE,
-      severityDistribution:     {
+      severityDistribution: {
         critical: 0,
         high:     0,
         medium:   0,

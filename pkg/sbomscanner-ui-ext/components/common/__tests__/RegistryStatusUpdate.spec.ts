@@ -1,13 +1,11 @@
-import { jest } from "@jest/globals";
+import { jest } from '@jest/globals';
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 import RegistryStatusUpdate from '../RegistryStatusUpdate.vue';
 import StatusBadge from '../StatusBadge.vue';
 import { elapsedTime } from '@shell/utils/time';
-import {from} from "@kubernetes/client-node/dist/gen/rxjsStub";
+import { from } from '@kubernetes/client-node/dist/gen/rxjsStub';
 
-jest.mock('@shell/utils/time', () => ({
-  elapsedTime: jest.fn(),
-}));
+jest.mock('@shell/utils/time', () => ({ elapsedTime: jest.fn() }));
 
 jest.mock('@pkg/types', () => ({
   PRODUCT_NAME: 'test-product',
@@ -26,9 +24,7 @@ describe('RegistryStatusUpdate.vue', () => {
     lastTransitionTime: '2023-01-01T00:00:00Z',
   };
 
-  const mockRoute = {
-    params: { cluster: 'c-12345' }
-  };
+  const mockRoute = { params: { cluster: 'c-12345' } };
 
   const mockT = (key: string) => (key === 'imageScanner.general.ago' ? 'ago' : key);
   let dateNowSpy;
@@ -50,7 +46,7 @@ describe('RegistryStatusUpdate.vue', () => {
     beforeEach(() => {
       wrapper = shallowMount(RegistryStatusUpdate, {
         propsData: { registryStatus: mockStatus },
-        global: {
+        global:    {
           stubs: {
             // --- FIX: Stub StatusBadge with `true`, not the component import ---
             StatusBadge: true,
@@ -63,6 +59,7 @@ describe('RegistryStatusUpdate.vue', () => {
 
     it('renders the registry name as a RouterLink', () => {
       const link = wrapper.findComponent(RouterLinkStub);
+
       expect(link.exists()).toBe(true);
       expect(link.text()).toBe('my-registry');
       expect(link.props('to')).toBe('/c/c-12345/test-product/test-registries/default/my-registry');
@@ -75,11 +72,13 @@ describe('RegistryStatusUpdate.vue', () => {
     it('renders two StatusBadge components', () => {
       // This will find <status-badge-stub> components
       const badges = wrapper.findAllComponents(StatusBadge);
+
       expect(badges.length).toBe(2);
     });
 
     it('passes the correct statuses to the StatusBadges', () => {
       const badges = wrapper.findAllComponents(StatusBadge);
+
       // We can still check props on the stubs
       expect(badges.at(0).props('status')).toBe(mockStatus.prevScanStatus);
       expect(badges.at(1).props('status')).toBe(mockStatus.currStatus);
@@ -108,9 +107,10 @@ describe('RegistryStatusUpdate.vue', () => {
 
     beforeEach(() => {
       const emptyStatus = { registryName: null };
+
       wrapper = shallowMount(RegistryStatusUpdate, {
         propsData: { registryStatus: emptyStatus },
-        global: {
+        global:    {
           stubs: {
             StatusBadge: true,
             RouterLink:  RouterLinkStub

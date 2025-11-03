@@ -33,7 +33,7 @@ export default {
   props:      {
     topRiskyImages: {
       type:    Array,
-      default:  () => []
+      default: () => []
     }
   },
   data() {

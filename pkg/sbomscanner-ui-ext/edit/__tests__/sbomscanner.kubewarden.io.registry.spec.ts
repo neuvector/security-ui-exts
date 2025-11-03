@@ -68,7 +68,7 @@ const defaultProps = {
 const createWrapper = (props: any, storeMock = mockStore) => {
   return shallowMount(CruRegistry, {
     props:  { ...defaultProps, ...props },
-    global:    {
+    global: {
       mocks: {
         $store:  storeMock,
         $route:  mockRoute,

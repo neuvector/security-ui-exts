@@ -19,7 +19,7 @@ export const SCAN_INTERVAL_OPTIONS = [
 ];
 
 export const REGISTRY_TYPE = {
-  OCI_DISTRIBUTION:  'OCIDistribution',
+  OCI_DISTRIBUTION: 'OCIDistribution',
   NO_CATALOG:       'NoCatalog'
 };
 

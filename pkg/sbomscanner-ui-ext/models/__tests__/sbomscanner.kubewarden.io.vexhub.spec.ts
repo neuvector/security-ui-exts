@@ -42,7 +42,7 @@ jest.mock('@shell/plugins/steve/steve-class', () => {
 
 jest.mock('@pkg/types', () => ({
   PRODUCT_NAME: 'test-product',
-  PAGE:           { VEX_MANAGEMENT: 'test-page-vex' }
+  PAGE:         { VEX_MANAGEMENT: 'test-page-vex' }
 }));
 
 describe('SbomscannerRancherIoVexhub', () => {

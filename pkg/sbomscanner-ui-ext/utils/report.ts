@@ -1,4 +1,4 @@
-import { ImageVulnerability } from "@pkg/types";
+import { ImageVulnerability } from '@pkg/types';
 
 export function imageDetailsToCSV(vuls: ImageVulnerability[]): Object[] {
   if (!vuls) {

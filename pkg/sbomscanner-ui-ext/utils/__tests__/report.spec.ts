@@ -8,10 +8,18 @@ describe('imageDetailsToCSV', () => {
 
   test('converts vulnerabilities to CSV rows with correct field mapping and sanitization', () => {
     const vuls = [
-      { cve: 'CVE-1', cvss: { nvd: { v3score: '9.8' } }, packageName: 'pkg', fixedVersions: ['1.0', '1.1'], severity: 'critical', suppressed: false, installedVersion: '0.9', purl: 'purl-1', description: 'desc "quote"\nnew line' },
-      { cve: 'CVE-2', cvss: { redhat: { v3score: '7.0' } }, packageName: 'pkg2', fixedVersions: [], severity: 'high', suppressed: true, installedVersion: '2.0', purl: 'purl-2', description: 'another' },
-      { cve: 'CVE-3', cvss: { ghsa: { v3score: '5.0' } }, packageName: 'pkg3', fixedVersions: null, severity: 'low', suppressed: false, installedVersion: '3.0', purl: 'purl-3', description: 'ok' },
-      { cve: 'CVE-4', cvss: {}, packageName: 'pkg4', fixedVersions: ['a'], severity: 'none', suppressed: false, installedVersion: '4.0', purl: 'purl-4', description: 'no score' },
+      {
+        cve: 'CVE-1', cvss: { nvd: { v3score: '9.8' } }, packageName: 'pkg', fixedVersions: ['1.0', '1.1'], severity: 'critical', suppressed: false, installedVersion: '0.9', purl: 'purl-1', description: 'desc "quote"\nnew line'
+      },
+      {
+        cve: 'CVE-2', cvss: { redhat: { v3score: '7.0' } }, packageName: 'pkg2', fixedVersions: [], severity: 'high', suppressed: true, installedVersion: '2.0', purl: 'purl-2', description: 'another'
+      },
+      {
+        cve: 'CVE-3', cvss: { ghsa: { v3score: '5.0' } }, packageName: 'pkg3', fixedVersions: null, severity: 'low', suppressed: false, installedVersion: '3.0', purl: 'purl-3', description: 'ok'
+      },
+      {
+        cve: 'CVE-4', cvss: {}, packageName: 'pkg4', fixedVersions: ['a'], severity: 'none', suppressed: false, installedVersion: '4.0', purl: 'purl-4', description: 'no score'
+      },
     ];
 
     const rows = imageDetailsToCSV(vuls as any) as any[];
@@ -55,15 +63,15 @@ describe('imageDetailsToCSV', () => {
     });
 
     expect(rows[3]).toEqual({
-      CVE_ID: 'CVE-4',
-      SCORE: '',
-      PACKAGE: 'pkg4',
-      "FIX AVAILABLE": 'a',
-      SEVERITY: 'none',
-      EXPLOITABILITY: 'Affected',
-      "PACKAGE VERSION": '4.0',
-      "PACKAGE PATH": 'purl-4',
-      DESCRIPTION: 'no score',
+      CVE_ID:            'CVE-4',
+      SCORE:             '',
+      PACKAGE:           'pkg4',
+      'FIX AVAILABLE':   'a',
+      SEVERITY:          'none',
+      EXPLOITABILITY:    'Affected',
+      'PACKAGE VERSION': '4.0',
+      'PACKAGE PATH':    'purl-4',
+      DESCRIPTION:       'no score',
     });
   });
 });
@@ -78,9 +86,9 @@ describe('download utils', () => {
   beforeEach(() => {
     mockLink = {
       setAttribute: jest.fn(),
-      click: jest.fn(),
-      style: { visibility: '' },
-      download: '',
+      click:        jest.fn(),
+      style:        { visibility: '' },
+      download:     '',
     };
 
     appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation(() => {});
@@ -106,6 +114,7 @@ describe('download utils', () => {
 
     expect(mockCreateObjectURL).toHaveBeenCalledTimes(1);
     const blob = mockCreateObjectURL.mock.calls[0][0] as Blob;
+
     expect(blob.type).toBe('text/csv;charset=utf-8;');
 
     expect(createElementSpy).toHaveBeenCalledWith('a');
@@ -125,6 +134,7 @@ describe('download utils', () => {
 
     expect(mockCreateObjectURL).toHaveBeenCalledTimes(1);
     const blob = mockCreateObjectURL.mock.calls[0][0] as Blob;
+
     expect(blob.type).toBe('application/json;charset=utf-8;');
 
     expect(createElementSpy).toHaveBeenCalledWith('a');
@@ -139,10 +149,11 @@ describe('download utils', () => {
   test('downloadCSV does nothing if link.download is not supported', () => {
     const unsupportedLink = {
       setAttribute: jest.fn(),
-      click: jest.fn(),
-      style: { visibility: '' },
+      click:        jest.fn(),
+      style:        { visibility: '' },
       // no 'download' property, so it will be undefined
     };
+
     createElementSpy.mockReturnValue(unsupportedLink as any);
 
     downloadCSV('content', 'file.csv');
@@ -158,9 +169,10 @@ describe('download utils', () => {
   test('downloadJSON does nothing if link.download is not supported', () => {
     const unsupportedLink = {
       setAttribute: jest.fn(),
-      click: jest.fn(),
-      style: { visibility: '' },
+      click:        jest.fn(),
+      style:        { visibility: '' },
     };
+
     createElementSpy.mockReturnValue(unsupportedLink as any);
 
     downloadJSON('content', 'file.json');

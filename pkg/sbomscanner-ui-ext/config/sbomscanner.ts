@@ -2,54 +2,52 @@ import {
   PRODUCT_NAME,
   PAGE,
   RESOURCE
-} from "@pkg/types";
+} from '@pkg/types';
 
 export function init($plugin: any, store: any) {
-  const { product, virtualType, basicType, weightType } = $plugin.DSL(store, PRODUCT_NAME);
+  const {
+    product, virtualType, basicType, weightType
+  } = $plugin.DSL(store, PRODUCT_NAME);
 
   product({
-    icon: "pod_security",
-    inStore: "cluster",
+    icon:    'pod_security',
+    inStore: 'cluster',
   });
 
   virtualType({
-    labelKey: 'imageScanner.dashboard.title',
-    name: PAGE.DASHBOARD,
+    labelKey:   'imageScanner.dashboard.title',
+    name:       PAGE.DASHBOARD,
     namespaced: false,
-    route: {
-      name: `c-cluster-${PRODUCT_NAME}-${PAGE.DASHBOARD}`,
-      params: {
-        product: PRODUCT_NAME
-      },
-      meta: { pkg: PRODUCT_NAME, product: PRODUCT_NAME }
+    route:      {
+      name:   `c-cluster-${PRODUCT_NAME}-${PAGE.DASHBOARD}`,
+      params: { product: PRODUCT_NAME },
+      meta:   { pkg: PRODUCT_NAME, product: PRODUCT_NAME }
     },
     overview: true
   });
-  
+
   virtualType({
-    labelKey: 'imageScanner.registries.title',
-    name: PAGE.REGISTRIES,
+    labelKey:   'imageScanner.registries.title',
+    name:       PAGE.REGISTRIES,
     namespaced: false,
-    route:    {
-        name:   `c-cluster-${PRODUCT_NAME}-${PAGE.REGISTRIES}`,
-        params: {
-            product: PRODUCT_NAME,
-            resource: RESOURCE.REGISTRY,
-        },
-        meta: { pkg: PRODUCT_NAME, product: PRODUCT_NAME }
+    route:      {
+      name:   `c-cluster-${PRODUCT_NAME}-${PAGE.REGISTRIES}`,
+      params: {
+        product:  PRODUCT_NAME,
+        resource: RESOURCE.REGISTRY,
+      },
+      meta: { pkg: PRODUCT_NAME, product: PRODUCT_NAME }
     },
   });
 
   virtualType({
-    labelKey: 'imageScanner.images.title',
-    name: PAGE.IMAGES,
+    labelKey:   'imageScanner.images.title',
+    name:       PAGE.IMAGES,
     namespaced: false,
-    route:    {
-        name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}`,
-        params: {
-            product: PRODUCT_NAME
-        },
-        meta: { pkg: PRODUCT_NAME, product: PRODUCT_NAME }
+    route:      {
+      name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}`,
+      params: { product: PRODUCT_NAME },
+      meta:   { pkg: PRODUCT_NAME, product: PRODUCT_NAME }
     }
   });
 
@@ -67,15 +65,13 @@ export function init($plugin: any, store: any) {
   // });
 
   virtualType({
-    labelKey: "imageScanner.vexManagement.title",
-    name: PAGE.VEX_MANAGEMENT,
+    labelKey:   'imageScanner.vexManagement.title',
+    name:       PAGE.VEX_MANAGEMENT,
     namespaced: false,
-    route: {
-      name: `c-cluster-${PRODUCT_NAME}-${PAGE.VEX_MANAGEMENT}`,
-      params: {
-        product: PRODUCT_NAME,
-      },
-      meta: { pkg: PRODUCT_NAME, product: PRODUCT_NAME },
+    route:      {
+      name:   `c-cluster-${PRODUCT_NAME}-${PAGE.VEX_MANAGEMENT}`,
+      params: { product: PRODUCT_NAME },
+      meta:   { pkg: PRODUCT_NAME, product: PRODUCT_NAME },
     },
   });
 

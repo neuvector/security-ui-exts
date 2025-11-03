@@ -13,9 +13,9 @@ export default {
       PRODUCT_NAME,
       RESOURCE,
       PAGE,
-      cveDetail:       null,
-      hoverVendor:     null,
-      inside:          false,
+      cveDetail:   null,
+      hoverVendor: null,
+      inside:      false,
     };
   },
 
@@ -31,8 +31,8 @@ export default {
 
       this.cveDetail = {
         ...cveMetaData,
-        id:             cveId,
-        totalImages:    totalScanned,
+        id:          cveId,
+        totalImages: totalScanned,
       };
     },
 

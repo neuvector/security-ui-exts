@@ -253,19 +253,19 @@ export default {
     ];
 
     return {
-      rows:                        [],
-      rowsByRepo:                  [],
+      rows:                [],
+      rowsByRepo:          [],
       REPO_BASED_TABLE,
       IMAGE_LIST_TABLE,
       REPO_BASED_IMAGE_LIST_TABLE,
-      isGrouped:                   false,
-      selectedRows:                [],
+      isGrouped:           false,
+      selectedRows:        [],
       filterCveOptions,
       filterImageOptions,
       severityOptions,
-      selectedCveFilter:           filterCveOptions[0],
-      selectedImageFilter:         filterImageOptions[0],
-      filters:                     {
+      selectedCveFilter:   filterCveOptions[0],
+      selectedImageFilter: filterImageOptions[0],
+      filters:             {
         imageSearch:      '',
         severitySearch:   severityOptions[0].value,
         repositorySearch: 'Any',

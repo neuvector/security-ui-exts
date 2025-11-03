@@ -91,12 +91,12 @@ describe('StackedPercentageBar.vue', () => {
 
     expect(wrapper.vm.indicatorStyle).toEqual([
       {
-        width:           '10%',
-        height:          '10px'
+        width:  '10%',
+        height: '10px'
       },
       {
-        width:           '20%',
-        height:          '10px'
+        width:  '20%',
+        height: '10px'
       }
     ]);
   });

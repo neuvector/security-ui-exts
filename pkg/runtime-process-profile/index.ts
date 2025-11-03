@@ -1,6 +1,6 @@
 import { importTypes } from '@rancher/auto-import';
 import { IPlugin } from '@shell/core/types';
-import runtimeProcessProfile from "./routes/runtime-process-profile";
+import runtimeProcessProfile from './routes/runtime-process-profile';
 
 // Init the package
 export default function(plugin: IPlugin): void {

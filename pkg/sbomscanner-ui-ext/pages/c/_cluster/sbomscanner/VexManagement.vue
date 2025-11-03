@@ -44,7 +44,7 @@ export default {
   data() {
     return { canEdit: getPermissions(this.$store.getters).canEdit };
   },
-  methods:    {
+  methods: {
     createVexHub() {
       this.$router.push({
         name:   `${ PRODUCT_NAME }-c-cluster-resource-create`,

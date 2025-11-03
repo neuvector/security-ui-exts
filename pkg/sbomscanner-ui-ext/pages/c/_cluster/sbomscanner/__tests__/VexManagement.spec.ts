@@ -4,17 +4,11 @@ import VexManagement from '../VexManagement.vue';
 import { getPermissions } from '../../../../../utils/permissions';
 
 
-jest.mock('@pkg/utils/permissions', () => ({
-  getPermissions: jest.fn(() => ({ canEdit: true, canDelete: true })),
-}));
+jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true, canDelete: true })) }));
 // Define RESOURCE constants locally to avoid import issues
-const RESOURCE = {
-  VEX_HUB: "sbomscanner.kubewarden.io.vexhub"
-};
+const RESOURCE = { VEX_HUB: 'sbomscanner.kubewarden.io.vexhub' };
 
-const mockRouter = {
-  push: jest.fn(),
-};
+const mockRouter = { push: jest.fn() };
 
 describe('VexManagement', () => {
   let store: any;
@@ -22,45 +16,45 @@ describe('VexManagement', () => {
 
   const mockVexHubs = [
     {
-      id: 'vexhub-1',
+      id:       'vexhub-1',
       metadata: {
-        name: 'vexhub-1',
+        name:              'vexhub-1',
         creationTimestamp: '2024-01-15T10:30:00Z'
       },
       spec: {
-        url: 'https://vex.example.com',
+        url:     'https://vex.example.com',
         enabled: true
       }
     },
     {
-      id: 'vexhub-2',
+      id:       'vexhub-2',
       metadata: {
-        name: 'vexhub-2',
+        name:              'vexhub-2',
         creationTimestamp: '2024-01-16T14:20:00Z'
       },
       spec: {
-        url: 'https://vex2.example.com',
+        url:     'https://vex2.example.com',
         enabled: false
       }
     }
   ];
 
   const mockSchema = {
-    id: 'sbomscanner.kubewarden.io.vexhub',
-    type: 'schema',
+    id:    'sbomscanner.kubewarden.io.vexhub',
+    type:  'schema',
     links: {
       collection: '/v1/sbomscanner.kubewarden.io.vexhubs',
-      self: '/v1/schemas/sbomscanner.kubewarden.io.vexhub'
+      self:       '/v1/schemas/sbomscanner.kubewarden.io.vexhub'
     },
-    resourceMethods: ['GET', 'DELETE', 'PUT', 'PATCH'],
+    resourceMethods:   ['GET', 'DELETE', 'PUT', 'PATCH'],
     collectionMethods: ['GET', 'POST'],
-    attributes: {
-      group: 'sbomscanner.kubewarden.io',
-      kind: 'VEXHub',
+    attributes:        {
+      group:      'sbomscanner.kubewarden.io',
+      kind:       'VEXHub',
       namespaced: false,
-      resource: 'vexhubs',
-      verbs: ['delete', 'deletecollection', 'get', 'list', 'patch', 'create', 'update', 'watch'],
-      version: 'v1alpha1'
+      resource:   'vexhubs',
+      verbs:      ['delete', 'deletecollection', 'get', 'list', 'patch', 'create', 'update', 'watch'],
+      version:    'v1alpha1'
     }
   };
 
@@ -69,19 +63,19 @@ describe('VexManagement', () => {
       modules: {
         cluster: {
           namespaced: true,
-          getters: {
+          getters:    {
             'all': () => (type: string) => {
               if (type === RESOURCE.VEX_HUB) return mockVexHubs;
+
               return [];
             },
             'schemaFor': () => (type: string) => {
               if (type === RESOURCE.VEX_HUB) return mockSchema;
+
               return null;
             }
           },
-          actions: {
-            'findAll': jest.fn()
-          }
+          actions: { 'findAll': jest.fn() }
         }
       }
     });
@@ -89,24 +83,20 @@ describe('VexManagement', () => {
     wrapper = mount(VexManagement, {
       global: {
         plugins: [store],
-        mocks: {
-          $route: {
-            params: { cluster: 'test-cluster' }
-          },
-          $router: {
-            push: jest.fn()
-          },
-          $t: (key: string) => key,
-          $store: store
+        mocks:   {
+          $route:  { params: { cluster: 'test-cluster' } },
+          $router: { push: jest.fn() },
+          $t:      (key: string) => key,
+          $store:  store
         },
         stubs: {
           RouterLink: {
             template: '<a><slot /></a>',
-            props: ['to']
+            props:    ['to']
           },
           VexHubList: {
             template: '<div class="vex-hub-list">VexHubList Component</div>',
-            name: 'VexHubList'
+            name:     'VexHubList'
           }
         }
       }
@@ -132,6 +122,7 @@ describe('VexManagement', () => {
 
     it('should display the create button', () => {
       const createButton = wrapper.find('.btn.role-primary');
+
       expect(createButton.exists()).toBe(true);
       expect(createButton.text()).toContain('imageScanner.vexManagement.button.create');
     });
@@ -140,14 +131,15 @@ describe('VexManagement', () => {
   describe('Navigation', () => {
     it('should navigate to create VEX hub page when create button is clicked', () => {
       const createButton = wrapper.find('.btn.role-primary');
+
       createButton.trigger('click');
-      
+
       expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
-        name: 'imageScanner-c-cluster-resource-create',
+        name:   'imageScanner-c-cluster-resource-create',
         params: {
           resource: RESOURCE.VEX_HUB,
-          cluster: 'test-cluster',
-          product: 'imageScanner'
+          cluster:  'test-cluster',
+          product:  'imageScanner'
         }
       });
     });
@@ -156,6 +148,7 @@ describe('VexManagement', () => {
   describe('Component Structure', () => {
     it('should render VexHubList component', () => {
       const vexHubList = wrapper.findComponent({ name: 'VexHubList' });
+
       expect(vexHubList.exists()).toBe(true);
     });
   });

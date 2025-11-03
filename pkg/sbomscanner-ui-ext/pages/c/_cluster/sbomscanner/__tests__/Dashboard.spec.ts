@@ -16,8 +16,8 @@ function makeScanJob({
 } = {}) {
   return {
     metadata: { namespace },
-    spec: { registry },
-    status: {
+    spec:     { registry },
+    status:   {
       imagesCount,
       scannedImagesCount,
       completionTime,
@@ -32,9 +32,7 @@ describe('Dashboard.vue full coverage', () => {
   beforeEach(() => {
     storeMock = {
       dispatch: jest.fn().mockResolvedValue([]),
-      getters: {
-        'cluster/all': jest.fn(() => [makeScanJob()]),
-      },
+      getters:  { 'cluster/all': jest.fn(() => [makeScanJob()]) },
     };
     jest.useFakeTimers();
   });
@@ -48,7 +46,7 @@ describe('Dashboard.vue full coverage', () => {
       global: {
         mocks: {
           $store: storeMock,
-          t: (key: any) => key,
+          t:      (key: any) => key,
         },
       },
       ...options,
@@ -57,6 +55,7 @@ describe('Dashboard.vue full coverage', () => {
 
   it('renders component correctly', () => {
     const wrapper = factory();
+
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.vm.selectedRegistry).toBe('All registries');
     expect(wrapper.vm.scanningStats.lastCompletionTimestamp).toBe(0);
@@ -64,12 +63,14 @@ describe('Dashboard.vue full coverage', () => {
 
   it('computed: displayedCurrDate and displayedCurrTime return strings', () => {
     const wrapper = factory();
+
     expect(typeof wrapper.vm.displayedCurrDate).toBe('string');
     expect(typeof wrapper.vm.displayedCurrTime).toBe('string');
   });
 
   it('computed: displayedDetectedErrorCnt pluralization', () => {
     const wrapper = factory();
+
     wrapper.vm.scanningStats.detectedErrorCnt = 1;
     expect(wrapper.vm.displayedDetectedErrorCnt).toBe('1 error');
     wrapper.vm.scanningStats.detectedErrorCnt = 2;
@@ -78,6 +79,7 @@ describe('Dashboard.vue full coverage', () => {
 
   it('computed: displayedFailedImagesCnt pluralization', () => {
     const wrapper = factory();
+
     wrapper.vm.scanningStats.failedImagesCnt = 1;
     expect(wrapper.vm.displayedFailedImagesCnt).toBe('1 image');
     wrapper.vm.scanningStats.failedImagesCnt = 2;
@@ -86,6 +88,7 @@ describe('Dashboard.vue full coverage', () => {
 
   it('computed: displayedTotalScannedImageCnt pluralization', () => {
     const wrapper = factory();
+
     wrapper.vm.scanningStats.totalScannedImageCnt = 1;
     expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('1 image');
     wrapper.vm.scanningStats.totalScannedImageCnt = 3;
@@ -116,8 +119,9 @@ describe('Dashboard.vue full coverage', () => {
     expect(wrapper.vm.durationFromLastScan).toContain('days');
   });
 
-  it('computed: registryOptions returns unique list', async () => {
+  it('computed: registryOptions returns unique list', async() => {
     const wrapper = factory();
+
     await wrapper.setData({
       scanJobsCRD: [
         makeScanJob({ namespace: 'ns1', registry: 'reg1' }),
@@ -125,15 +129,24 @@ describe('Dashboard.vue full coverage', () => {
       ],
     });
     const options = wrapper.vm.registryOptions;
+
     expect(options).toContain('All registries');
     expect(options).toContain('ns1/reg1');
   });
 
   it('method: getFailedImageCnt calculates correctly', () => {
     const wrapper = factory();
-    
-    const jobWithError = { status: { conditions: [{error: true}], scannedImagesCount: 6, imagesCount: 10 } };
-    const jobWithoutError = { status: { conditions: [{error: false}], scannedImagesCount: 8, imagesCount: 8 } };
+
+    const jobWithError = {
+      status: {
+        conditions: [{ error: true }], scannedImagesCount: 6, imagesCount: 10
+      }
+    };
+    const jobWithoutError = {
+      status: {
+        conditions: [{ error: false }], scannedImagesCount: 8, imagesCount: 8
+      }
+    };
 
     expect(wrapper.vm.getFailedImageCnt(jobWithError)).toBe(4);
     expect(wrapper.vm.getFailedImageCnt(jobWithoutError)).toBe(0);
@@ -142,11 +155,17 @@ describe('Dashboard.vue full coverage', () => {
   it('method: getScanningStats aggregates correctly', () => {
     const wrapper = factory();
     const jobs = [
-      makeScanJob({ conditions: [{error: false}], scannedImagesCount: 5, imagesCount: 5, completionTime: 1761480970 }),
-      makeScanJob({ conditions: [{error: true}], scannedImagesCount: 3, imagesCount: 10, completionTime: 1761480098 }),
+      makeScanJob({
+        conditions: [{ error: false }], scannedImagesCount: 5, imagesCount: 5, completionTime: 1761480970
+      }),
+      makeScanJob({
+        conditions: [{ error: true }], scannedImagesCount: 3, imagesCount: 10, completionTime: 1761480098
+      }),
     ];
+
     wrapper.vm.scanJobsCRD = jobs;
     const stats = wrapper.vm.getScanningStats();
+
     expect(stats.totalScannedImageCnt).toBe(8);
     expect(stats.detectedErrorCnt).toBe(1);
     expect(stats.failedImagesCnt).toBe(7);
@@ -156,31 +175,39 @@ describe('Dashboard.vue full coverage', () => {
   it('method: getScanningStats aggregates correctly', () => {
     const wrapper = factory();
     const jobs = [
-      { metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{error: false}] }},
-      { metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{error: true}] } },
+      {
+        metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{ error: false }] }
+      },
+      {
+        metadata: { namespace: 'default' }, spec: { registry: 'my-registry' }, status: { conditions: [{ error: true }] }
+      },
     ];
+
     wrapper.vm.scanJobsCRD = jobs;
     const stats = wrapper.vm.getScanningStats();
+
     expect(stats.totalScannedImageCnt).toBe(0);
     expect(stats.detectedErrorCnt).toBe(1);
     expect(stats.failedImagesCnt).toBe(0);
     expect(stats.lastCompletionTimestamp).toBe(0);
   });
 
-  it('method: loadData replaces data when reloading', async () => {
+  it('method: loadData replaces data when reloading', async() => {
     const wrapper = factory();
     const mockData = [makeScanJob()];
+
     storeMock.getters['cluster/all'].mockReturnValueOnce(mockData);
 
     wrapper.vm.loadData(true);
     expect(storeMock.getters['cluster/all']).toHaveBeenCalledWith(RESOURCE.SCAN_JOB);
   });
 
-  it('method: fetch loads data and sets interval', async () => {
+  it('method: fetch loads data and sets interval', async() => {
     const mockDispatch = jest.fn().mockResolvedValue([]);
     const mockClearInterval = jest.spyOn(global, 'clearInterval').mockImplementation(() => {});
     const mockSetInterval = jest.spyOn(global, 'setInterval').mockImplementation((fn, t) => {
       fn(); // call it immediately
+
       return 123;
     });
 
@@ -189,7 +216,7 @@ describe('Dashboard.vue full coverage', () => {
         mocks: {
           $store: {
             dispatch: mockDispatch,
-            getters: { 'cluster/all': jest.fn(() => []) },
+            getters:  { 'cluster/all': jest.fn(() => []) },
           },
           t: (key) => key,
         },
@@ -211,9 +238,10 @@ describe('Dashboard.vue full coverage', () => {
     mockClearInterval.mockRestore();
   });
 
-  it('watch: selectedRegistry triggers getScanningStats', async () => {
+  it('watch: selectedRegistry triggers getScanningStats', async() => {
     const wrapper = factory();
     const spy = jest.spyOn(wrapper.vm, 'getScanningStats');
+
     await wrapper.setData({ selectedRegistry: 'custom' });
     wrapper.vm.$options.watch.selectedRegistry.call(wrapper.vm);
     expect(spy).toHaveBeenCalled();
@@ -222,6 +250,7 @@ describe('Dashboard.vue full coverage', () => {
   it('beforeUnmount clears interval', () => {
     const wrapper = factory();
     const clearSpy = jest.spyOn(global, 'clearInterval');
+
     wrapper.vm.keepAliveTimer = setInterval(() => {}, 2000);
     wrapper.vm.$options.beforeUnmount.call(wrapper.vm);
     expect(clearSpy).toHaveBeenCalled();

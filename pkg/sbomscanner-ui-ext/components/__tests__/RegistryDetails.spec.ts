@@ -7,21 +7,17 @@ import RegistryDetailScanTable from '../RegistryDetailScanTable.vue';
 import ScanButton from '../common/ScanButton.vue';
 import { getPermissions } from '../../utils/permissions';
 
-jest.mock('@pkg/utils/permissions', () => ({
-  getPermissions: jest.fn(() => ({ canEdit: true })),
-}));
+jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true })) }));
 describe('RegistryDetails.vue', () => {
 
   let storeMock: any;
   let tMock: any;
-  const mockRouter = {
-    push: jest.fn(),
-  };
+  const mockRouter = { push: jest.fn() };
 
   const registryMock = {
     metadata: { name: 'my-reg', namespace: 'ns1' },
-    spec: {
-      uri: 'http://test.registry',
+    spec:     {
+      uri:          'http://test.registry',
       repositories: ['repo1', 'repo2'],
       scanInterval: '5m',
     },
@@ -46,6 +42,7 @@ describe('RegistryDetails.vue', () => {
 
     tMock = jest.fn((str, vars) => {
       if (vars?.i) return `Every ${vars.i}`;
+
       return str;
     });
 
@@ -53,41 +50,46 @@ describe('RegistryDetails.vue', () => {
       global: {
         mocks: {
           $store: storeMock,
-          $route: { params: { cluster: 'local', id: 'my-reg', ns: 'ns1' } },
+          $route: {
+            params: {
+              cluster: 'local', id: 'my-reg', ns: 'ns1'
+            }
+          },
           $router: mockRouter,
-          t: tMock,
+          t:       tMock,
         },
         stubs: {
-          RouterLink: {
-            template: '<a><slot /></a>',
-          },
-          ActionMenu: true,
-          RancherMeta: true,
-          StatusBadge: true,
+          RouterLink:              { template: '<a><slot /></a>' },
+          ActionMenu:              true,
+          RancherMeta:             true,
+          StatusBadge:             true,
           RegistryDetailScanTable: true,
-          ScanButton: true,
+          ScanButton:              true,
         },
       },
       ...options,
     });
   };
 
-  it('renders header and basic structure', async () => {
+  it('renders header and basic structure', async() => {
     getPermissions.mockReturnValueOnce({ canEdit: true });
     const wrapper = factory();
+
     expect(wrapper.find('.registry-details').exists()).toBe(true);
     expect(wrapper.find('.header').exists()).toBe(true);
   });
 
-  it('calls loadData() on fetch hook', async () => {
+  it('calls loadData() on fetch hook', async() => {
     const wrapper = factory();
     const spy = jest.spyOn(wrapper.vm, 'loadData');
+
     await wrapper.vm.$options.fetch.call(wrapper.vm);
     expect(spy).toHaveBeenCalled();
   });
 
-  it('loadData populates registry, status, metadata, and scanHistory', async () => {
+  it('loadData populates registry, status, metadata, and scanHistory', async() => {
     const wrapper = factory();
+
     await wrapper.vm.loadData();
 
     expect(storeMock.dispatch).toHaveBeenCalledWith('cluster/find', expect.any(Object));
@@ -102,8 +104,9 @@ describe('RegistryDetails.vue', () => {
     expect(tMock).toHaveBeenCalledWith('imageScanner.registries.configuration.meta.namespace');
   });
 
-  it('renders ActionMenu only when registry is set', async () => {
+  it('renders ActionMenu only when registry is set', async() => {
     const wrapper = factory();
+
     // initially null
     expect(wrapper.findComponent(ActionMenu).exists()).toBe(false);
 
@@ -114,8 +117,9 @@ describe('RegistryDetails.vue', () => {
     expect(wrapper.findComponent(ActionMenu).exists()).toBe(true);
   });
 
-  it('renders child components', async () => {
+  it('renders child components', async() => {
     const wrapper = factory();
+
     await wrapper.vm.loadData();
     await flushPromises();
 
@@ -125,8 +129,9 @@ describe('RegistryDetails.vue', () => {
     expect(wrapper.findComponent(ScanButton).exists()).toBe(true);
   });
 
-  it('computes correct metadata values', async () => {
+  it('computes correct metadata values', async() => {
     const wrapper = factory();
+
     await wrapper.vm.loadData();
 
     const meta = wrapper.vm.registryMetadata;
@@ -141,8 +146,9 @@ describe('RegistryDetails.vue', () => {
     expect(tagsMeta.tags).toEqual(['repo1', 'repo2']);
   });
 
-  it('handles empty repositories and scanInterval gracefully', async () => {
+  it('handles empty repositories and scanInterval gracefully', async() => {
     const wrapper = factory();
+
     registryMock.spec.repositories = undefined;
     registryMock.spec.scanInterval = undefined;
     await wrapper.vm.loadData();
@@ -153,5 +159,5 @@ describe('RegistryDetails.vue', () => {
     expect(repoMeta.value).toBe(0);
     expect(scheduleMeta?.value).toBe('');
   });
-  
+
 });

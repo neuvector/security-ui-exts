@@ -154,9 +154,9 @@ export default {
     ];
 
     return {
-      headers:            REGISTRY_SCAN_TABLE,
-      selectedRows:       [],
-      filters:            {
+      headers:      REGISTRY_SCAN_TABLE,
+      selectedRows: [],
+      filters:      {
         registrySearch:   '',
         namespaceSearch:  '',
         uriSearch:        '',

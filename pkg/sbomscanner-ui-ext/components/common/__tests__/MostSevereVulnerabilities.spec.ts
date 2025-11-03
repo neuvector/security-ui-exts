@@ -343,12 +343,16 @@ describe('MostSevereVulnerabilities.vue', () => {
 
     it('should render for severity is null', () => {
       const noScoreWrapper = createWrapper({
-        vulnerabilityReport: {report: {
-    results: [{
-      vulnerabilities: [{
-          cve: 'CVE-CRIT-3', packageName: 'pkg-crit-3', cvss: { nvd: { v3score: '9.0' } }, fixedVersions: []
-        }]}]
-      }}});
+        vulnerabilityReport: {
+          report: {
+            results: [{
+              vulnerabilities: [{
+                cve: 'CVE-CRIT-3', packageName: 'pkg-crit-3', cvss: { nvd: { v3score: '9.0' } }, fixedVersions: []
+              }]
+            }]
+          }
+        }
+      });
       const row = noScoreWrapper.find('.row');
 
       expect(row.find('score-badge-stub').exists()).toBe(false);
