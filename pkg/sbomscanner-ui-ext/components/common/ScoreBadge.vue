@@ -4,16 +4,9 @@
     :class="computedSeverity"
   >
     <div
-      v-if="score && scoreType"
       class="text"
     >
-      {{ score }} ({{ scoreType }})
-    </div>
-    <div
-      v-else
-      class="text na"
-    >
-      n/a
+      {{ score || 'n/a' }} {{ scoreType ? `(${scoreType})` : '' }}
     </div>
   </div>
 </template>
@@ -48,8 +41,10 @@ export default {
         return SEVERITY.HIGH;
       } else if (this.severity.toLowerCase() === SEVERITY.MEDIUM) {
         return SEVERITY.MEDIUM;
-      } else {
+      } else if (this.severity.toLowerCase() === SEVERITY.LOW) {
         return SEVERITY.LOW;
+      } else {
+        return 'na';
       }
     }
   }

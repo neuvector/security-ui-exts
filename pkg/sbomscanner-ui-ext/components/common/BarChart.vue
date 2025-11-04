@@ -150,7 +150,7 @@ export default {
       --cve-high: #{$high-color};
       --cve-medium: #{$medium-color};
       --cve-low: #{$low-color};
-      --cve-none: #{$na-color};
+      --cve-unknown: #{$na-color};
       --status-pending: #{$pending-color};
       --status-scheduled: #{$scheduled-color};
       --status-inprogress: #{$inprogress-color};

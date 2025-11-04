@@ -214,7 +214,7 @@ export default {
         { label: this.t('imageScanner.enum.cve.high'), value: 'high' },
         { label: this.t('imageScanner.enum.cve.medium'), value: 'medium' },
         { label: this.t('imageScanner.enum.cve.low'), value: 'low' },
-        { label: this.t('imageScanner.enum.cve.none'), value: 'none' },
+        { label: this.t('imageScanner.enum.cve.none'), value: 'unknown' },
       ],
       filterExploitabilityOptions: [
         { label: this.t('imageScanner.imageDetails.any'), value: 'any' },
@@ -326,42 +326,17 @@ export default {
     severityDistribution() {
       if (!this.vulnerabilityReport) {
         return {
-          critical: 0, high: 0, medium: 0, low: 0, none: 0
+          critical: 0, high: 0, medium: 0, low: 0, unknown: 0
         };
       }
 
-      // Try to get vulnerabilities directly from the report data
-      let vulnerabilities = [];
-
-      if (this.vulnerabilityReport.report && this.vulnerabilityReport.report.results) {
-        this.vulnerabilityReport.report.results.forEach((result) => {
-          if (result && result.vulnerabilities) {
-            vulnerabilities = vulnerabilities.concat(result.vulnerabilities);
-          }
-        });
-      }
-
-      // Fallback to model's computed property
-      if (vulnerabilities.length === 0) {
-        vulnerabilities = this.vulnerabilityReport.vulnerabilities || [];
-      }
-
-      // Calculate distribution from vulnerabilities
-      const distribution = {
-        critical: 0, high: 0, medium: 0, low: 0, none: 0
+      return {
+        critical: this.vulnerabilityReport.report.summary.critical || 0,
+        high:     this.vulnerabilityReport.report.summary.high || 0,
+        medium:   this.vulnerabilityReport.report.summary.medium || 0,
+        low:      this.vulnerabilityReport.report.summary.low || 0,
+        unknown:     this.vulnerabilityReport.report.summary.unknown || 0,
       };
-
-      vulnerabilities.forEach((vuln) => {
-        const severity = vuln.severity?.toLowerCase();
-
-        if (Object.prototype.hasOwnProperty.call(distribution, severity)) {
-          distribution[severity]++;
-        } else {
-          distribution.none++;
-        }
-      });
-
-      return distribution;
     },
 
     // Get vulnerability details from vulnerability report

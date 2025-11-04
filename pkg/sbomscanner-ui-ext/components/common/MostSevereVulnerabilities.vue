@@ -16,22 +16,17 @@
           v-if="vuln.cveId"
           class="row"
         >
-          <div class="col span-4">
+          <div class="col" style="width: 200px;">
             <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.VULNERABILITIES}/${vuln.cveId}`">
               {{ vuln.cveId }}
             </RouterLink>
           </div>
           <div class="col span-3">
             <ScoreBadge
-              v-if="vuln.score && vuln.score.trim()"
-              :score="(parseFloat(vuln.score.split(' ')[0]) || 0).toString()"
-              :score-type="vuln.score.split(' ')[1] ? vuln.score.split(' ')[1].replace(/[()]/g, '') : 'CVSS'"
+              :score="vuln.score ? vuln.score.split(' ')[0] : ''"
+              :score-type="vuln.score ? vuln.score.split(' ')[1].replace(/[()]/g, '') : ''"
               :severity="vuln.severity"
             />
-            <span
-              v-else
-              class="na-badge"
-            >n/a</span>
           </div>
           <div class="col span-4">
             {{ vuln.package }}

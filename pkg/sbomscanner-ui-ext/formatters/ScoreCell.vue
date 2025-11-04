@@ -1,15 +1,10 @@
 <template>
   <div style="padding-right: 32px;">
     <ScoreBadge
-      v-if="row.score && row.score.trim()"
-      :score="parseFloat(row.score.split(' ')[0])"
-      :score-type="row.score.split(' ')[1].replace(/[()]/g, '')"
+      :score="row.score ? row.score.split(' ')[0] : ''"
+      :score-type="row.score ? row.score.split(' ')[1].replace(/[()]/g, '') : ''"
       :severity="row.severity"
     />
-    <span
-      v-else
-      class="na-badge"
-    >n/a</span>
   </div>
 </template>
 

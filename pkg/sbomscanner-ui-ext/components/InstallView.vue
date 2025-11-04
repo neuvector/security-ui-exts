@@ -391,7 +391,7 @@ export default {
     >
       <div class="logo mt-20 mb-10">
         <img
-          src="../assets/img/icon-kubewarden.svg"
+          src="../assets/img/icon-sbomscanner.svg"
           height="64"
         />
       </div>

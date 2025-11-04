@@ -85,7 +85,7 @@ export default {
           <div class="product">
             <div class="product-image">
               <img
-                src="../../assets/img/icon-kubewarden.svg"
+                src="../../assets/img/icon-sbomscanner.svg"
                 class="logo"
               />
             </div>
