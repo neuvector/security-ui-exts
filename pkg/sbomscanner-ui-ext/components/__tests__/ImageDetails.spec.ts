@@ -308,27 +308,33 @@ describe('ImageDetails.vue', () => {
   });
 
   it('computes overallSeverity based on vulnerability distribution', () => {
-    wrapper.vm.loadedVulnerabilityReport = { report: {
-       summary: {
-        critical: 1, high: 0, medium: 0, low: 0, unknown: 0
-      },
-      results: [{ vulnerabilities: [{ }] }] } };
+    wrapper.vm.loadedVulnerabilityReport = {
+      report: {
+        summary: {
+          critical: 1, high: 0, medium: 0, low: 0, unknown: 0
+        },
+        results: [{ vulnerabilities: [{ }] }]
+      }
+    };
     expect(wrapper.vm.overallSeverity).toBe('critical');
   });
 
   it('computes overallSeverity based on vulnerability distribution - severity is empty', () => {
-    wrapper.vm.loadedVulnerabilityReport = { report:{
-      summary: {
-        critical: 0, high: 0, medium: 0, low: 0, unknown: 0
-      },
-      results: [{ vulnerabilities: [{ }] }] } };
+    wrapper.vm.loadedVulnerabilityReport = {
+      report: {
+        summary: {
+          critical: 0, high: 0, medium: 0, low: 0, unknown: 0
+        },
+        results: [{ vulnerabilities: [{ }] }]
+      }
+    };
     expect(wrapper.vm.overallSeverity).toBe('none');
   });
 
   it('computes overallSeverity based on vulnerability distribution - severity is empty', () => {
     wrapper.vm.loadedVulnerabilityReport = null;
     const result = wrapper.vm.severityDistribution;
-    
+
     expect(result.critical).toBe(0);
     expect(result.high).toBe(0);
     expect(result.medium).toBe(0);

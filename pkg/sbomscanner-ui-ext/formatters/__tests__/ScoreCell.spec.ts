@@ -12,6 +12,7 @@ describe('ScoreCell.vue', () => {
     const wrapper = shallowMount(ScoreCell, { props: { row: mockRow } });
 
     const scoreBadge = wrapper.findComponent(ScoreBadge);
+
     expect(scoreBadge.exists()).toBe(true);
 
     // Check that props were passed correctly after parsing
@@ -29,6 +30,7 @@ describe('ScoreCell.vue', () => {
     const wrapper = shallowMount(ScoreCell, { props: { row: mockRow } });
 
     const scoreBadge = wrapper.findComponent(ScoreBadge);
+
     expect(scoreBadge.exists()).toBe(true);
 
     // For missing score, both score and scoreType should be empty
@@ -38,11 +40,10 @@ describe('ScoreCell.vue', () => {
   });
 
   it('renders correctly inside container div with padding', () => {
-    const wrapper = shallowMount(ScoreCell, {
-      props: { row: { score: '5.0 (v3)', severity: 'Low' } }
-    });
+    const wrapper = shallowMount(ScoreCell, { props: { row: { score: '5.0 (v3)', severity: 'Low' } } });
 
     const div = wrapper.find('div');
+
     expect(div.attributes('style')).toContain('padding-right: 32px;');
   });
 });

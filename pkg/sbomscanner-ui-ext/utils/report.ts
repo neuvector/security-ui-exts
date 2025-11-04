@@ -8,7 +8,7 @@ export function imageDetailsToCSV(vuls: ImageVulnerability[]): Object[] {
   return vuls.map((vul) => {
     return {
       CVE_ID:            vul.cve,
-      SCORE:             getScore(vul.cvss, vul.severity),
+      SCORE:             getHighestScore(vul.cvss),
       PACKAGE:           vul.packageName,
       'FIX AVAILABLE':   vul.fixedVersions ? vul.fixedVersions.join(', ') : '',
       SEVERITY:          vul.severity,
@@ -96,6 +96,25 @@ export function getScore(cvss: any, severity: string): string {
   }
 
   return '';
+}
+
+export function getHighestScore(cvss: any): string {
+  if (!cvss || typeof cvss !== 'object') return '';
+
+  let highestScore = 0;
+
+  for (const source of Object.values(cvss)) {
+    if (source && typeof source === 'object' && 'v3score' in source && source.v3score != null) {
+      const raw = (source as any).v3score;
+      const score = typeof raw === 'number' ? raw : parseFloat(String(raw));
+
+      if (Number.isFinite(score) && !Number.isNaN(score) && score > highestScore) {
+        highestScore = score;
+      }
+    }
+  }
+
+  return highestScore > 0 ? `${ highestScore < 10 ? highestScore.toFixed(1) : highestScore } (v3)` : '';
 }
 
 export function getSeverityNum(severity: string): number {

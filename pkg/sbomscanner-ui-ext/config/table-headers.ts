@@ -507,11 +507,11 @@ export const LAYER_BASED_TABLE = [
     sort:     'updated',
     width:    150,
   },
-  {
-    name:     'size',
-    labelKey: 'imageScanner.imageDetails.table.headers.size',
-    value:    'size',
-    sort:     'size',
-    width:    120,
-  },
+  // {
+  //   name:     'size',
+  //   labelKey: 'imageScanner.imageDetails.table.headers.size',
+  //   value:    'size',
+  //   sort:     'size',
+  //   width:    120,
+  // },
 ];

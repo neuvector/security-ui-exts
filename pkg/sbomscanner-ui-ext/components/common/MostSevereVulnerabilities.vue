@@ -50,7 +50,7 @@ import ScoreBadge from '@pkg/components/common/ScoreBadge';
 import InfoTooltip from '@pkg/components/common/Tooltip';
 import { PRODUCT_NAME, PAGE } from '@pkg/types';
 import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
-import { getScore, getSeverityNum } from '@pkg/utils/report';
+import { getHighestScore, getSeverityNum, getScoreNum } from '@pkg/utils/report';
 export default {
   name:       'MostSevereVulnerabilities',
   components: {
@@ -95,8 +95,8 @@ export default {
 
       const sortedVulnerabilities = vulnerabilities
         .sort((a, b) => {
-          const scoreA = parseFloat(getScore(a.cvss, a.severity).split(' ')[0]) || 0;
-          const scoreB = parseFloat(getScore(b.cvss, b.severity).split(' ')[0]) || 0;
+          const scoreA = getScoreNum(getHighestScore(a.cvss));
+          const scoreB = getScoreNum(getHighestScore(b.cvss));
 
           if ((scoreA > 0 || scoreB > 0) && scoreA !== scoreB) {
             return scoreB - scoreA;
@@ -113,7 +113,7 @@ export default {
         .slice(0, 5)
         .map((vuln) => ({
           cveId:        vuln.cve,
-          score:        getScore(vuln.cvss, vuln.severity),
+          score:        getHighestScore(vuln.cvss),
           severity:     vuln.severity?.toLowerCase() || null,
           package:      vuln.packageName,
           fixAvailable: vuln.fixedVersions && vuln.fixedVersions.length > 0

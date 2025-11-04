@@ -171,7 +171,7 @@ import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import VulnerabilityTable from './common/VulnerabilityTable';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
-import { getScore, getSeverityNum, getScoreNum } from '../utils/report';
+import { getHighestScore, getSeverityNum, getScoreNum } from '../utils/report';
 
 export default {
   name:       'ImageDetails',
@@ -335,7 +335,7 @@ export default {
         high:     this.vulnerabilityReport.report.summary.high || 0,
         medium:   this.vulnerabilityReport.report.summary.medium || 0,
         low:      this.vulnerabilityReport.report.summary.low || 0,
-        unknown:     this.vulnerabilityReport.report.summary.unknown || 0,
+        unknown:  this.vulnerabilityReport.report.summary.unknown || 0,
       };
     },
 
@@ -363,7 +363,7 @@ export default {
 
       // Transform the vulnerability data to match the expected format
       return vulnerabilities.map((vuln, index) => {
-        const score = getScore(vuln.cvss, vuln.severity);
+        const score = getHighestScore(vuln.cvss);
 
         return ({
           id:               `${ vuln.cve }-${ vuln.packageName }-${ index }`, // Create unique ID

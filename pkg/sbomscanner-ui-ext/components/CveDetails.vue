@@ -3,7 +3,7 @@ import { BadgeState } from '@components/BadgeState';
 
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
 import { NVD_BASE_URL, CVSS_VECTOR_BASE_URL } from '@pkg/constants';
-import { getScore } from '@pkg/utils/report';
+import { getHighestScore } from '@pkg/utils/report';
 
 export default {
   name:       'CveDetails',
@@ -49,7 +49,7 @@ export default {
                 const hasCvss = !!vuln.cvss;
 
                 cveMetaData = {
-                  score:           hasCvss ? getScore(vuln.cvss, vuln.severity) : 'n/a',
+                  score:           hasCvss ? getHighestScore(vuln.cvss) : 'n/a',
                   sources:         hasCvss ? this.convertCvssToSources(vuln.cvss, cveId) : [],
                   severity:        vuln.severity,
                   cvssScores:      hasCvss ? this.convertCvss(vuln.cvss) : [],

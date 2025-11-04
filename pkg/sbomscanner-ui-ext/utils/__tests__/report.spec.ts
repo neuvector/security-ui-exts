@@ -1,5 +1,5 @@
 import {
-  imageDetailsToCSV, downloadCSV, downloadJSON, getScore, getSeverityNum, getScoreNum
+  imageDetailsToCSV, downloadCSV, downloadJSON, getScore, getSeverityNum, getScoreNum, getHighestScore
 } from '../report';
 
 describe('imageDetailsToCSV', () => {
@@ -362,5 +362,78 @@ describe('getScoreNum', () => {
   it('returns 0 if string does not contain (v3)', () => {
     expect(getScoreNum('7.5')).toBe(0);
     expect(getScoreNum('7.5 (v2)')).toBe(0);
+  });
+});
+
+describe('getHighestScore', () => {
+  it('returns highest v3score with (v3) suffix', () => {
+    const cvss = {
+      nvd:    { v3score: 5.6 },
+      ghsa:   { v3score: 8.2 },
+      custom: { v3score: 7.5 },
+    };
+
+    expect(getHighestScore(cvss)).toBe('8.2 (v3)');
+  });
+
+  it('handles v3score as string and number correctly', () => {
+    const cvss = {
+      nvd:  { v3score: '4.1' },
+      ghsa: { v3score: 9 },
+    };
+
+    expect(getHighestScore(cvss)).toBe('9.0 (v3)');
+  });
+
+  it('returns empty string if no valid v3score is present', () => {
+    const cvss = {
+      nvd:   { v2score: 6.3 },
+      other: {},
+    };
+
+    expect(getHighestScore(cvss)).toBe('');
+  });
+
+  it('ignores non-finite or invalid scores', () => {
+    const cvss = {
+      nvd:    { v3score: 'NaN' },
+      ghsa:   { v3score: 'abc' },
+      custom: { v3score: null },
+    };
+
+    expect(getHighestScore(cvss)).toBe('');
+  });
+
+  it('returns empty string for non-object input', () => {
+    expect(getHighestScore(null)).toBe('');
+    expect(getHighestScore(undefined)).toBe('');
+    expect(getHighestScore('string')).toBe('');
+    expect(getHighestScore(42)).toBe('');
+  });
+
+  it('handles mixed valid and invalid scores and picks highest', () => {
+    const cvss = {
+      nvd:    { v3score: '8.5' },
+      ghsa:   { v3score: null },
+      custom: { v3score: 9.1 },
+      extra:  { v3score: 'not-a-number' },
+    };
+
+    expect(getHighestScore(cvss)).toBe('9.1 (v3)');
+  });
+
+  it('formats 10 exactly as "10 (v3)" instead of 10.0', () => {
+    const cvss = {
+      nvd:   { v3score: 10 },
+      other: { v3score: 9.9 },
+    };
+
+    expect(getHighestScore(cvss)).toBe('10 (v3)');
+  });
+
+  it('rounds lower scores to one decimal place', () => {
+    const cvss = { nvd: { v3score: 6 } };
+
+    expect(getHighestScore(cvss)).toBe('6.0 (v3)');
   });
 });
