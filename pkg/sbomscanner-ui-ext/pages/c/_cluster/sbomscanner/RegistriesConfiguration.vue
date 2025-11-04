@@ -259,7 +259,7 @@ export default {
 
       return await this.$store.dispatch(`cluster/findAll`, { type: RESOURCE.SCAN_JOB });
     },
-    async fetchPageSecondaryResources({ canPaginate, force, page }) {
+    async fetchPageSecondaryResources({ force, page }) {
       if (!page?.length) {
         return;
       }

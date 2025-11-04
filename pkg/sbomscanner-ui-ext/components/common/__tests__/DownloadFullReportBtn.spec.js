@@ -193,6 +193,7 @@ describe('DownloadFullReportBtn.vue', () => {
 
       const expectedCsvHeaders = 'CVE_ID,SCORE,PACKAGE,FIX AVAILABLE,SEVERITY,EXPLOITABILITY,PACKAGE VERSION,PACKAGE PATH,DESCRIPTION';
 
+      expect(vulnerabilityDetails).toBeNull();
       expect(downloadCSV).toHaveBeenCalledWith(
         expectedCsvHeaders,
         'my-test-image-image-detail-report_MMDDYYYY_HHmmss.csv'

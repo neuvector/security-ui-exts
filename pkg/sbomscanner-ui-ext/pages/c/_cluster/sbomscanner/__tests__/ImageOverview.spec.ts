@@ -402,7 +402,6 @@ describe('ImageOverview.vue', () => {
   });
 
   test('downloadCSVReport handles papaparse throwing and dispatches error', async() => {
-    const wrapper = mountComponent();
 
     // prepare a sample row matching expected shape
     const rows = [ {
@@ -581,7 +580,7 @@ describe('ImageOverview.vue', () => {
     };
 
     const storeSuccess = {
-      dispatch: jest.fn((action: string) => Promise.resolve(vulReport)),
+      dispatch: jest.fn(() => Promise.resolve(vulReport)),
       getters:  {},
     };
 
@@ -636,7 +635,7 @@ describe('ImageOverview.vue', () => {
 
     const store: any = {
       _called:  false,
-      dispatch: jest.fn((action: string, payload: any) => {
+      dispatch: jest.fn((action: string) => {
         if (action === 'cluster/findAll') {
           // mimic first call for vulnerability reports and second call for registry
           if (!store._called) {
@@ -672,7 +671,6 @@ describe('ImageOverview.vue', () => {
   test('header custom report button disabled/enabled based on selectedRows', () => {
     const wrapper = mountComponent();
     // initial no selection -> button disabled
-    const headerLeft = (wrapper.findComponent({ name: 'SortableTable' }) as any);
 
     expect((wrapper.vm as any).selectedRows.length).toBe(0);
 
@@ -788,7 +786,7 @@ describe('ImageOverview.vue', () => {
     };
 
     const storeSuccess = {
-      dispatch: jest.fn((action: string) => Promise.resolve(vulReport)),
+      dispatch: jest.fn(() => Promise.resolve(vulReport)),
       getters:  {},
     };
 

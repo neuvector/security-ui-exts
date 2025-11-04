@@ -524,7 +524,8 @@ describe('InstallView.vue - schema computed tests', () => {
     });
 
     const wrapper = factory(mockStore);
-    const spy = jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
+
+    jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
 
     wrapper.vm.debouncedRefreshCharts = jest.fn();
     await nextTick();
@@ -557,7 +558,7 @@ describe('InstallView.vue - schema computed tests', () => {
       configurable: true,
     });
     Object.defineProperty(wrapper.vm, 'cnpgRepo', { get: () => ({ id: 'repo-cnpg' }) });
-    const spy = jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
+    jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
 
     wrapper.vm.debouncedRefreshCharts = jest.fn();
     await nextTick();
@@ -593,7 +594,7 @@ describe('InstallView.vue - schema computed tests', () => {
       configurable: true,
     });
     Object.defineProperty(wrapper.vm, 'sbomscannerRepo', { get: () => ({ id: 'repo-sbomscanner' }) });
-    const spy = jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
+    jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
 
     wrapper.vm.debouncedRefreshCharts = jest.fn();
     await nextTick();
@@ -629,7 +630,7 @@ describe('InstallView.vue - schema computed tests', () => {
     });
     Object.defineProperty(wrapper.vm, 'sbomscannerRepo', { get: () => null });
     Object.defineProperty(wrapper.vm, 'controllerChart4Sbomscanner', { get: () => null });
-    const spy = jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
+    jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
 
     wrapper.vm.debouncedRefreshCharts = jest.fn();
     await nextTick();
@@ -663,7 +664,7 @@ describe('InstallView.vue - schema computed tests', () => {
     });
     Object.defineProperty(wrapper.vm, 'sbomscannerRepo', { get: () => ({ id: 'repo-sbomscanner' }) });
     Object.defineProperty(wrapper.vm, 'controllerChart4Sbomscanner', { get: () => ({ id: 'chart' }) });
-    const spy = jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
+    jest.spyOn(wrapper.vm, '$fetchType').mockResolvedValue(undefined);
 
     wrapper.vm.debouncedRefreshCharts = jest.fn();
     await nextTick();

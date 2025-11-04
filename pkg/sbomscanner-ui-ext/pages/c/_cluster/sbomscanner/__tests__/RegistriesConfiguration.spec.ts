@@ -2,9 +2,6 @@ import { mount, flushPromises } from '@vue/test-utils';
 import RegistriesOverview from '../RegistriesConfiguration.vue';
 import { getPermissions } from '../../../../../utils/permissions';
 import { scanJobs4General } from '../../../../../test/mockdata/scanJobs';
-import { findBy } from '@shell/utils/array';
-import { shallowMount } from '@vue/test-utils';
-import PaginatedResourceTable from '@shell/components/PaginatedResourceTable';
 
 
 const day = require('dayjs');

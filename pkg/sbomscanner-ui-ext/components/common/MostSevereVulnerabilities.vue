@@ -116,7 +116,7 @@ export default {
           }
         })
         .slice(0, 5)
-        .map((vuln, index) => ({
+        .map((vuln) => ({
           cveId:        vuln.cve,
           score:        getScore(vuln.cvss, vuln.severity),
           severity:     vuln.severity?.toLowerCase() || null,

@@ -1,5 +1,3 @@
-import { sort } from 'semver';
-
 export const REGISTRY_SCAN_TABLE = [
   {
     name:      'registry',

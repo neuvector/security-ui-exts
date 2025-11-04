@@ -1,14 +1,11 @@
 import { mount } from '@vue/test-utils';
 import { createStore } from 'vuex';
 import VexManagement from '../VexManagement.vue';
-import { getPermissions } from '../../../../../utils/permissions';
 
 
 jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true, canDelete: true })) }));
 // Define RESOURCE constants locally to avoid import issues
 const RESOURCE = { VEX_HUB: 'sbomscanner.kubewarden.io.vexhub' };
-
-const mockRouter = { push: jest.fn() };
 
 describe('VexManagement', () => {
   let store: any;

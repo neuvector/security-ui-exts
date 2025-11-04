@@ -86,7 +86,7 @@ export default {
     await this.loadData();
   },
   methods: {
-    async loadData(isForceLoading = false) {
+    async loadData() {
       this.vexHub = await this.$store.dispatch('cluster/find', { type: RESOURCE.VEX_HUB, id: this.$route.params.id });
       this.vexHubMetadata = [
         {

@@ -1,4 +1,4 @@
-import { mount, shallowMount, flushPromises } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Dashboard from '../Dashboard.vue';
 
 const RESOURCE = {
@@ -205,7 +205,7 @@ describe('Dashboard.vue full coverage', () => {
   it('method: fetch loads data and sets interval', async() => {
     const mockDispatch = jest.fn().mockResolvedValue([]);
     const mockClearInterval = jest.spyOn(global, 'clearInterval').mockImplementation(() => {});
-    const mockSetInterval = jest.spyOn(global, 'setInterval').mockImplementation((fn, t) => {
+    const mockSetInterval = jest.spyOn(global, 'setInterval').mockImplementation((fn) => {
       fn(); // call it immediately
 
       return 123;

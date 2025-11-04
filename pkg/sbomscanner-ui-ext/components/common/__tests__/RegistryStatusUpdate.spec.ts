@@ -3,7 +3,6 @@ import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 import RegistryStatusUpdate from '../RegistryStatusUpdate.vue';
 import StatusBadge from '../StatusBadge.vue';
 import { elapsedTime } from '@shell/utils/time';
-import { from } from '@kubernetes/client-node/dist/gen/rxjsStub';
 
 jest.mock('@shell/utils/time', () => ({ elapsedTime: jest.fn() }));
 

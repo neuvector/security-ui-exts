@@ -100,15 +100,15 @@ describe('Registry model', () => {
   });
 
   describe('scanRec - status, statusResult is undefined', () => {
-    const baseScan = (type, time, progress = 50, failed = false) => ({
+    const baseScan = () => ({
       metadata: { namespace: 'ns1' },
       spec:     { registry: 'reg1' },
     });
 
     it('returns scan record correctly with 2 scanjobs', () => {
       registry.$getters.all.mockReturnValue([
-        baseScan('Complete', Date.now() - 10000),
-        baseScan('Failed', Date.now() - 20000, 80, true)
+        baseScan(),
+        baseScan()
       ]);
 
       const rec = registry.scanRec;
@@ -253,10 +253,6 @@ describe('Registry model', () => {
     });
 
     it('get latest 2 scanjobs - without status and statusResult', () => {
-      const time = new Date();
-      const type = 'none';
-      const progress = 70;
-
       registry.$getters.all.mockReturnValue([
         {
           metadata: { namespace: 'ns1' },
@@ -296,14 +292,12 @@ describe('Registry model', () => {
     });
 
     it('returns earlier condition if index >= 3 - Cover condition is undefined with statusIndex === 3', () => {
-      const conds = [{ type: 'A' }, { type: 'B' }, { type: 'C' }];
       const scan = [{ status: {}, statusResult: { statusIndex: 3 } }];
 
       expect(registry.getPreviousStatus(scan)).toBe('none');
     });
 
     it('returns earlier condition if index >= 3 - Cover condition is undefined with statusIndex === 2', () => {
-      const conds = [{ type: 'A' }, { type: 'B' }, { type: 'C' }];
       const scan = [{ status: {}, statusResult: { statusIndex: 2 } }];
 
       expect(registry.getPreviousStatus(scan)).toBe('none');

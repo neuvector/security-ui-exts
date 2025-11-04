@@ -1,9 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Registries from '../sbomscanner.kubewarden.io.registry.vue';
-import { RESOURCE } from '../../types';
 import { PaginationParamFilter } from '@shell/types/store/pagination.types';
 import { getPermissions } from '../../utils/permissions';
-import _ from 'lodash';
 
 // Mock lodash debounce to call immediately
 jest.mock('lodash', () => {

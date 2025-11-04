@@ -31,7 +31,7 @@ describe('RegistryDetails.vue', () => {
 
   const factory = (options = {}) => {
     storeMock = {
-      dispatch: jest.fn((action, payload) => {
+      dispatch: jest.fn((action) => {
         if (action === 'cluster/find') {
           return Promise.resolve(registryMock);
         } else if (action === 'cluster/findAll') {

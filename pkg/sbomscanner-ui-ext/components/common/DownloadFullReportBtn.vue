@@ -127,7 +127,7 @@ export default {
           `"${ vuln.exploitability || '' }"`,
           `"${ vuln.installedVersion || '' }"`,
           `"${ vuln.packagePath || '' }"`,
-          `"${ (vuln.description || '').replace(/\"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
+          `"${ (vuln.description || '').replace(/"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
         ];
 
         csvRows.push(row.join(','));

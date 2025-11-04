@@ -90,7 +90,7 @@ describe('SBOM model', () => {
     inst2.$rootGetters = { 'i18n/t': (k: string) => k };
     const images = [ { metadata: { name: 'img-1' } }, { spec: { name: 'other' } } ];
 
-    inst2.$getters = { all: (_arg: string) => images };
+    inst2.$getters = { all: () => images };
     expect(inst2.associatedImage.metadata.name).toBe('img-1');
 
     const inst3 = Object.create((SBOM as any).prototype);
@@ -99,7 +99,7 @@ describe('SBOM model', () => {
     inst3.$rootGetters = { 'i18n/t': (k: string) => k };
     const images2 = [ { spec: { name: 'spec-img' } } ];
 
-    inst3.$getters = { all: (_arg: string) => images2 };
+    inst3.$getters = { all: () => images2 };
     expect(inst3.associatedImage.spec.name).toBe('spec-img');
   });
 
@@ -152,7 +152,7 @@ describe('SBOM model', () => {
 
     inst.spec = { image: 'not-found' };
     inst.$rootGetters = { 'i18n/t': (k: string) => k };
-    inst.$getters = { all: (_arg: string) => [] };
+    inst.$getters = { all: () => [] };
 
     expect(inst.associatedImage).toBeUndefined();
   });
@@ -195,7 +195,7 @@ describe('SBOM model', () => {
     inst.$rootGetters = { 'i18n/t': (k: string) => k };
     const images = [ { spec: { name: 'no' } }, { metadata: { name: 'meta-img' } } ];
 
-    inst.$getters = { all: (_arg: string) => images };
+    inst.$getters = { all: () => images };
 
     const found = inst.associatedImage;
 
@@ -207,7 +207,7 @@ describe('SBOM model', () => {
 
     inst2.spec = { image: 'spec-img' };
     inst2.$rootGetters = { 'i18n/t': (k: string) => k };
-    inst2.$getters = { all: (_arg: string) => [ { spec: { name: 'spec-img' } } ] };
+    inst2.$getters = { all: () => [ { spec: { name: 'spec-img' } } ] };
 
     const found2 = inst2.associatedImage;
 
@@ -228,7 +228,7 @@ describe('SBOM model', () => {
       { spec: { name: 'wanted' } },
     ];
 
-    inst.$getters = { all: (_arg: string) => images };
+    inst.$getters = { all: () => images };
 
     const found = inst.associatedImage;
 

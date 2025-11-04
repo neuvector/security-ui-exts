@@ -1,7 +1,6 @@
 import { shallowMount, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import ImageDetails from '../ImageDetails.vue';
-import { RESOURCE } from '../../types';
 
 // Mock child components
 jest.mock('@components/BadgeState', () => ({ BadgeState: { template: '<div class="badge-state" />' } }));
