@@ -13,4 +13,4 @@ updates:
     open-pull-requests-limit: 10
     ignore:                           # Ignore everything that is not a security update
       - dependency-name: "*"
-    security-updates: true
+        update-types: ["version-update:semver-patch", "version-update:semver-minor", "version-update:semver-major"]
