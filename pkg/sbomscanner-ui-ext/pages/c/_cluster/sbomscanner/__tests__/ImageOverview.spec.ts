@@ -168,6 +168,45 @@ describe('ImageOverview.vue', () => {
     expect(repo.cveCntByRepo.high).toBe(3);
   });
 
+  test('preprocessData adds imageReference for sorting in grouped view', () => {
+    const wrapper = mountComponent();
+
+    const vulReports = [
+      {
+        id:            '2',
+        imageMetadata: {
+          repository: 'test-repo', registry: 'my-reg', registryURI: 'my-reg', tag: 'zulu'
+        },
+        metadata: { name: 'img-z', namespace: 'ns' },
+        report:   { summary: { critical: 1 } }
+      },
+      {
+        id:            '1',
+        imageMetadata: {
+          repository: 'test-repo', registry: 'my-reg', registryURI: 'my-reg', tag: 'alpha'
+        },
+        metadata: { name: 'img-a', namespace: 'ns' },
+        report:   { summary: { critical: 1 } }
+      }
+    ];
+
+    const processedData = (wrapper.vm as any).preprocessData(vulReports);
+
+    // Expect one group for 'test-repo'
+    expect(processedData).toHaveLength(1);
+    const repoGroup = processedData[0];
+
+    // Check that imageReference is correctly constructed
+    expect(repoGroup.images[0].imageReference).toBe('my-reg/test-repo:zulu');
+    expect(repoGroup.images[1].imageReference).toBe('my-reg/test-repo:alpha');
+
+    // Simulate SortableTable's sorting on the 'imageReference' field
+    repoGroup.images.sort((a: any, b: any) => a.imageReference.localeCompare(b.imageReference));
+
+    // Verify the sorted order
+    expect(repoGroup.images[0].imageReference).toBe('my-reg/test-repo:alpha');
+  });
+
   test('downloadCSVReport handles grouped rows and saveAs failure', async() => {
     const wrapper = mountComponent();
 

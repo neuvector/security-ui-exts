@@ -8,6 +8,7 @@ import {
   PRODUCT_NAME,
   PAGE,
 } from '@pkg/types';
+import { constructImageName } from '@pkg/utils/image';
 export default {
   props: {
     row: {
@@ -23,7 +24,7 @@ export default {
   },
   computed: {
     displayName() {
-      return `${ this.row.imageMetadata?.registryURI }/${ this.row.imageMetadata?.repository }:${ this.row.imageMetadata?.tag }`;
+      return this.row.imageReference ? this.row.imageReference : constructImageName(this.row.imageMetadata);
     }
   }
 };

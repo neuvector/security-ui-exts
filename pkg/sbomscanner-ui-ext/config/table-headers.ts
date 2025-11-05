@@ -232,7 +232,7 @@ export const REPO_BASED_IMAGE_LIST_TABLE = [
     name:      'image',
     labelKey:  'imageScanner.images.listTable.headers.imageName',
     formatter: 'ImageNameCell',
-    sort:      'name',
+    sort:      'imageReference',
     width:     300,
   },
   {

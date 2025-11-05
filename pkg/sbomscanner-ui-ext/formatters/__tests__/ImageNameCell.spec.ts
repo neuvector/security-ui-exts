@@ -43,7 +43,7 @@ describe('ImageNameCell.vue', () => {
   it('should handle missing imageMetadata gracefully', () => {
     const mockRow = { metadata: { name: 'my-image-resource-name-2' } };
 
-    const expectedDisplayName = 'undefined/undefined:undefined';
+    const expectedDisplayName = '';
     const expectedUrl = `/c/${ mockClusterId }/mocked-product/mocked-images-page/my-image-resource-name-2`;
 
     const wrapper = mountComponent(mockRow);

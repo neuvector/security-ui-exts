@@ -186,6 +186,7 @@ import { Checkbox } from '@components/Form/Checkbox';
 import { RESOURCE } from '@pkg/types';
 import { imageDetailsToCSV } from '@pkg/utils/report';
 import { saveAs } from 'file-saver';
+import { constructImageName } from '@pkg/utils/image';
 import Papa from 'papaparse';
 import _ from 'lodash';
 import day from 'dayjs';
@@ -294,7 +295,7 @@ export default {
     filteredRows() {
       const filters = this.debouncedFilters;
       const filteredRows = this.rows.filter((row) => {
-        const imageName = `${ row.imageMetadata.registryURI }/${ row.imageMetadata.repository }:${ row.imageMetadata.tag }`;
+        const imageName = constructImageName(row.imageMetadata);
         const imageMatch = !filters.imageSearch || imageName.toLowerCase().includes(filters.imageSearch.toLowerCase());
         const severityMatch = filters.severitySearch === 'any' || row.report.summary[filters.severitySearch] > 0;
         const repositoryMatch = filters.repositorySearch === 'Any' || row.imageMetadata.repository === filters.repositorySearch;
@@ -376,7 +377,7 @@ export default {
 
         const imageList = imagesData.map((row) => {
           return {
-            'IMAGE REFERENCE': isDataGrouped ? `${ row.imageMetadata.registryURI }/${ row.imageMetadata.repository }:${ row.imageMetadata.tag }` : row.imageReference,
+            'IMAGE REFERENCE': isDataGrouped ? constructImageName(row.imageMetadata) : row.imageReference,
             'CVEs(Critical)':  isDataGrouped ? row.scanResult.critical : row.report.summary.critical,
             'CVEs(High)':      isDataGrouped ? row.scanResult.high : row.report.summary.high,
             'CVEs(Medium)':    isDataGrouped ? row.scanResult.medium : row.report.summary.medium,
@@ -517,10 +518,11 @@ export default {
           }
           currRepo.images.push(
             {
-              id:            report.id,
-              imageMetadata: report.imageMetadata,
-              metadata:      { name: report.metadata.name },
-              scanResult:    currImageScanResult,
+              id:             report.id,
+              imageMetadata:  report.imageMetadata,
+              metadata:       { name: report.metadata.name },
+              imageReference: constructImageName(report.imageMetadata),
+              scanResult:     currImageScanResult,
             }
           );
           repoMap.set(mapKey, currRepo);
@@ -533,10 +535,11 @@ export default {
             cveCntByRepo: { ...currImageScanResult },
             images:       [
               {
-                id:            report.id,
-                imageMetadata: report.imageMetadata,
-                metadata:      { name: report.metadata.name },
-                scanResult:    currImageScanResult,
+                id:             report.id,
+                imageMetadata:  report.imageMetadata,
+                metadata:       { name: report.metadata.name },
+                imageReference: constructImageName(report.imageMetadata),
+                scanResult:     currImageScanResult,
               }
             ]
           };

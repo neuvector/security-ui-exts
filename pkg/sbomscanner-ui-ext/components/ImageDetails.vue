@@ -172,6 +172,7 @@ import VulnerabilityTable from './common/VulnerabilityTable';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import { getHighestScore, getSeverityNum, getScoreNum } from '../utils/report';
+import { constructImageName } from '@pkg/utils/image';
 
 export default {
   name:       'ImageDetails',
@@ -254,14 +255,7 @@ export default {
     displayImageName() {
       if (!this.currentImage) return this.imageName;
 
-      const metadata = this.currentImage.imageMetadata;
-
-      if (metadata?.registryURI && metadata?.repository && metadata?.tag) {
-        return `${ metadata.registryURI }/${ metadata.repository }:${ metadata.tag }`;
-      }
-
-      // Fallback to the hash ID if metadata is not available
-      return this.imageName;
+      return constructImageName(this.currentImage.imageMetadata) || this.imageName;
     },
 
     // Get the vulnerability report for this image
