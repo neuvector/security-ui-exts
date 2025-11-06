@@ -193,7 +193,7 @@ imageScanner:
           severity: Severity
           repository: Repository
           registry: Registry
-          platform: OS
+          platform: Platform
   imageDetails:
     status: Status
     vulnerabilities: Vulnerabilities
