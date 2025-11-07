@@ -15,7 +15,61 @@ jest.mock('lodash', () => {
 
 jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn() }));
 
-jest.mock('@shell/types/store/pagination.types', () => ({ PaginationParamFilter: { createMultipleFields: jest.fn((fields) => ({ createdFilter: true, fields })) } }));
+// jest.mock('@shell/types/store/pagination.types', () => ({ 
+//   PaginationParamFilter: { createMultipleFields: jest.fn((fields) => ({ createdFilter: true, fields })) }
+// }));
+
+jest.mock('@shell/types/store/pagination.types', () => {
+  class PaginationFilterField {
+    constructor({ field, value }) {
+      this.field = field;
+      this.value = value;
+    }
+  }
+
+  class FilterArgs {
+    constructor({ filters }) {
+      this.filters = filters;
+    }
+  }
+
+  const PaginationParamFilter = {
+    createMultipleFields: jest.fn((fields) => ({ createdFilter: true, fields })),
+  };
+
+  return { PaginationFilterField, FilterArgs, PaginationParamFilter };
+});
+
+
+
+const mockT = (key: string) => key;
+
+const mockStore = {
+  dispatch: jest.fn().mockResolvedValue([]),
+  getters:  {
+    'cluster/schemaFor':         jest.fn().mockReturnValue({ kind: 'Registry' }),
+    'cluster/paginationEnabled': jest.fn().mockReturnValue(false),
+    'management/byId':           jest.fn().mockReturnValue({ kind: 'Registry' }),
+  },
+};
+
+const mockRouter = { push: jest.fn() };
+
+const mockRoute = { params: { cluster: 'mock-cluster' } };
+
+const factory = (options = {}) =>
+  shallowMount(Registries, {
+    global: {
+      mocks: {
+        $store:  mockStore,
+        $router: mockRouter,
+        $route:  mockRoute,
+        t:       mockT,
+        $t:      mockT,
+      },
+    },
+    ...options,
+  });
 
 describe('Registries.vue', () => {
   let wrapper: any;
@@ -23,6 +77,7 @@ describe('Registries.vue', () => {
 
   beforeEach(() => {
     mockStore = {
+      dispatch: jest.fn().mockResolvedValue([]),
       getters: {
         'cluster/schemaFor':         jest.fn(() => ({ schema: 'test-schema' })),
         'cluster/paginationEnabled': jest.fn(() => true),
@@ -63,35 +118,58 @@ describe('Registries.vue', () => {
     expect(wrapper.vm.selectedRows).toEqual([]);
   });
 
-  //   it('runs promptRemoveRegistry when action exists', async () => {
-  //     const mockAct = { action: 'promptRemove' };
-  //     const mockTable = {
-  //       availableActions: [mockAct],
-  //       setBulkActionOfInterest: jest.fn(),
-  //       applyTableAction: jest.fn(),
-  //     };
-  //     wrapper.vm.$refs.registryTable = {
-  //       $refs: { table: { $refs: { table: mockTable } } },
-  //     };
+    it('runs promptRemoveRegistry when action exists', async () => {
+      const mockAct = { action: 'promptRemove' };
+      const mockTable = {
+        availableActions: [mockAct],
+        setBulkActionOfInterest: jest.fn(),
+        applyTableAction: jest.fn(),
+      };
+      
+      Object.defineProperty(wrapper.vm.$, 'refs', {
+        value: Object.defineProperty({}, 'registryTable', {
+          value: {
+            $refs: {
+              table: {
+                $refs: {
+                  table: mockTable,
+                },
+              },
+            },
+          },
+        }),
+        configurable: true,
+      });
+      
+      await wrapper.vm.promptRemoveRegistry();
+      expect(mockTable.setBulkActionOfInterest).toHaveBeenCalledWith(mockAct);
+      expect(mockTable.applyTableAction).toHaveBeenCalledWith(mockAct);
+    });
 
-  //     await wrapper.vm.promptRemoveRegistry();
-  //     expect(mockTable.setBulkActionOfInterest).toHaveBeenCalledWith(mockAct);
-  //     expect(mockTable.applyTableAction).toHaveBeenCalledWith(mockAct);
-  //   });
+    it('skips promptRemoveRegistry when action not found', async () => {
+      const mockTable = {
+        availableActions: [],
+        setBulkActionOfInterest: jest.fn(),
+        applyTableAction: jest.fn(),
+      };
 
-  //   it('skips promptRemoveRegistry when action not found', async () => {
-  //     const mockTable = {
-  //       availableActions: [],
-  //       setBulkActionOfInterest: jest.fn(),
-  //       applyTableAction: jest.fn(),
-  //     };
-  //     wrapper.vm.$refs.registryTable = {
-  //       $refs: { table: { $refs: { table: mockTable } } },
-  //     };
-
-  //     await wrapper.vm.promptRemoveRegistry();
-  //     expect(mockTable.setBulkActionOfInterest).not.toHaveBeenCalled();
-  //   });
+      Object.defineProperty(wrapper.vm.$, 'refs', {
+        value: Object.defineProperty({}, 'registryTable', {
+          value: {
+            $refs: {
+              table: {
+                $refs: {
+                  table: mockTable,
+                },
+              },
+            },
+          },
+        }),
+        configurable: true,
+      });
+      await wrapper.vm.promptRemoveRegistry();
+      expect(mockTable.setBulkActionOfInterest).not.toHaveBeenCalled();
+    });
 
   it('filters rows locally by all fields - currStatus is String', () => {
     const rows = [
@@ -284,5 +362,36 @@ describe('Registries.vue', () => {
     wrapper.setProps({ statusFilterLink: 'complete' });
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.filters.statusSearch).toBe('complete');
+  });
+
+  it('fetchSecondaryResources calls store if !canPaginate', async() => {
+    const wrapper = factory();
+    const res = await wrapper.vm.fetchSecondaryResources({ canPaginate: false });
+
+    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith('cluster/findAll', { type: expect.any(String) });
+    expect(res).toEqual([]);
+  });
+
+  it('fetchPageSecondaryResources returns undefined when page empty', async() => {
+    const wrapper = factory();
+    const res = await wrapper.vm.fetchPageSecondaryResources({
+      canPaginate: false, force: false, page: []
+    });
+
+    expect(res).toBeUndefined();
+  });
+
+
+  it('fetchPageSecondaryResources calls cluster/findPage', async() => {
+    mockStore.dispatch = jest.fn().mockResolvedValue([{ id: 'ns1/n1' }]);
+    const wrapper = factory({ mockStore });
+    const res = await wrapper.vm.fetchPageSecondaryResources({
+      canPaginate: false,
+      force:       false,
+      page:        [{ metadata: { namespace: 'ns1', name: 'n1' } }],
+    });
+
+    expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith('cluster/findPage', expect.any(Object));
+    // expect(res).toEqual([{ id: 'ns1/n1' }]);
   });
 });

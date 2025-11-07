@@ -85,7 +85,7 @@ describe('SevereVulnerabilitiesItem.vue', () => {
     expect(bar.props('percentage')).toBe(0); // (0 / 10) * 100
   });
 
-  it('calculates percentage as Infinity if totalImages is 0 and impacted > 0', () => {
+  it('calculates percentage as zero if totalImages is 0 and impacted > 0', () => {
     const zeroTotalVuln = {
       ...mockVulnerability,
       spec: { ...mockVulnerability.spec, totalImages: 0 }
@@ -95,10 +95,10 @@ describe('SevereVulnerabilitiesItem.vue', () => {
 
     const bar = wrapper.findComponent(BlockPercentageBar);
 
-    expect(bar.props('percentage')).toBe(Infinity); // (5 / 0) * 100
+    expect(bar.props('percentage')).toBe(0);
   });
 
-  it('calculates percentage as NaN if totalImages and impacted are 0', () => {
+  it('calculates percentage as zero if totalImages and impacted are 0', () => {
     const zeroAllVuln = {
       ...mockVulnerability,
       spec: {
@@ -110,6 +110,6 @@ describe('SevereVulnerabilitiesItem.vue', () => {
 
     const bar = wrapper.findComponent(BlockPercentageBar);
 
-    expect(bar.props('percentage')).toBeNaN(); // (0 / 0) * 100
+    expect(bar.props('percentage')).toBe(0);
   });
 });

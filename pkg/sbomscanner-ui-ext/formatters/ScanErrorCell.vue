@@ -4,7 +4,7 @@ import { REGISTRY_STATUS } from '@pkg/types';
 export default {
   props: {
     value: {
-      type:     String,
+      type:     Object,
       required: true
     },
     row: {

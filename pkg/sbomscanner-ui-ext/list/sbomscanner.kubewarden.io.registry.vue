@@ -125,10 +125,10 @@ import PaginatedResourceTable from '@shell/components/PaginatedResourceTable';
 import { REGISTRY_SCAN_TABLE } from '@pkg/config/table-headers';
 import ScanButton from '@pkg/components/common/ScanButton';
 import { findBy } from '@shell/utils/array';
-import { PaginationParamFilter } from '@shell/types/store/pagination.types';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import _ from 'lodash';
 import { getPermissions } from '@pkg/utils/permissions';
+import { FilterArgs, PaginationFilterField, PaginationParamFilter } from '@shell/types/store/pagination.types';
 
 export default {
   name:       'Registries',
@@ -191,7 +191,6 @@ export default {
     }
   },
   methods: {
-
     onSelectionChange(selected) {
       this.selectedRows = selected || [];
     },
@@ -204,6 +203,31 @@ export default {
         table.setBulkActionOfInterest(act);
         table.applyTableAction(act);
       }
+    },
+    async fetchSecondaryResources({ canPaginate }) {
+      if (canPaginate) {
+        return;
+      }
+
+      return await this.$store.dispatch(`cluster/findAll`, { type: RESOURCE.SCAN_JOB });
+    },
+    async fetchPageSecondaryResources({ force, page }) {
+      if (!page?.length) {
+        return;
+      }
+
+      const opt = {
+        force,
+        pagination: new FilterArgs({
+          filters: PaginationParamFilter.createMultipleFields(page.map((r) => new PaginationFilterField({
+            field: 'id',
+            value: `${ r.metadata.namespace }/${ r.metadata.name }`
+          }))),
+        })
+      };
+      const scanJobs = await this.$store.dispatch(`cluster/findPage`, { type: RESOURCE.SCAN_JOB, opt });
+
+      return scanJobs;
     },
     filterRowsLocal(rows) {
       const filters = this.debouncedFilters;

@@ -6,10 +6,6 @@ export default {
       type:     Object,
       required: true
     },
-    row: {
-      type:     Object,
-      required: true
-    }
   },
   components: { TextWithPoppedDetail },
   name:       'ProgressCell',

@@ -478,38 +478,6 @@ describe('RegistriesOverview.vue', () => {
     expect(wrapper.vm.selectedStatus).toBe('failed');
   });
 
-
-  it('fetchSecondaryResources calls store if !canPaginate', async() => {
-    const wrapper = factory();
-    const res = await wrapper.vm.fetchSecondaryResources({ canPaginate: false });
-
-    expect(mockStore.dispatch).toHaveBeenCalledWith('cluster/findAll', { type: expect.any(String) });
-    expect(res).toEqual([]);
-  });
-
-  it('fetchPageSecondaryResources returns undefined when page empty', async() => {
-    const wrapper = factory();
-    const res = await wrapper.vm.fetchPageSecondaryResources({
-      canPaginate: false, force: false, page: []
-    });
-
-    expect(res).toBeUndefined();
-  });
-
-
-  it('fetchPageSecondaryResources calls cluster/findPage', async() => {
-    mockStore.dispatch.mockResolvedValueOnce([{ id: 1 }]);
-    const wrapper = factory();
-    const res = await wrapper.vm.fetchPageSecondaryResources({
-      canPaginate: false,
-      force:       false,
-      page:        [{ metadata: { namespace: 'ns1', name: 'n1' } }],
-    });
-
-    expect(mockStore.dispatch).toHaveBeenCalledWith('cluster/findPage', expect.any(Object));
-    expect(res).toEqual([{ id: 1 }]);
-  });
-
   it('getLastTransitionTime returns the latest timestamp', () => {
     const wrapper = factory();
     const conditions = [

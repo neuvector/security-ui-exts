@@ -14,7 +14,7 @@
         <span>{{ vulnerability.spec.impactedImages_count }}</span>
         <BlockPercentageBar
           class="percentage-bar"
-          :percentage="(vulnerability.spec.impactedImages / vulnerability.spec.totalImages) * 100"
+          :percentage="vulnerability.spec.totalImages > 0 ? (vulnerability.spec.impactedImages / vulnerability.spec.totalImages) * 100 : 0"
           :event-handler="resize"
         />
       </div>

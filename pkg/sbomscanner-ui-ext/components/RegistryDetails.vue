@@ -54,6 +54,7 @@ import StatusBadge from './common/StatusBadge.vue';
 import RegistryDetailScanTable from './RegistryDetailScanTable.vue';
 import ScanButton from './common/ScanButton.vue';
 import { getPermissions } from '@pkg/utils/permissions';
+import { RouterLink } from 'vue-router';
 
 export default {
   name:       'RegistryDetails',

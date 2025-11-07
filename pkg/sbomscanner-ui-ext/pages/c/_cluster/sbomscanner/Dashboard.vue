@@ -145,7 +145,7 @@ import { RESOURCE, PRODUCT_NAME, PAGE } from '@pkg/types';
 // import TopRiskyImagesChart from '@pkg/components/TopRiskyImagesChart';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import day from 'dayjs';
-import Banner from '@components/Banner/Banner.vue';
+import { Banner } from '@components/Banner';
 import InfoTooltip from '@pkg/components/common/Tooltip';
 
 export default {

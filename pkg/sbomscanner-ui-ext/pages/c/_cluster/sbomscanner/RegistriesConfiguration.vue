@@ -58,7 +58,6 @@ import DistributionChart from '@pkg/components/DistributionChart';
 import { REGISTRY_SCAN_TABLE } from '@pkg/config/table-headers';
 import day from 'dayjs';
 import { findBy } from '@shell/utils/array';
-import { FilterArgs, PaginationFilterField, PaginationParamFilter } from '@shell/types/store/pagination.types';
 import RegistryResourceTable from '@pkg/list/sbomscanner.kubewarden.io.registry.vue';
 import { getPermissions } from '@pkg/utils/permissions';
 
@@ -251,31 +250,6 @@ export default {
       });
 
       return lastTransitionTime;
-    },
-    async fetchSecondaryResources({ canPaginate }) {
-      if (canPaginate) {
-        return;
-      }
-
-      return await this.$store.dispatch(`cluster/findAll`, { type: RESOURCE.SCAN_JOB });
-    },
-    async fetchPageSecondaryResources({ force, page }) {
-      if (!page?.length) {
-        return;
-      }
-
-      const opt = {
-        force,
-        pagination: new FilterArgs({
-          filters: PaginationParamFilter.createMultipleFields(page.map((r) => new PaginationFilterField({
-            field: 'id',
-            value: `${ r.metadata.namespace }/${ r.metadata.name }`
-          }))),
-        })
-      };
-      const scanJobs = await this.$store.dispatch(`cluster/findPage`, { type: RESOURCE.SCAN_JOB, opt });
-
-      return scanJobs;
     },
     getUri(registryJson) {
       try {

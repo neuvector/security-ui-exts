@@ -8,7 +8,7 @@ describe('PreviousScanCell.vue', () => {
   const mockT = jest.fn((key) => key);
   const mockRow = { metadata: { name: 'my-image-name' } };
 
-  const mountComponent = (valueProp) => {
+  const mountComponent = (valueProp: any) => {
     return shallowMount(PreviousScanCell, {
       props: {
         value: valueProp,
