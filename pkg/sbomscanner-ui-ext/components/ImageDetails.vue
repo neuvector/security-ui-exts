@@ -173,7 +173,6 @@ import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import { getHighestScore, getSeverityNum, getScoreNum } from '../utils/report';
 import { constructImageName } from '@pkg/utils/image';
-import { RouterLink } from 'vue-router';
 
 export default {
   name:       'ImageDetails',
@@ -186,7 +185,6 @@ export default {
     VulnerabilityTable,
     DownloadSBOMBtn,
     DownloadFullReportBtn,
-    RouterLink,
   },
   data() {
     return {
