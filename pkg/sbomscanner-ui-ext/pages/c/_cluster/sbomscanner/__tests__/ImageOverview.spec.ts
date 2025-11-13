@@ -22,6 +22,7 @@ describe('ImageOverview.vue', () => {
       $t:           t,
       t,
       $store:       store,
+      $fetchState:  { pending: false },
       $rootGetters: {},
     };
 
@@ -68,7 +69,7 @@ describe('ImageOverview.vue', () => {
     const wrapper = mount(ImageOverview as any, {
       global: {
         mocks: {
-          $store: store, $t: t, t
+          $store: store, $t: t, t, $fetchState: { pending: false }
         },
         stubs: {
           SortableTable: SortableTableWithSlots,
@@ -239,7 +240,7 @@ describe('ImageOverview.vue', () => {
     const wrapperErr = mountComponent({
       global: {
         mocks: {
-          $store: storeErr, $t: t, t, $rootGetters: {}
+          $store: storeErr, $t: t, t, $rootGetters: {}, $fetchState: { pending: false }
         }
       }
     });
@@ -264,7 +265,7 @@ describe('ImageOverview.vue', () => {
     const wrapper = mountComponent({
       global: {
         mocks: {
-          $store: store, $t: t, t
+          $store: store, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -469,7 +470,7 @@ describe('ImageOverview.vue', () => {
     const wrapperErr = mountComponent({
       global: {
         mocks: {
-          $store: storeErr, $t: t, t, $rootGetters: {}
+          $store: storeErr, $t: t, t, $rootGetters: {}, $fetchState: { pending: false }
         }
       }
     });
@@ -527,7 +528,7 @@ describe('ImageOverview.vue', () => {
     const wrapperSuccess = mountComponent({
       global: {
         mocks: {
-          $store: storeSuccess, $t: t, t
+          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -552,7 +553,7 @@ describe('ImageOverview.vue', () => {
     const wrapperError = mountComponent({
       global: {
         mocks: {
-          $store: storeError, $t: t, t
+          $store: storeError, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -577,7 +578,7 @@ describe('ImageOverview.vue', () => {
     const wrapper = mountComponent({
       global: {
         mocks: {
-          $store: storeSuccess, $t: t, t
+          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -598,7 +599,7 @@ describe('ImageOverview.vue', () => {
     const wrapperErr = mountComponent({
       global: {
         mocks: {
-          $store: storeError, $t: t, t
+          $store: storeError, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -626,7 +627,7 @@ describe('ImageOverview.vue', () => {
     const wrapper = mountComponent({
       global: {
         mocks: {
-          $store: storeSuccess, $t: t, t
+          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -648,7 +649,7 @@ describe('ImageOverview.vue', () => {
     const wrapperErr = mountComponent({
       global: {
         mocks: {
-          $store: storeError, $t: t, t
+          $store: storeError, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -694,7 +695,7 @@ describe('ImageOverview.vue', () => {
     const wrapper = mountComponent({
       global: {
         mocks: {
-          $store: store, $t: t, t
+          $store: store, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -733,7 +734,7 @@ describe('ImageOverview.vue', () => {
     const wrapperSuccess = mountComponent({
       global: {
         mocks: {
-          $store: storeSuccess, $t: t, t
+          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -758,7 +759,7 @@ describe('ImageOverview.vue', () => {
     const wrapperError = mountComponent({
       global: {
         mocks: {
-          $store: storeError, $t: t, t
+          $store: storeError, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -783,7 +784,7 @@ describe('ImageOverview.vue', () => {
     const wrapper = mountComponent({
       global: {
         mocks: {
-          $store: storeSuccess, $t: t, t
+          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -804,7 +805,7 @@ describe('ImageOverview.vue', () => {
     const wrapperErr = mountComponent({
       global: {
         mocks: {
-          $store: storeError, $t: t, t
+          $store: storeError, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -832,7 +833,7 @@ describe('ImageOverview.vue', () => {
     const wrapper = mountComponent({
       global: {
         mocks: {
-          $store: storeSuccess, $t: t, t
+          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
         }
       }
     });
@@ -854,7 +855,7 @@ describe('ImageOverview.vue', () => {
     const wrapperErr = mountComponent({
       global: {
         mocks: {
-          $store: storeError, $t: t, t
+          $store: storeError, $t: t, t, $fetchState: { pending: false }
         }
       }
     });

@@ -45,7 +45,8 @@ describe('VexHubList.vue', () => {
               'cluster/schemaFor': mockSchemaFor,
             }
           },
-          $fetch: mockFetch,
+          $fetch:      mockFetch,
+          $fetchState: { pending: false },
         },
         stubs: { ResourceTable: true }
       }

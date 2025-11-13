@@ -56,11 +56,13 @@ describe('ImageDetails.vue', () => {
     wrapper = shallowMount(ImageDetails, {
       global: {
         mocks: {
-          $t:     mockT,
-          t:      mockT,
-          $store: mockStore,
-          $route: { params: { id: 'test-image-route', cluster: 'test-cluster' } },
+          $fetchState: { pending: false },
+          $t:          mockT,
+          t:           mockT,
+          $store:      mockStore,
+          $route:      { params: { id: 'test-image-route', cluster: 'test-cluster' } },
         },
+        stubs: { RouterLink: { template: '<a><slot /></a>', props: ['to'] } }
       },
       data() {
         return { imageName: 'test-image' };
@@ -88,11 +90,13 @@ describe('ImageDetails.vue', () => {
     const wrapper = shallowMount(ImageDetails, {
       global: {
         mocks: {
-          $t:     mockT,
-          t:      mockT,
-          $store: mockStore,
-          $route: { params: { cluster: 'test-cluster' } },
+          $fetchState: { pending: false },
+          $t:          mockT,
+          t:           mockT,
+          $store:      mockStore,
+          $route:      { params: { cluster: 'test-cluster' } },
         },
+        stubs: { RouterLink: { template: '<a><slot /></a>', props: ['to'] } }
       },
       data() {
         return { imageName: 'test-image' };
@@ -139,11 +143,13 @@ describe('ImageDetails.vue', () => {
     const localWrapper = shallowMount(ImageDetails, {
       global: {
         mocks: {
-          $t:     mockT,
-          t:      mockT,
-          $store: localStore,
-          $route: { params: { id: 'fallback', cluster: 'test-cluster' } },
+          $fetchState: { pending: false },
+          $t:          mockT,
+          t:           mockT,
+          $store:      localStore,
+          $route:      { params: { id: 'fallback', cluster: 'test-cluster' } },
         },
+        stubs: { RouterLink: { template: '<a><slot /></a>', props: ['to'] } }
       },
       data() {
         return { imageName: 'fallback' };

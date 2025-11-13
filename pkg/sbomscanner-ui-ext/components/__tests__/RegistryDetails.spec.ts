@@ -49,7 +49,8 @@ describe('RegistryDetails.vue', () => {
     return mount(RegistryDetails, {
       global: {
         mocks: {
-          $store: storeMock,
+          $store:      storeMock,
+          $fetchState: { pending: false },
           $route: {
             params: {
               cluster: 'local', id: 'my-reg', ns: 'ns1'

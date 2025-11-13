@@ -45,8 +45,9 @@ describe('Dashboard.vue full coverage', () => {
     return shallowMount(Dashboard, {
       global: {
         mocks: {
-          $store: storeMock,
-          t:      (key: any) => key,
+          $store:      storeMock,
+          t:           (key: any) => key,
+          $fetchState: { pending: false },
         },
       },
       ...options,
@@ -218,7 +219,8 @@ describe('Dashboard.vue full coverage', () => {
             dispatch: mockDispatch,
             getters:  { 'cluster/all': jest.fn(() => []) },
           },
-          t: (key) => key,
+          t:           (key) => key,
+          $fetchState: { pending: false },
         },
       },
     });
