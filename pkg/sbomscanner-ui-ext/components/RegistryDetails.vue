@@ -1,5 +1,6 @@
 <template>
-  <div class="registry-details">
+  <Loading v-if="$fetchState.pending" />
+  <div v-else class="registry-details">
     <div class="about">
       <div class="header">
         <div class="resource-header">
@@ -49,6 +50,7 @@
 <script>
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
+import Loading from '@shell/components/Loading';
 import RancherMeta from './common/RancherMeta.vue';
 import StatusBadge from './common/StatusBadge.vue';
 import RegistryDetailScanTable from './RegistryDetailScanTable.vue';
@@ -62,7 +64,8 @@ export default {
     StatusBadge,
     RegistryDetailScanTable,
     ScanButton,
-    ActionMenu
+    ActionMenu,
+    Loading,
   },
   data() {
     return {

@@ -1,5 +1,6 @@
 <template>
-  <div class="page">
+  <Loading v-if="$fetchState.pending" />
+  <div v-else class="page">
     <!-- Header Section -->
     <div class="header-meta">
       <div class="header-section">
@@ -165,6 +166,7 @@ import { BadgeState } from '@components/BadgeState';
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
 import day from 'dayjs';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
+import Loading from '@shell/components/Loading';
 import DistributionChart from '@pkg/components/DistributionChart';
 import RancherMeta from './common/RancherMeta.vue';
 import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
@@ -185,6 +187,7 @@ export default {
     VulnerabilityTable,
     DownloadSBOMBtn,
     DownloadFullReportBtn,
+    Loading,
   },
   data() {
     return {

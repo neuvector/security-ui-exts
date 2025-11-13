@@ -1,5 +1,6 @@
 <template>
-  <div class="page">
+  <Loading v-if="$fetchState.pending" />
+  <div v-else class="page">
     <div class="header-section">
       <div class="title">
         {{ t('imageScanner.dashboard.title') }}
@@ -144,6 +145,7 @@ import { RESOURCE, PRODUCT_NAME, PAGE } from '@pkg/types';
 // import ImageRiskAssessment from '@pkg/components/ImageRiskAssessment';
 // import TopRiskyImagesChart from '@pkg/components/TopRiskyImagesChart';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
+import Loading from '@shell/components/Loading';
 import day from 'dayjs';
 import { Banner } from '@components/Banner';
 import InfoTooltip from '@pkg/components/common/Tooltip';
@@ -158,6 +160,7 @@ export default {
     LabeledSelect,
     Banner,
     InfoTooltip,
+    Loading,
   },
   data() {
     return {

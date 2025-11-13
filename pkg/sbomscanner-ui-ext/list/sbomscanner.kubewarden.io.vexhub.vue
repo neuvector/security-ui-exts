@@ -4,6 +4,7 @@
       ref="rt"
       :schema="schema"
       :rows="rows"
+      :loading="$fetchState.pending"
       :namespaced="false"
       :headers="headers"
       :key-field="'id'"

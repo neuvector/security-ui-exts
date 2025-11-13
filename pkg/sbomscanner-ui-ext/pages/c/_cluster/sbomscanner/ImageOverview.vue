@@ -114,6 +114,7 @@
       :sub-rows="isGrouped"
       :sub-expand-column="isGrouped"
       :rows="isGrouped ? filteredRows.rowsByRepo : filteredRows.rows"
+      :loading="$fetchState.pending"
       :key-field="'id'"
       @selection="onSelectionChange"
     >
