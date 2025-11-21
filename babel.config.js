@@ -7,12 +7,12 @@ module.exports = {
           {
             root:  ['.'],
             alias: {
-              '@':                                       '.',
-              '~':                                       '.',
-              '@benchmark-compliance':                   './pkg/benchmark-compliance',
-              '@sbombastic':                             './pkg/sbombastic',
-              '@network':                                './pkg/network',
-              '@runtime-process-profile':                './pkg/runtime-process-profile',
+              '@':                        '.',
+              '~':                        '.',
+              '@benchmark-compliance':    './pkg/benchmark-compliance',
+              '@sbombastic':              './pkg/sbombastic',
+              '@network':                 './pkg/network',
+              '@runtime-process-profile': './pkg/runtime-process-profile',
             },
           },
         ],
