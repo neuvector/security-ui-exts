@@ -10,7 +10,7 @@ module.exports = {
               '@':                        '.',
               '~':                        '.',
               '@benchmark-compliance':    './pkg/benchmark-compliance',
-              '@sbombastic':              './pkg/sbombastic',
+              '@sbomscanner-ui-ext':      './pkg/sbomscanner-ui-ext',
               '@network':                 './pkg/network',
               '@runtime-process-profile': './pkg/runtime-process-profile',
             },
