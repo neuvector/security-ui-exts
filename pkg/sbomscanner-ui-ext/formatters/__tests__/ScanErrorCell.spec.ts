@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { shallowMount } from '@vue/test-utils';
 import ScanErrorCell from '../ScanErrorCell.vue';
 
-jest.mock('@pkg/types', () => ({ REGISTRY_STATUS: { FAILED: 'failed' } }));
+jest.mock('@sbomscanner-ui-ext/types', () => ({ REGISTRY_STATUS: { FAILED: 'failed' } }));
 
 describe('ScanErrorCell.vue', () => {
   const mockT = jest.fn((key) => key);

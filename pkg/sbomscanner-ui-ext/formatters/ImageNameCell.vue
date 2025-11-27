@@ -7,8 +7,8 @@
 import {
   PRODUCT_NAME,
   PAGE,
-} from '@pkg/types';
-import { constructImageName } from '@pkg/utils/image';
+} from '@sbomscanner-ui-ext/types';
+import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 export default {
   props: {
     row: {

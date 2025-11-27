@@ -1,6 +1,6 @@
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 import MostSevereVulnerabilities from '../MostSevereVulnerabilities.vue';
-import { PRODUCT_NAME, PAGE } from '@pkg/types';
+import { PRODUCT_NAME, PAGE } from '@sbomscanner-ui-ext/types';
 
 const mockReport = {
   report: {

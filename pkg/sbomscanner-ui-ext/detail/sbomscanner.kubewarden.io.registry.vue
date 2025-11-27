@@ -1,6 +1,6 @@
 <script>
 import DetailPage from '@rancher/shell/components/Resource/Detail/Page.vue';
-import RegistryDetailScanTable from '@pkg/components/RegistryDetailScanTable.vue';
+import RegistryDetailScanTable from '@sbomscanner-ui-ext/components/RegistryDetailScanTable.vue';
 
 export default {
   name:  'CruRegistry',

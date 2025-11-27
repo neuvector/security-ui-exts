@@ -59,10 +59,10 @@
 <script>
 import SortableTable from '@shell/components/SortableTable';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
-import DistributionChart from '@pkg/components/DistributionChart';
-import TopSevereVulnerabilitiesChart from '@pkg/components/TopSevereVulnerabilitiesChart';
-import DownloadCustomReport from '@pkg/components/common/DownloadCustomReport';
-import { VULNERABILITIES_TABLE } from '@pkg/config/table-headers';
+import DistributionChart from '@sbomscanner-ui-ext/components/DistributionChart';
+import TopSevereVulnerabilitiesChart from '@sbomscanner-ui-ext/components/TopSevereVulnerabilitiesChart';
+import DownloadCustomReport from '@sbomscanner-ui-ext/components/common/DownloadCustomReport';
+import { VULNERABILITIES_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 
 export default {
   name:       'Vulnerabilities',

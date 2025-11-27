@@ -1,5 +1,5 @@
 import SteveModel from '@shell/plugins/steve/steve-class';
-import { PRODUCT_NAME, PAGE } from '@pkg/types';
+import { PRODUCT_NAME, PAGE } from '@sbomscanner-ui-ext/types';
 
 export default class SbomscannerRancherIoVexhub extends SteveModel {
   get _availableActions() {

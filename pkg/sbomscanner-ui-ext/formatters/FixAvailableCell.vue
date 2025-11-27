@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
+import FixAvailableIcon from '@sbomscanner-ui-ext/components/common/FixAvailableIcon';
 
 export default {
   components: { FixAvailableIcon },

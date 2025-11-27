@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { VEX_STATUS } from '@pkg/types';
+import { VEX_STATUS } from '@sbomscanner-ui-ext/types';
 export default {
   name:     'VexStatusBadge',
   props:    { enabled: { type: Boolean } },

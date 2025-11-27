@@ -13,7 +13,7 @@ jest.mock('../common/DownloadSBOMBtn', () => ({ default: { template: '<button cl
 jest.mock('../common/DownloadFullReportBtn.vue', () => ({ default: { template: '<button class="download-report" />' } }));
 
 // Mock constants
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'mockProduct',
   RESOURCE:     {
     IMAGE:                'image',

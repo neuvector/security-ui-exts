@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import RegistryStatusUpdate from '@pkg/components/common/RegistryStatusUpdate';
-import InfoTooltip from '@pkg/components/common/Tooltip';
+import RegistryStatusUpdate from '@sbomscanner-ui-ext/components/common/RegistryStatusUpdate';
+import InfoTooltip from '@sbomscanner-ui-ext/components/common/Tooltip';
 
 export default {
   name:       'RecentUpdatedRegistries',

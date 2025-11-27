@@ -3,7 +3,7 @@ import { createStore } from 'vuex';
 import VexManagement from '../VexManagement.vue';
 
 
-jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true, canDelete: true })) }));
+jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true, canDelete: true })) }));
 // Define RESOURCE constants locally to avoid import issues
 const RESOURCE = { VEX_HUB: 'sbomscanner.kubewarden.io.vexhub' };
 

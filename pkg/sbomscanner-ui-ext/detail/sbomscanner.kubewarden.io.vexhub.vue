@@ -4,7 +4,7 @@ import Masthead from '@shell/components/Resource/Detail/Masthead/index.vue';
 import Date from '@shell/components/formatter/Date.vue';
 import { useStore } from 'vuex';
 import { useI18n } from '@shell/composables/useI18n';
-import UriExternalLink from '@pkg/formatters/UriExternalLink.vue';
+import UriExternalLink from '@sbomscanner-ui-ext/formatters/UriExternalLink.vue';
 import { computed } from 'vue';
 
 const store = useStore();

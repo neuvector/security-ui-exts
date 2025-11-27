@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import SteveModel from '@shell/plugins/steve/steve-class';
 import SbomscannerRancherIoVexhub from '../sbomscanner.kubewarden.io.vexhub.js';
-import { PRODUCT_NAME, PAGE } from '@pkg/types';
+import { PRODUCT_NAME, PAGE } from '@sbomscanner-ui-ext/types';
 
 jest.mock('@shell/plugins/steve/steve-class', () => {
   const MockSteveModel = class {
@@ -40,7 +40,7 @@ jest.mock('@shell/plugins/steve/steve-class', () => {
   };
 });
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'test-product',
   PAGE:         { VEX_MANAGEMENT: 'test-page-vex' }
 }));

@@ -1,5 +1,5 @@
 import SteveModel from '@shell/plugins/steve/steve-class';
-import { PRODUCT_NAME, PAGE, RESOURCE } from '@pkg/types';
+import { PRODUCT_NAME, PAGE, RESOURCE } from '@sbomscanner-ui-ext/types';
 export default class Registry extends SteveModel {
   get _availableActions() {
     // Remove the default actions we don't want

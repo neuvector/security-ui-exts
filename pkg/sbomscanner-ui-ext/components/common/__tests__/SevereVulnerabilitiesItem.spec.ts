@@ -4,7 +4,7 @@ import SevereVulnerabilitiesItem from '../SevereVulnerabilitiesItem.vue';
 import ScoreBadge from '../ScoreBadge.vue';
 import BlockPercentageBar from '../BlockPercentageBar.vue';
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'test-product',
   PAGE:         { VULNERABILITIES: 'test-vulns' }
 }));

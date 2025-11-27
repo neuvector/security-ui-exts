@@ -12,8 +12,8 @@ module.exports = () => {
     if (typeof vendorConfigureWebpack === 'function') {
       vendorConfigureWebpack(config);
     }
-    // Add the @sbomscanner alias to point to the pkg/sbomscanner directory.
-    config.resolve.alias['@sbomscanner'] = path.resolve(__dirname);
+    // Add the @sbomscanner-ui-ext alias to point to the pkg/sbomscanner-ui-ext directory.
+    config.resolve.alias['@sbomscanner-ui-ext'] = path.resolve(__dirname);
   };
 
   // Create an override for __tests__ directories.

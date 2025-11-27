@@ -10,8 +10,8 @@ import { CATALOG } from '@shell/config/types';
 import { nextTick } from 'vue';
 
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
-jest.mock('@pkg/utils/handle-growl', () => ({ handleGrowl: jest.fn() }));
-jest.mock('@pkg/utils/chart', () => ({
+jest.mock('@sbomscanner-ui-ext/utils/handle-growl', () => ({ handleGrowl: jest.fn() }));
+jest.mock('@sbomscanner-ui-ext/utils/chart', () => ({
   refreshCharts:    jest.fn(),
   getLatestVersion: jest.fn(() => '1.0.0')
 }));
@@ -472,7 +472,7 @@ describe('InstallView.vue', () => {
     await Object.defineProperty(wrapper.vm, 'hasCnpgSchema', { get: () => false });
     await Object.defineProperty(wrapper.vm, 'hasSbomscannerSchema', { get: () => false });
     wrapper.vm.isSkipped = false;
-    const latestChartVersion = require('@pkg/utils/chart').getLatestVersion();
+    const latestChartVersion = require('@sbomscanner-ui-ext/utils/chart').getLatestVersion();
 
     await wrapper.vm.chartRoute();
 
@@ -509,7 +509,7 @@ describe('InstallView.vue', () => {
       },
     });
 
-    require('@pkg/utils/chart').getLatestVersion.mockReturnValue(null);
+    require('@sbomscanner-ui-ext/utils/chart').getLatestVersion.mockReturnValue(null);
 
     await wrapper.vm.chartRoute();
     expect(handleGrowl).toHaveBeenCalled();
@@ -998,7 +998,7 @@ describe('chartRoute - InstallView router push', () => {
     });
     await Object.defineProperty(wrapper.vm, 'hasCnpgSchema', { get: () => false });
     wrapper.vm.isSkipped = false;
-    require('@pkg/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
+    require('@sbomscanner-ui-ext/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
 
     await wrapper.vm.chartRoute();
 
@@ -1034,7 +1034,7 @@ describe('chartRoute - InstallView router push', () => {
       configurable: true,
     });
     wrapper.vm.isSkipped = false;
-    require('@pkg/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
+    require('@sbomscanner-ui-ext/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
     await wrapper.vm.chartRoute();
 
     expect(routerMock.push).toHaveBeenCalled();
@@ -1062,7 +1062,7 @@ describe('chartRoute - InstallView router push', () => {
       configurable: true,
     });
     wrapper.vm.isSkipped = false;
-    require('@pkg/utils/chart').getLatestVersion.mockReturnValue(null);
+    require('@sbomscanner-ui-ext/utils/chart').getLatestVersion.mockReturnValue(null);
 
     await wrapper.vm.chartRoute();
 
@@ -1087,7 +1087,7 @@ describe('chartRoute - InstallView router push', () => {
     });
     await Object.defineProperty(wrapper.vm, 'hasSbomscannerSchema', { get: () => false });
     wrapper.vm.isSkipped = true;
-    require('@pkg/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
+    require('@sbomscanner-ui-ext/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
 
     await wrapper.vm.chartRoute();
 
@@ -1123,7 +1123,7 @@ describe('chartRoute - InstallView router push', () => {
       configurable: true,
     });
     wrapper.vm.isSkipped = true;
-    require('@pkg/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
+    require('@sbomscanner-ui-ext/utils/chart').getLatestVersion.mockReturnValue('1.0.0');
     await wrapper.vm.chartRoute();
 
     expect(routerMock.push).toHaveBeenCalled();
@@ -1151,7 +1151,7 @@ describe('chartRoute - InstallView router push', () => {
       configurable: true,
     });
     wrapper.vm.isSkipped = true;
-    require('@pkg/utils/chart').getLatestVersion.mockReturnValue(null);
+    require('@sbomscanner-ui-ext/utils/chart').getLatestVersion.mockReturnValue(null);
 
     await wrapper.vm.chartRoute();
 

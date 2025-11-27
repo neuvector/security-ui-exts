@@ -31,7 +31,7 @@
       "@tests/*": [
         "./tests/*"
       ],
-      "@pkg/*": ["./pkg/sbomscanner-ui-ext/*"],
+      "@sbomscanner-ui-ext/*": ["./pkg/sbomscanner-ui-ext/*"],
     },
     "typeRoots": [
       "./node_modules",

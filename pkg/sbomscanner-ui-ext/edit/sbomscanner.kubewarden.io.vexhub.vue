@@ -4,7 +4,7 @@ import CruResource from '@shell/components/CruResource.vue';
 import { Checkbox } from '@components/Form/Checkbox';
 import { LabeledInput } from '@components/Form/LabeledInput';
 import CreateEditView from '@shell/mixins/create-edit-view';
-import { PAGE, PRODUCT_NAME } from '@pkg/types/sbomscanner';
+import { PAGE, PRODUCT_NAME } from '@sbomscanner-ui-ext/types/sbomscanner';
 
 export default {
   name: 'CruVexHub',

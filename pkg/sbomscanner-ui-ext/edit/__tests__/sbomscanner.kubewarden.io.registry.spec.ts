@@ -4,7 +4,7 @@ import { SECRET } from '@shell/config/types';
 import { SECRET_TYPES } from '@shell/config/secret';
 import { SCAN_INTERVALS, REGISTRY_TYPE } from '../../constants';
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'kubewarden',
   PAGE:         { REGISTRIES: 'registries' },
   LOCAT_HOST:   [],

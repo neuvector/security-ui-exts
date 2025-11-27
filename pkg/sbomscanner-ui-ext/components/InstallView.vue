@@ -10,10 +10,10 @@ import ResourceFetch from '@shell/mixins/resource-fetch';
 import { Banner } from '@components/Banner';
 import AsyncButton from '@shell/components/AsyncButton';
 import Loading from '@shell/components/Loading';
-import { SBOMSCANNER, SBOMSCANNER_REPOS, CNPG, CNPG_REPOS } from '@pkg/types';
-import { handleGrowl } from '@pkg/utils/handle-growl';
-import { refreshCharts, getLatestVersion } from '@pkg/utils/chart';
-import InstallWizard from '@pkg/components/common/InstallWizard';
+import { SBOMSCANNER, SBOMSCANNER_REPOS, CNPG, CNPG_REPOS } from '@sbomscanner-ui-ext/types';
+import { handleGrowl } from '@sbomscanner-ui-ext/utils/handle-growl';
+import { refreshCharts, getLatestVersion } from '@sbomscanner-ui-ext/utils/chart';
+import InstallWizard from '@sbomscanner-ui-ext/components/common/InstallWizard';
 
 export default {
 

@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 import ImageNameCell from '../ImageNameCell.vue'; // Adjust this path as needed
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'mocked-product',
   PAGE:         { IMAGES: 'mocked-images-page' }
 }));

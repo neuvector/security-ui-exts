@@ -46,11 +46,11 @@
 </template>
 
 <script>
-import ScoreBadge from '@pkg/components/common/ScoreBadge';
-import InfoTooltip from '@pkg/components/common/Tooltip';
-import { PRODUCT_NAME, PAGE } from '@pkg/types';
-import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
-import { getHighestScore, getSeverityNum, getScoreNum } from '@pkg/utils/report';
+import ScoreBadge from '@sbomscanner-ui-ext/components/common/ScoreBadge';
+import InfoTooltip from '@sbomscanner-ui-ext/components/common/Tooltip';
+import { PRODUCT_NAME, PAGE } from '@sbomscanner-ui-ext/types';
+import FixAvailableIcon from '@sbomscanner-ui-ext/components/common/FixAvailableIcon';
+import { getHighestScore, getSeverityNum, getScoreNum } from '@sbomscanner-ui-ext/utils/report';
 export default {
   name:       'MostSevereVulnerabilities',
   components: {

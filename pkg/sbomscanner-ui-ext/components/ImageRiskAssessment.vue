@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import BarChart from '@pkg/components/common/BarChart';
+import BarChart from '@sbomscanner-ui-ext/components/common/BarChart';
 
 export default {
   name:       'ImageRiskAssessment',

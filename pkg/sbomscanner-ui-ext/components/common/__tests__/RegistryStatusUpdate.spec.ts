@@ -6,7 +6,7 @@ import { elapsedTime } from '@shell/utils/time';
 
 jest.mock('@shell/utils/time', () => ({ elapsedTime: jest.fn() }));
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'test-product',
   PAGE:         { REGISTRIES: 'test-registries' },
 }));

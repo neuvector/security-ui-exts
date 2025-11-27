@@ -7,19 +7,19 @@ import { scanJobs4General } from '../../../../../test/mockdata/scanJobs';
 const day = require('dayjs');
 
 // --- MOCKS ---
-jest.mock('@pkg/components/RecentUpdatedRegistries', () => ({
+jest.mock('@sbomscanner-ui-ext/components/RecentUpdatedRegistries', () => ({
   name:     'RecentUpdatedRegistries',
   template: '<div class="mock-recent"></div>',
 }));
-jest.mock('@pkg/components/DistributionChart', () => ({
+jest.mock('@sbomscanner-ui-ext/components/DistributionChart', () => ({
   name:     'DistributionChart',
   template: '<div class="mock-distribution"></div>',
 }));
-jest.mock('@pkg/list/sbomscanner.kubewarden.io.registry.vue', () => ({
+jest.mock('@sbomscanner-ui-ext/list/sbomscanner.kubewarden.io.registry.vue', () => ({
   name:     'RegistryResourceTable',
   template: '<div class="mock-table"></div>',
 }));
-jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true })) }));
+jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true })) }));
 jest.mock('@shell/utils/array', () => ({ findBy: jest.fn() }));
 
 

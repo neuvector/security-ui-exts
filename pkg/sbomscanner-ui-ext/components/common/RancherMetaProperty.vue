@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { MetadataProperty } from '@pkg/types';
+import { MetadataProperty } from '@sbomscanner-ui-ext/types';
 import { PropType } from 'vue';
 
 export default {

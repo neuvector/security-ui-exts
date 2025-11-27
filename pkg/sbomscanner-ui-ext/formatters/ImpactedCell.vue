@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import BlockPercentageBarAlt from '@pkg/components/common/BlockPercentageBarAlt.vue';
+import BlockPercentageBarAlt from '@sbomscanner-ui-ext/components/common/BlockPercentageBarAlt.vue';
 
 export default {
   components: { BlockPercentageBarAlt },

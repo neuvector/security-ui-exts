@@ -2,7 +2,7 @@ import {
   PRODUCT_NAME,
   PAGE,
   RESOURCE
-} from '@pkg/types';
+} from '@sbomscanner-ui-ext/types';
 
 export function init($plugin: any, store: any) {
   const {

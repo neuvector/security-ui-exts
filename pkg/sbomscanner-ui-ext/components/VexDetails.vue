@@ -56,11 +56,11 @@
 </template>
 
 <script>
-import { PRODUCT_NAME, RESOURCE, PAGE, VEX_STATUS } from '@pkg/types';
+import { PRODUCT_NAME, RESOURCE, PAGE, VEX_STATUS } from '@sbomscanner-ui-ext/types';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
 import RancherMeta from './common/RancherMeta.vue';
 import StatusBadge from './common/StatusBadge.vue';
-import { getPermissions } from '@pkg/utils/permissions';
+import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 import day from 'dayjs';
 
 export default {

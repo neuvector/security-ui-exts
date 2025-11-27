@@ -1,5 +1,5 @@
 <script>
-import TextWithPoppedDetail from '@pkg/components/common/TextWithPoppedDetail';
+import TextWithPoppedDetail from '@sbomscanner-ui-ext/components/common/TextWithPoppedDetail';
 export default {
   props: {
     value: {

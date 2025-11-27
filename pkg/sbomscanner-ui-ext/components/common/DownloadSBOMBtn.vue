@@ -12,7 +12,7 @@
 
 <script>
 import day from 'dayjs';
-import { downloadJSON } from '@pkg/utils/report';
+import { downloadJSON } from '@sbomscanner-ui-ext/utils/report';
 export default {
   name:  'DownloadSBOMBtn',
   props: {

@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import ScanButton from '../ScanButton.vue';
 
 // Mock dependencies
-jest.mock('@pkg/types', () => ({ RESOURCE: { SCAN_JOB: 'sbom.cisco.com.scanjob' } }));
+jest.mock('@sbomscanner-ui-ext/types', () => ({ RESOURCE: { SCAN_JOB: 'sbom.cisco.com.scanjob' } }));
 
 describe('ScanButton.vue', () => {
   let wrapper;

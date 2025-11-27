@@ -1,5 +1,5 @@
 <script>
-import VexStatusBadge from '@pkg/components/common/VexStatusBadge.vue';
+import VexStatusBadge from '@sbomscanner-ui-ext/components/common/VexStatusBadge.vue';
 export default {
   components: { VexStatusBadge },
   props:      {

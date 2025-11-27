@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import StackedPercentageBar from '@pkg/components/common/StackedPercentageBar';
+import StackedPercentageBar from '@sbomscanner-ui-ext/components/common/StackedPercentageBar';
 export default {
   name:       'AmountBarBySeverity',
   components: { StackedPercentageBar },

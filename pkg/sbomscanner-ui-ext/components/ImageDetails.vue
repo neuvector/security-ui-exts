@@ -163,18 +163,18 @@
 
 <script>
 import { BadgeState } from '@components/BadgeState';
-import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
+import { PRODUCT_NAME, RESOURCE, PAGE } from '@sbomscanner-ui-ext/types';
 import day from 'dayjs';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import Loading from '@shell/components/Loading';
-import DistributionChart from '@pkg/components/DistributionChart';
+import DistributionChart from '@sbomscanner-ui-ext/components/DistributionChart';
 import RancherMeta from './common/RancherMeta.vue';
 import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import VulnerabilityTable from './common/VulnerabilityTable';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import { getHighestScore, getSeverityNum, getScoreNum } from '../utils/report';
-import { constructImageName } from '@pkg/utils/image';
+import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 
 export default {
   name:       'ImageDetails',

@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals';
 import { shallowMount } from '@vue/test-utils';
 import VexStatusBadge from '../VexStatusBadge.vue';
-import { VEX_STATUS } from '@pkg/types';
+import { VEX_STATUS } from '@sbomscanner-ui-ext/types';
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   VEX_STATUS: {
     ENABLED:  'enabled',
     DISABLED: 'disabled',

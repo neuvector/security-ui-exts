@@ -179,15 +179,15 @@
 <script>
 import SortableTable from '@shell/components/SortableTable';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
-// import TopRiskyImagesChart from '@pkg/components/TopRiskyImagesChart';
-// import ImageRiskAssessment from '@pkg/components/ImageRiskAssessment';
+// import TopRiskyImagesChart from '@sbomscanner-ui-ext/components/TopRiskyImagesChart';
+// import ImageRiskAssessment from '@sbomscanner-ui-ext/components/ImageRiskAssessment';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
-import { IMAGE_LIST_TABLE, REPO_BASED_TABLE, REPO_BASED_IMAGE_LIST_TABLE } from '@pkg/config/table-headers';
+import { IMAGE_LIST_TABLE, REPO_BASED_TABLE, REPO_BASED_IMAGE_LIST_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 import { Checkbox } from '@components/Form/Checkbox';
-import { RESOURCE } from '@pkg/types';
-import { imageDetailsToCSV } from '@pkg/utils/report';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
+import { imageDetailsToCSV } from '@sbomscanner-ui-ext/utils/report';
 import { saveAs } from 'file-saver';
-import { constructImageName } from '@pkg/utils/image';
+import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import Papa from 'papaparse';
 import _ from 'lodash';
 import day from 'dayjs';

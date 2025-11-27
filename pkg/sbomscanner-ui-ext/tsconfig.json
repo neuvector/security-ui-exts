@@ -43,7 +43,7 @@
         "@rancher/components/*"
       ],
       "@tests/*": ["./tests/*"],
-      "@pkg/*": ["./*"],
+      "@sbomscanner-ui-ext/*": ["./*"],
     }
   },
   "include": [

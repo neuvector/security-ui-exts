@@ -1,5 +1,5 @@
 <script>
-import { REGISTRY_SCAN_HISTORY_TABLE } from '@pkg/config/table-headers';
+import { REGISTRY_SCAN_HISTORY_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 import SortableTable from '@shell/components/SortableTable';
 
 export default {

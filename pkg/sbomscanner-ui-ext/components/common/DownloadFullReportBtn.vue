@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { downloadCSV, downloadJSON } from '@pkg/utils/report';
+import { downloadCSV, downloadJSON } from '@sbomscanner-ui-ext/utils/report';
 import day from 'dayjs';
 export default {
   name:  'DownloadFullReportBtn',

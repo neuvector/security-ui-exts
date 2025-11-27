@@ -1,11 +1,11 @@
 /* eslint-env jest */
 
 import { shallowMount } from '@vue/test-utils';
-import { downloadJSON } from '@pkg/utils/report';
+import { downloadJSON } from '@sbomscanner-ui-ext/utils/report';
 import dayjs from 'dayjs';
 import DownloadSBOMBtn from '../DownloadSBOMBtn.vue';
 
-jest.mock('@pkg/utils/report');
+jest.mock('@sbomscanner-ui-ext/utils/report');
 
 jest.mock('dayjs', () => ({
   __esModule: true, // This is important for mocking ES6 modules with default exports

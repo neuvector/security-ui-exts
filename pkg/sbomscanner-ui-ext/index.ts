@@ -1,6 +1,6 @@
 import { importTypes } from '@rancher/auto-import';
 import { IPlugin } from '@shell/core/types';
-import imageScanRoutes from '@pkg/routes/sbomscanner-routes';
+import imageScanRoutes from '@sbomscanner-ui-ext/routes/sbomscanner-routes';
 
 
 // Init the package

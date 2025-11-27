@@ -20,9 +20,9 @@
 import {
   RESOURCE,
   PRODUCT_NAME,
-} from '@pkg/types';
+} from '@sbomscanner-ui-ext/types';
 import ResourceTable from '@shell/components/ResourceTable';
-import { VEX_MANAGEMENT_TABLE } from '@pkg/config/table-headers';
+import { VEX_MANAGEMENT_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 
 export default {
   name:       'VexManagement',

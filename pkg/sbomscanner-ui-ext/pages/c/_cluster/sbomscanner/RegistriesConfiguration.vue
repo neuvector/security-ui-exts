@@ -52,14 +52,14 @@
 import {
   RESOURCE,
   PRODUCT_NAME,
-} from '@pkg/types';
-import RecentUpdatedRegistries from '@pkg/components/RecentUpdatedRegistries';
-import DistributionChart from '@pkg/components/DistributionChart';
-import { REGISTRY_SCAN_TABLE } from '@pkg/config/table-headers';
+} from '@sbomscanner-ui-ext/types';
+import RecentUpdatedRegistries from '@sbomscanner-ui-ext/components/RecentUpdatedRegistries';
+import DistributionChart from '@sbomscanner-ui-ext/components/DistributionChart';
+import { REGISTRY_SCAN_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 import day from 'dayjs';
 import { findBy } from '@shell/utils/array';
-import RegistryResourceTable from '@pkg/list/sbomscanner.kubewarden.io.registry.vue';
-import { getPermissions } from '@pkg/utils/permissions';
+import RegistryResourceTable from '@sbomscanner-ui-ext/list/sbomscanner.kubewarden.io.registry.vue';
+import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 
 export default {
   name:       'RegistriesOverview',

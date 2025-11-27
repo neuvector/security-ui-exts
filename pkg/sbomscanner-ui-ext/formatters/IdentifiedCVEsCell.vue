@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import AmountBarBySeverity from '@pkg/components/common/AmountBarBySeverity';
+import AmountBarBySeverity from '@sbomscanner-ui-ext/components/common/AmountBarBySeverity';
 export default {
   props: {
     value: {

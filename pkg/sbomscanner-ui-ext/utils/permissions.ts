@@ -1,4 +1,4 @@
-import { RESOURCE } from '@pkg/types';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
 export function getPermissions(getters: any) {
   const resourceMethods = getters['cluster/schemaFor'](RESOURCE.REGISTRY)?.resourceMethods || [];
   const canEdit = resourceMethods.includes('PUT');

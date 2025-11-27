@@ -2,10 +2,10 @@
 
 import { shallowMount } from '@vue/test-utils';
 import DownloadFullReportBtn from '../DownloadFullReportBtn.vue';
-import { downloadCSV, downloadJSON } from '@pkg/utils/report';
+import { downloadCSV, downloadJSON } from '@sbomscanner-ui-ext/utils/report';
 
 // Mock dependencies
-jest.mock('@pkg/utils/report', () => ({
+jest.mock('@sbomscanner-ui-ext/utils/report', () => ({
   downloadCSV:  jest.fn(),
   downloadJSON: jest.fn(),
 }));

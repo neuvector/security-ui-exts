@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { REGISTRY_STATUS, VEX_STATUS } from '@pkg/types';
+import { REGISTRY_STATUS, VEX_STATUS } from '@sbomscanner-ui-ext/types';
 export default {
   name:  'StatusBadge',
   props: {

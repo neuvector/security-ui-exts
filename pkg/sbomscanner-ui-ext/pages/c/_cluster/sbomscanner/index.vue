@@ -1,8 +1,8 @@
 <script>
-import Dashboard from '@pkg/pages/c/_cluster/sbomscanner/Dashboard';
+import Dashboard from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/Dashboard';
 import { SERVICE, SCHEMA } from '@shell/config/types';
-import { RESOURCE } from '@pkg/types';
-import InstallView from '@pkg/components/InstallView';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
+import InstallView from '@sbomscanner-ui-ext/components/InstallView';
 
 export default {
   name: 'InstallationWizard',

@@ -1,5 +1,5 @@
-import { Chart } from '@pkg/types';
-import { handleGrowl } from '@pkg/utils/handle-growl';
+import { Chart } from '@sbomscanner-ui-ext/types';
+import { handleGrowl } from '@sbomscanner-ui-ext/utils/handle-growl';
 import isEmpty from 'lodash/isEmpty';
 import semver from 'semver';
 import { SHOW_PRE_RELEASE } from '@shell/store/prefs';

@@ -2,15 +2,15 @@ import { jest } from '@jest/globals';
 import { shallowMount, flushPromises } from '@vue/test-utils';
 import VexHubList from '../sbomscanner.kubewarden.io.vexhub.vue';
 import ResourceTable from '@shell/components/ResourceTable';
-import { RESOURCE, PRODUCT_NAME } from '@pkg/types';
-import { VEX_MANAGEMENT_TABLE } from '@pkg/config/table-headers';
+import { RESOURCE, PRODUCT_NAME } from '@sbomscanner-ui-ext/types';
+import { VEX_MANAGEMENT_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   RESOURCE:     { VEX_HUB: 'test.vexhub' },
   PRODUCT_NAME: 'test-product'
 }));
 
-jest.mock('@pkg/config/table-headers', () => ({ VEX_MANAGEMENT_TABLE: [{ name: 'name', label: 'Name' }] }));
+jest.mock('@sbomscanner-ui-ext/config/table-headers', () => ({ VEX_MANAGEMENT_TABLE: [{ name: 'name', label: 'Name' }] }));
 
 describe('VexHubList.vue', () => {
   let wrapper;

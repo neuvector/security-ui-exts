@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ScoreBadge from '@pkg/components/common/ScoreBadge.vue';
+import ScoreBadge from '@sbomscanner-ui-ext/components/common/ScoreBadge.vue';
 
 export default {
   components: { ScoreBadge },

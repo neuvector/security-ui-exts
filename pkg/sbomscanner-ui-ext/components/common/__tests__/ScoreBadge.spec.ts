@@ -1,8 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 import ScoreBadge from '../ScoreBadge.vue';
-import { SEVERITY } from '@pkg/types/image';
+import { SEVERITY } from '@sbomscanner-ui-ext/types/image';
 
-jest.mock('@pkg/types/image', () => ({
+jest.mock('@sbomscanner-ui-ext/types/image', () => ({
   SEVERITY: {
     CRITICAL: 'critical',
     HIGH:     'high',

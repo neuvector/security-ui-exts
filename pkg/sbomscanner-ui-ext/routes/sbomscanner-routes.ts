@@ -1,19 +1,19 @@
-import RegistryDetails from '@pkg/components/RegistryDetails.vue';
-import ImageOverview from '@pkg/pages/c/_cluster/sbomscanner/ImageOverview.vue';
-import ImageDetails from '@pkg/components/ImageDetails.vue';
-import RegistriesConfiguration from '@pkg/pages/c/_cluster/sbomscanner/RegistriesConfiguration.vue';
-// import Vulnerabilities from "@pkg/pages/c/_cluster/sbomscanner/Vulnerabilities.vue";
-import CreateResource from '@pkg/pages/c/_cluster/sbomscanner/_resource/create.vue';
-import ListResource from '@pkg/pages/c/_cluster/sbomscanner/_resource/index.vue';
-import Entry from '@pkg/pages/c/_cluster/sbomscanner/index.vue';
-import VexManagement from '@pkg/pages/c/_cluster/sbomscanner/VexManagement.vue';
-import CveDetails from '@pkg/components/CveDetails.vue';
-import VexDetails from '@pkg/components/VexDetails.vue';
+import RegistryDetails from '@sbomscanner-ui-ext/components/RegistryDetails.vue';
+import ImageOverview from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/ImageOverview.vue';
+import ImageDetails from '@sbomscanner-ui-ext/components/ImageDetails.vue';
+import RegistriesConfiguration from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/RegistriesConfiguration.vue';
+// import Vulnerabilities from "@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/Vulnerabilities.vue";
+import CreateResource from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/_resource/create.vue';
+import ListResource from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/_resource/index.vue';
+import Entry from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/index.vue';
+import VexManagement from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/VexManagement.vue';
+import CveDetails from '@sbomscanner-ui-ext/components/CveDetails.vue';
+import VexDetails from '@sbomscanner-ui-ext/components/VexDetails.vue';
 import {
   PRODUCT_NAME,
   PAGE,
   RESOURCE,
-} from '@pkg/types';
+} from '@sbomscanner-ui-ext/types';
 
 const routes = [
   {

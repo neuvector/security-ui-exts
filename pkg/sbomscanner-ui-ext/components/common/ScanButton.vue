@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { RESOURCE } from '@pkg/types';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
 
 export default {
   name:  'ScanButton',

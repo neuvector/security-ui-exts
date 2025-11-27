@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { SEVERITY } from '@pkg/types/image';
+import { SEVERITY } from '@sbomscanner-ui-ext/types/image';
 export default {
   name:  'ScoreBadge',
   props: {

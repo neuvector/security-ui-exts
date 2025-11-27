@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import PercentageBar from '@pkg/components/rancher-rewritten/shell/components/PercentageBar';
+import PercentageBar from '@sbomscanner-ui-ext/components/rancher-rewritten/shell/components/PercentageBar';
 
 export default {
   name:       'BarChart',

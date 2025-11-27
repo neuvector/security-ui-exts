@@ -2,7 +2,7 @@
 import {
   PRODUCT_NAME,
   PAGE,
-} from '@pkg/types';
+} from '@sbomscanner-ui-ext/types';
 export default {
   name:  'RegistryCellLink',
   props: {

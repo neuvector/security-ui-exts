@@ -7,7 +7,7 @@ import RegistryDetailScanTable from '../RegistryDetailScanTable.vue';
 import ScanButton from '../common/ScanButton.vue';
 import { getPermissions } from '../../utils/permissions';
 
-jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true })) }));
+jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true })) }));
 describe('RegistryDetails.vue', () => {
 
   let storeMock: any;

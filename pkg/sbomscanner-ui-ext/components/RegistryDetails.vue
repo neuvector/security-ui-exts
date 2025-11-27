@@ -48,14 +48,14 @@
 </template>
 
 <script>
-import { PRODUCT_NAME, RESOURCE, PAGE } from '@pkg/types';
+import { PRODUCT_NAME, RESOURCE, PAGE } from '@sbomscanner-ui-ext/types';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
 import Loading from '@shell/components/Loading';
 import RancherMeta from './common/RancherMeta.vue';
 import StatusBadge from './common/StatusBadge.vue';
 import RegistryDetailScanTable from './RegistryDetailScanTable.vue';
 import ScanButton from './common/ScanButton.vue';
-import { getPermissions } from '@pkg/utils/permissions';
+import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 
 export default {
   name:       'RegistryDetails',

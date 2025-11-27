@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import ScoreBadgeCell from '../ScoreBadgeCell.vue';
-import ScoreBadge from '@pkg/components/common/ScoreBadge.vue';
+import ScoreBadge from '@sbomscanner-ui-ext/components/common/ScoreBadge.vue';
 
 describe('ScoreBadgeCell.vue', () => {
   it('should render ScoreBadge and pass the score and score-type props', () => {

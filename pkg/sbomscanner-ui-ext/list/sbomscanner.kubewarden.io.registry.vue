@@ -120,14 +120,14 @@
 
 <script>
 
-import { RESOURCE } from '@pkg/types';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
 import PaginatedResourceTable from '@shell/components/PaginatedResourceTable';
-import { REGISTRY_SCAN_TABLE } from '@pkg/config/table-headers';
-import ScanButton from '@pkg/components/common/ScanButton';
+import { REGISTRY_SCAN_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
+import ScanButton from '@sbomscanner-ui-ext/components/common/ScanButton';
 import { findBy } from '@shell/utils/array';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import _ from 'lodash';
-import { getPermissions } from '@pkg/utils/permissions';
+import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 import { FilterArgs, PaginationFilterField, PaginationParamFilter } from '@shell/types/store/pagination.types';
 
 export default {

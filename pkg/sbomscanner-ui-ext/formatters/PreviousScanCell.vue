@@ -1,6 +1,6 @@
 <script>
-import ProgressCell from '@pkg/formatters/ProgressCell';
-import TextWithPoppedDetail from '@pkg/components/common/TextWithPoppedDetail';
+import ProgressCell from '@sbomscanner-ui-ext/formatters/ProgressCell';
+import TextWithPoppedDetail from '@sbomscanner-ui-ext/components/common/TextWithPoppedDetail';
 export default {
   components: {
     ProgressCell,

@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import AmountBarBySeverity from '@pkg/components/common/AmountBarBySeverity';import {
+import AmountBarBySeverity from '@sbomscanner-ui-ext/components/common/AmountBarBySeverity';import {
   PRODUCT_NAME,
   PAGE,
-} from '@pkg/types';
+} from '@sbomscanner-ui-ext/types';
 export default {
   name:       'AmountBarBySeverity',
   components: { AmountBarBySeverity },

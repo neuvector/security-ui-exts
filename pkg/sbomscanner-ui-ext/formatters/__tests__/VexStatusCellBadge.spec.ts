@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import VexStatusCellBadge from '../VexStatusCellBadge.vue';
-import VexStatusBadge from '@pkg/components/common/VexStatusBadge.vue';
+import VexStatusBadge from '@sbomscanner-ui-ext/components/common/VexStatusBadge.vue';
 
 describe('VexStatusCellBadge.vue', () => {
   it.each([

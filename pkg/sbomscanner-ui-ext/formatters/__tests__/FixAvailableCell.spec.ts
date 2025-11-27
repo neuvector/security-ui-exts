@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import FixAvailableCell from '../FixAvailableCell.vue';
-import FixAvailableIcon from '@pkg/components/common/FixAvailableIcon';
+import FixAvailableIcon from '@sbomscanner-ui-ext/components/common/FixAvailableIcon';
 
 describe('FixAvailableCell.vue', () => {
   it('should render a success icon and fix version when fix is available', () => {

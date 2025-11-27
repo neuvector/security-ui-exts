@@ -1,5 +1,5 @@
 <script>
-import StatusBadge from '@pkg/components/common/StatusBadge';
+import StatusBadge from '@sbomscanner-ui-ext/components/common/StatusBadge';
 export default {
   components: { StatusBadge },
   props:      {

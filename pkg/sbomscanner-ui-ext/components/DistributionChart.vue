@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import BarChart from '@pkg/components/common/BarChart';
-import InfoTooltip from '@pkg/components/common/Tooltip';
+import BarChart from '@sbomscanner-ui-ext/components/common/BarChart';
+import InfoTooltip from '@sbomscanner-ui-ext/components/common/Tooltip';
 
 export default {
   name:       'DistributionChart',

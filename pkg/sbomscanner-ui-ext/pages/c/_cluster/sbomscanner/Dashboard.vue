@@ -139,16 +139,16 @@
 </template>
 
 <script>
-import { RESOURCE, PRODUCT_NAME, PAGE } from '@pkg/types';
-// import SevereVulnerabilitiesItem from '@pkg/components/common/SevereVulnerabilitiesItem.vue';
-// import TopSevereVulnerabilitiesChart from '@pkg/components/TopSevereVulnerabilitiesChart';
-// import ImageRiskAssessment from '@pkg/components/ImageRiskAssessment';
-// import TopRiskyImagesChart from '@pkg/components/TopRiskyImagesChart';
+import { RESOURCE, PRODUCT_NAME, PAGE } from '@sbomscanner-ui-ext/types';
+// import SevereVulnerabilitiesItem from '@sbomscanner-ui-ext/components/common/SevereVulnerabilitiesItem.vue';
+// import TopSevereVulnerabilitiesChart from '@sbomscanner-ui-ext/components/TopSevereVulnerabilitiesChart';
+// import ImageRiskAssessment from '@sbomscanner-ui-ext/components/ImageRiskAssessment';
+// import TopRiskyImagesChart from '@sbomscanner-ui-ext/components/TopRiskyImagesChart';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import Loading from '@shell/components/Loading';
 import day from 'dayjs';
 import { Banner } from '@components/Banner';
-import InfoTooltip from '@pkg/components/common/Tooltip';
+import InfoTooltip from '@sbomscanner-ui-ext/components/common/Tooltip';
 
 export default {
   name:       'Dashboard',

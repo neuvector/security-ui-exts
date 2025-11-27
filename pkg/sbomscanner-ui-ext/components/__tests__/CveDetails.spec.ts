@@ -2,16 +2,16 @@ import { jest } from '@jest/globals';
 import { shallowMount, flushPromises } from '@vue/test-utils';
 import CveDetails from '../CveDetails.vue';
 import { BadgeState } from '@components/BadgeState';
-import { RESOURCE } from '@pkg/types';
-import { NVD_BASE_URL, CVSS_VECTOR_BASE_URL } from '@pkg/constants';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
+import { NVD_BASE_URL, CVSS_VECTOR_BASE_URL } from '@sbomscanner-ui-ext/constants';
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'test-product',
   RESOURCE:     { VULNERABILITY_REPORT: 'storage.sbomscanner.kubewarden.io.vulnerabilityreport' },
   PAGE:         { VULNERABILITIES: 'test-page-vulns' }
 }));
 
-jest.mock('@pkg/constants', () => ({
+jest.mock('@sbomscanner-ui-ext/constants', () => ({
   NVD_BASE_URL:         'https://nvd.nist.gov/vuln/detail/',
   CVSS_VECTOR_BASE_URL: 'https://www.first.org/cvss/calculator/'
 }));

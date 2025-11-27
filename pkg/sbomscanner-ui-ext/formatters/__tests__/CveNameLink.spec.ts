@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 import CveNameLink from '../CveNameLink.vue';
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'mocked-product',
   PAGE:         { VULNERABILITIES: 'mocked-vulns-page' }
 }));

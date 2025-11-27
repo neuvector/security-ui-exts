@@ -34,9 +34,9 @@
 import {
   RESOURCE,
   PRODUCT_NAME,
-} from '@pkg/types';
-import VexHubList from '@pkg/list/sbomscanner.kubewarden.io.vexhub.vue';
-import { getPermissions } from '@pkg/utils/permissions';
+} from '@sbomscanner-ui-ext/types';
+import VexHubList from '@sbomscanner-ui-ext/list/sbomscanner.kubewarden.io.vexhub.vue';
+import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 
 export default {
   name:       'VexManagement',

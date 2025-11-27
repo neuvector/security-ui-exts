@@ -13,7 +13,7 @@ jest.mock('lodash', () => {
   };
 });
 
-jest.mock('@pkg/utils/permissions', () => ({ getPermissions: jest.fn() }));
+jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({ getPermissions: jest.fn() }));
 
 // jest.mock('@shell/types/store/pagination.types', () => ({
 //   PaginationParamFilter: { createMultipleFields: jest.fn((fields) => ({ createdFilter: true, fields })) }

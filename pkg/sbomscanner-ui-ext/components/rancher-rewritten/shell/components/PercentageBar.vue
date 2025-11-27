@@ -1,5 +1,5 @@
 <script>
-import Bar from '@pkg/components/rancher-rewritten/shell/components/graph/Bar';
+import Bar from '@sbomscanner-ui-ext/components/rancher-rewritten/shell/components/graph/Bar';
 import { formatPercent } from '@shell/utils/string';
 
 export const PreferredDirection = {

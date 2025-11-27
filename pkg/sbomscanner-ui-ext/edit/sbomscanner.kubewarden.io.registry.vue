@@ -10,8 +10,8 @@ import {
   REGISTRY_TYPE,
   REGISTRY_TYPE_OPTIONS,
   SCAN_INTERVAL_OPTIONS, SCAN_INTERVALS
-} from '@pkg/constants';
-import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@pkg/types';
+} from '@sbomscanner-ui-ext/constants';
+import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@sbomscanner-ui-ext/types';
 import { SECRET_TYPES } from '@shell/config/secret';
 
 export default {

@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals';
 import { shallowMount } from '@vue/test-utils';
 import StatusBadge from '../StatusBadge.vue';
-import { REGISTRY_STATUS, VEX_STATUS } from '@pkg/types';
+import { REGISTRY_STATUS, VEX_STATUS } from '@sbomscanner-ui-ext/types';
 
-jest.mock('@pkg/types', () => ({
+jest.mock('@sbomscanner-ui-ext/types', () => ({
   REGISTRY_STATUS: {
     PENDING:     'Pending',
     SCHEDULED:   'Scheduled',
