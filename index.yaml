@@ -39,28 +39,6 @@ entries:
     urls:
     - assets/sbombastic-image-vulnerability-scanner/sbombastic-image-vulnerability-scanner-0.1.0.tgz
     version: 0.1.0
-  sbomscanner:
-  - annotations:
-      catalog.cattle.io/certified: rancher
-      catalog.cattle.io/display-name: SBOMScanner
-      catalog.cattle.io/namespace: cattle-ui-plugin-system
-      catalog.cattle.io/os: linux
-      catalog.cattle.io/permits-os: linux, windows
-      catalog.cattle.io/rancher-version: '>= 2.10.0'
-      catalog.cattle.io/scope: management
-      catalog.cattle.io/ui-component: plugins
-      catalog.cattle.io/ui-extensions-version: '>= 3.0.0 < 4.0.0'
-    apiVersion: v2
-    appVersion: 0.4.2
-    created: "2025-11-22T01:51:28.874705399Z"
-    description: SBOMscanner UI extension for rancher manager
-    digest: f94d0b609ad93433f4abdbc0320f8f170115b0a537b591dd735fa2bf1c1f39ca
-    icon: https://raw.githubusercontent.com/neuvector/security/main/pkg/sbomscanner/sb-icon.svg
-    name: sbomscanner
-    type: application
-    urls:
-    - assets/sbomscanner/sbomscanner-0.4.2.tgz
-    version: 0.4.2
   sbomscanner-ui-ext:
   - annotations:
       catalog.cattle.io/certified: rancher
