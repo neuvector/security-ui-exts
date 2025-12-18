@@ -51,6 +51,27 @@ entries:
       catalog.cattle.io/ui-component: plugins
       catalog.cattle.io/ui-extensions-version: '>= 3.0.0 < 4.0.0'
     apiVersion: v2
+    appVersion: 0.4.3
+    created: "2025-12-18T03:43:05.388894098Z"
+    description: SBOMscanner UI extension for rancher manager
+    digest: 23b804eadc8233203f79d70040560802215d973dc92083ea9f4743c75e1302f8
+    icon: https://raw.githubusercontent.com/neuvector/security-ui-exts/main/pkg/sbomscanner-ui-ext/assets/img/icon-sbomscanner.svg
+    name: sbomscanner-ui-ext
+    type: application
+    urls:
+    - assets/sbomscanner-ui-ext/sbomscanner-ui-ext-0.4.3.tgz
+    version: 0.4.3
+  - annotations:
+      catalog.cattle.io/certified: rancher
+      catalog.cattle.io/display-name: SBOMScanner
+      catalog.cattle.io/namespace: cattle-ui-plugin-system
+      catalog.cattle.io/os: linux
+      catalog.cattle.io/permits-os: linux, windows
+      catalog.cattle.io/rancher-version: '>= 2.10.0'
+      catalog.cattle.io/scope: management
+      catalog.cattle.io/ui-component: plugins
+      catalog.cattle.io/ui-extensions-version: '>= 3.0.0 < 4.0.0'
+    apiVersion: v2
     appVersion: 0.4.3-rc1
     created: "2025-12-11T03:28:39.223171438Z"
     description: SBOMscanner UI extension for rancher manager
@@ -122,4 +143,4 @@ entries:
     urls:
     - assets/sbomscanner-ui-ext/sbomscanner-ui-ext-0.3.0.tgz
     version: 0.3.0
-generated: "2025-12-11T03:28:39.222767269Z"
+generated: "2025-12-18T03:43:05.388490211Z"
