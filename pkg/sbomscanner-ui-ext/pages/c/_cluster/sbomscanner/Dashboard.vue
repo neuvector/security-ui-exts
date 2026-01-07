@@ -342,10 +342,10 @@ export default {
       this.scanJobsCRD.filter((scanjob) => {
         return this.selectedRegistry === `${ scanjob.metadata.namespace }/${ scanjob.spec.registry }` || this.selectedRegistry === 'All registries';
       }).forEach((scanjob) => {
-        totalScannedImageCnt += (scanjob.status.scannedImagesCount || 0);
-        detectedErrorCnt += (scanjob.status.conditions ? (scanjob.status.conditions.find((condition) => condition.error) ? 1 : 0) : 0);
+        totalScannedImageCnt += (scanjob.status?.scannedImagesCount || 0);
+        detectedErrorCnt += (scanjob.status?.conditions ? (scanjob.status?.conditions.find((condition) => condition.error) ? 1 : 0) : 0);
         failedImagesCnt += this.getFailedImageCnt(scanjob);
-        lastCompletionTimestamp = Math.max(lastCompletionTimestamp, scanjob.status.completionTime ? new Date(scanjob.status.completionTime).getTime() : 0);
+        lastCompletionTimestamp = Math.max(lastCompletionTimestamp, scanjob.status?.completionTime ? new Date(scanjob.status?.completionTime).getTime() : 0);
       });
 
       return {
@@ -356,8 +356,8 @@ export default {
       };
     },
     getFailedImageCnt(scanjob) {
-      if (scanjob.status.conditions && scanjob.status.conditions.find((condition) => condition.error )) {
-        return (scanjob.status.imagesCount || 0) - (scanjob.status.scannedImagesCount || 0);
+      if (scanjob.status?.conditions && scanjob.status?.conditions.find((condition) => condition.error )) {
+        return (scanjob.status?.imagesCount || 0) - (scanjob.status?.scannedImagesCount || 0);
       }
 
       return 0;
