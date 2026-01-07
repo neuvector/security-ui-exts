@@ -109,6 +109,8 @@ imageScanner:
           uri:
             label: URI
             placeholder: "The registry address URI"
+          insecure:
+            label: "Allow insecure connections"
         proxy:
           enable: Use the embedded proxy
           tooltip: "When enabled, Rancher routes all registry traffic through its secure proxy instead of direct connections."

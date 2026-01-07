@@ -1,6 +1,8 @@
 <script>
 import CreateEditView from '@shell/mixins/create-edit-view';
 import { LabeledInput } from '@components/Form/LabeledInput';
+import { Checkbox } from '@components/Form/Checkbox';
+import FileSelector from '@shell/components/form/FileSelector';
 import NameNsDescription from '@shell/components/form/NameNsDescription';
 import CruResource from '@shell/components/CruResource';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
@@ -19,6 +21,8 @@ export default {
 
   components: {
     LabeledInput,
+    Checkbox,
+    FileSelector,
     NameNsDescription,
     CruResource,
     LabeledSelect,
@@ -41,8 +45,13 @@ export default {
         uri:          '',
         repositories: [],
         scanInterval: SCAN_INTERVALS.MANUAL,
+        caBundle:     '',
+        insecure:     false,
       };
     }
+
+    if (this.value.spec.insecure === undefined) this.value.spec.insecure = false;
+    if (this.value.spec.caBundle === undefined) this.value.spec.caBundle = '';
 
     if ( this.value.spec.scanInterval === null) {
       this.value.spec.scanInterval = SCAN_INTERVALS.MANUAL;
@@ -60,7 +69,14 @@ export default {
   },
 
   computed: {
-
+    repoNames: {
+      get(){
+        return (this.value.spec.repositories || []).map( (r) => r.name);
+      },
+      set(repoStrings){
+        this.value.spec.repositories = repoStrings.map((repoName) => ({ name: repoName }));
+      },
+    },
     /**
      * Build the options list for the authentication dropdown
      */
@@ -198,6 +214,10 @@ export default {
         this.authLoading = false;
       }
     },
+
+    onFileSelected(value) {
+      this.value.spec.caBundle = value;
+    }
   }
 };
 </script>
@@ -244,6 +264,33 @@ export default {
             :placeholder="t('imageScanner.registries.configuration.cru.registry.uri.placeholder')"
             required
           />
+        </div>
+      </div>
+      <div class="row mt-20">
+        <div class="col span-6">
+          <LabeledInput
+              v-model:value="value.spec.caBundle"
+              type="multiline"
+              label="CA Cert Bundle"
+              style="max-height: 110px; overflow-y: auto;"
+              data-testid="auth-ca-bundle-input"
+          />
+          <div class="mt-10">
+            <FileSelector
+                class="btn btn-sm role-secondary"
+                :label="t('generic.readFromFile')"
+                @selected="onFileSelected"
+            />
+          </div>
+        </div>
+        <div class="col span-6">
+          <div class="mt-10">
+            <Checkbox
+                v-model:value="value.spec.insecure"
+                :label="t('imageScanner.registries.configuration.cru.registry.insecure.label')"
+                data-testid="auth-insecure-checkbox"
+            />
+          </div>
         </div>
       </div>
       <div class="registry-input-label mt-24">
@@ -300,7 +347,7 @@ export default {
       <div class="row">
         <div class="col span-6">
           <LabeledSelect
-            v-model:value="value.spec.repositories"
+            v-model:value="repoNames"
             data-testid="registry-scanning-repository-names"
             :taggable="true"
             :searchable="true"
@@ -310,7 +357,7 @@ export default {
             :multiple="true"
             :label="t('imageScanner.registries.configuration.cru.scan.repoName')"
             :placeholder="value.spec.catalogType === REGISTRY_TYPE.OCI_DISTRIBUTION ? t('imageScanner.registries.configuration.cru.scan.placeholder.ociDistribution') : t('imageScanner.registries.configuration.cru.scan.placeholder.nocatalog')"
-            :options="value.spec.repositories || []"
+            :options="repoNames"
             :disabled="mode==='view'"
             :required="value.spec.catalogType === REGISTRY_TYPE.NO_CATALOG"
           />
