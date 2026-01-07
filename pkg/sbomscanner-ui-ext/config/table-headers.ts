@@ -21,8 +21,8 @@ export const REGISTRY_SCAN_TABLE = [
   {
     name:     'repositories',
     labelKey: 'imageScanner.registries.registrytable.header.repos',
-    value:    'spec.repositories',
-    sort:     'spec.repositories',
+    value:    'repositoryiesDisplay',
+    sort:     'repositoryiesDisplay',
   },
   {
     name:      'scanInterval',

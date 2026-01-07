@@ -67,6 +67,20 @@ export default class Registry extends SteveModel {
     return this.listLocation;
   }
 
+  get repositoryiesDisplay() {
+    if (!this.spec || !this.spec.repositories) {
+      return '';
+    }
+
+    const repos = this.spec.repositories;
+
+    if (Array.isArray(repos)) {
+      return repos.map((repo) => (typeof repo === 'string' ? repo : repo.name)).join(', ');
+    } else {
+      return typeof repos === 'string' ? repos : repos.name || '';
+    }
+  }
+
   get scanRec() {
     if (!this.id) {
       return null;

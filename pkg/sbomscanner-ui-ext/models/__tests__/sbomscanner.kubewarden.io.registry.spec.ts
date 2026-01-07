@@ -4,7 +4,9 @@ import { RESOURCE } from '../../types';
 // mock SteveModel base class
 jest.mock('@shell/plugins/steve/steve-class', () => {
   return class {
-    constructor() {
+    constructor(
+      override: any = {},
+    ) {
       this.t = jest.fn((s) => s);
       this.$dispatch = jest.fn();
       this.$rootGetters = { 'i18n/t': (s: any, vars: any) => (vars ? `${s} ${JSON.stringify(vars)}` : s) };
@@ -12,6 +14,7 @@ jest.mock('@shell/plugins/steve/steve-class', () => {
       this.$getters = { all: jest.fn() };
       this.canEdit = true;
       this.metadata = { name: 'reg1', namespace: 'ns1' };
+      this.spec = override.spec;
       this.id = 'ns1/reg1';
     }
 
@@ -96,6 +99,63 @@ describe('Registry model', () => {
       expect(registry.listLocation.name).toContain('registries');
       expect(registry.doneOverride).toEqual(registry.listLocation);
       expect(registry.parentLocationOverride).toEqual(registry.listLocation);
+    });
+  });
+
+  describe('repositoryiesDisplay', () => {
+    function createModel(overrides = {}) {
+      return new Registry({
+        ...overrides,
+        rootGetters: {},
+        rootState: {},
+        getters: {},
+        dispatch: jest.fn(),
+        store: { dispatch: jest.fn() },
+      });
+    }
+
+    test('returns empty string when spec is missing', () => {
+      const model = createModel({});
+
+      expect(model.repositoryiesDisplay).toBe('');
+    });
+
+    test('returns empty string when spec.repositories is missing', () => {
+      const model = createModel({ spec: {} });
+
+      expect(model.repositoryiesDisplay).toBe('');
+    });
+
+    test('handles repositories as string array', () => {
+      const model = createModel({
+        spec: { repositories: ['repo1', 'repo2'] }
+      });
+
+      expect(model.repositoryiesDisplay).toBe('repo1, repo2');
+    });
+
+    test('handles repositories as object array', () => {
+      const model = createModel({
+        spec: { repositories: [{ name: 'alpha' }, { name: 'beta' }] }
+      });
+
+      expect(model.repositoryiesDisplay).toBe('alpha, beta');
+    });
+
+    test('handles repositories as single string', () => {
+      const model = createModel({
+        spec: { repositories: 'singleRepo' }
+      });
+
+      expect(model.repositoryiesDisplay).toBe('singleRepo');
+    });
+
+    test('handles repositories as single object', () => {
+      const model = createModel({
+        spec: { repositories: { name: 'objectRepo' } }
+      });
+
+      expect(model.repositoryiesDisplay).toBe('objectRepo');
     });
   });
 
