@@ -13,7 +13,7 @@ const config: Config.InitialOptions = {
     '@shell/(.*)': '<rootDir>/node_modules/@rancher/shell/$1',
     '@components/(.*)':
       '<rootDir>/node_modules/@rancher/components/dist/@rancher/components.common.js',
-    '@sbomscanner-ui-ext/(.*)':                     '<rootDir>/pkg/sbomscanner-ui-ext/$1',
+    '@sbomscanner-ui-ext/(.*)':      '<rootDir>/pkg/sbomscanner-ui-ext/$1',
     '@network/(.*)':                 '<rootDir>/pkg/network/$1',
     '@runtime-process-profile/(.*)': '<rootDir>/pkg/runtime-process-profile/$1',
     '@tests/(.*)':                   '<rootDir>/tests/$1',
