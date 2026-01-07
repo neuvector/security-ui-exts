@@ -107,10 +107,10 @@ describe('Registry model', () => {
       return new Registry({
         ...overrides,
         rootGetters: {},
-        rootState: {},
-        getters: {},
-        dispatch: jest.fn(),
-        store: { dispatch: jest.fn() },
+        rootState:   {},
+        getters:     {},
+        dispatch:    jest.fn(),
+        store:       { dispatch: jest.fn() },
       });
     }
 
@@ -127,33 +127,25 @@ describe('Registry model', () => {
     });
 
     test('handles repositories as string array', () => {
-      const model = createModel({
-        spec: { repositories: ['repo1', 'repo2'] }
-      });
+      const model = createModel({ spec: { repositories: ['repo1', 'repo2'] } });
 
       expect(model.repositoryiesDisplay).toBe('repo1, repo2');
     });
 
     test('handles repositories as object array', () => {
-      const model = createModel({
-        spec: { repositories: [{ name: 'alpha' }, { name: 'beta' }] }
-      });
+      const model = createModel({ spec: { repositories: [{ name: 'alpha' }, { name: 'beta' }] } });
 
       expect(model.repositoryiesDisplay).toBe('alpha, beta');
     });
 
     test('handles repositories as single string', () => {
-      const model = createModel({
-        spec: { repositories: 'singleRepo' }
-      });
+      const model = createModel({ spec: { repositories: 'singleRepo' } });
 
       expect(model.repositoryiesDisplay).toBe('singleRepo');
     });
 
     test('handles repositories as single object', () => {
-      const model = createModel({
-        spec: { repositories: { name: 'objectRepo' } }
-      });
+      const model = createModel({ spec: { repositories: { name: 'objectRepo' } } });
 
       expect(model.repositoryiesDisplay).toBe('objectRepo');
     });
