@@ -13,17 +13,24 @@ function makeScanJob({
   imagesCount = 10,
   completionTime = Date.now(),
   conditions =  [{ error: false }],
-} = {}) {
-  return {
-    metadata: { namespace },
-    spec:     { registry },
-    status:   {
-      imagesCount,
-      scannedImagesCount,
-      completionTime,
-      conditions,
-    },
-  };
+} = {}, withStatus = true) {
+  if (withStatus) {
+    return {
+      metadata: { namespace },
+      spec:     { registry },
+      status:   {
+        imagesCount,
+        scannedImagesCount,
+        completionTime,
+        conditions,
+      },
+    };
+  } else {
+    return {
+      metadata: { namespace },
+      spec:     { registry },
+    };
+  }
 }
 
 describe('Dashboard.vue full coverage', () => {
@@ -153,6 +160,20 @@ describe('Dashboard.vue full coverage', () => {
     expect(wrapper.vm.getFailedImageCnt(jobWithoutError)).toBe(0);
   });
 
+  it('method: getFailedImageCnt calculates correctly - without status', () => {
+    const wrapper = factory();
+
+    const jobWithError = {
+      status: {
+        conditions: [{ error: true }], scannedImagesCount: 6, imagesCount: 10
+      }
+    };
+    const jobWithoutError = {};
+
+    expect(wrapper.vm.getFailedImageCnt(jobWithError)).toBe(4);
+    expect(wrapper.vm.getFailedImageCnt(jobWithoutError)).toBe(0);
+  });
+
   it('method: getScanningStats aggregates correctly', () => {
     const wrapper = factory();
     const jobs = [
@@ -171,6 +192,26 @@ describe('Dashboard.vue full coverage', () => {
     expect(stats.detectedErrorCnt).toBe(1);
     expect(stats.failedImagesCnt).toBe(7);
     expect(stats.lastCompletionTimestamp).toBe(1761480970);
+  });
+
+  it('method: getScanningStats aggregates correctly - without status', () => {
+    const wrapper = factory();
+    const jobs = [
+      makeScanJob({
+        conditions: [{ error: true }], scannedImagesCount: 5, imagesCount: 6, completionTime: 1761480970
+      }, false),
+      makeScanJob({
+        conditions: [{ error: true }], scannedImagesCount: 3, imagesCount: 10, completionTime: 1761480098
+      }),
+    ];
+
+    wrapper.vm.scanJobsCRD = jobs;
+    const stats = wrapper.vm.getScanningStats();
+
+    expect(stats.totalScannedImageCnt).toBe(3);
+    expect(stats.detectedErrorCnt).toBe(1);
+    expect(stats.failedImagesCnt).toBe(7);
+    expect(stats.lastCompletionTimestamp).toBe(1761480098);
   });
 
   it('method: getScanningStats aggregates correctly', () => {
