@@ -109,6 +109,8 @@ imageScanner:
           uri:
             label: URI
             placeholder: "The registry address URI"
+          caBundle:
+            placeholder: "This can be entered either manually in the current text area or by importing it via the button below. Cap the text-area to a max of 5 lines."
           insecure:
             label: "Allow insecure connections"
         proxy:
@@ -133,6 +135,12 @@ imageScanner:
             label: Scan Interval
             manualScan: Manual scan
             placeholder: Selecting '{manualScan}' disables automatic scanning
+        filters:
+          label: Filter by
+          os: OS
+          arch: Architecture
+          variant: Variable
+          add: Add Platform
       scan: Start Scan
       meta:
         namespace: Namespace

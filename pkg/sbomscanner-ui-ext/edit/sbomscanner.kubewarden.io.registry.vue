@@ -16,6 +16,29 @@ import {
 import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@sbomscanner-ui-ext/types';
 import { SECRET_TYPES } from '@shell/config/secret';
 
+const VALID_PLATFORMS = {
+  aix:       ['ppc64'],
+  android:   ['386', 'amd64', 'arm', 'arm64'],
+  darwin:    ['amd64', 'arm64'],
+  dragonfly: ['amd64'],
+  freebsd:   ['386', 'amd64', 'arm'],
+  illumos:   ['amd64'],
+  ios:       ['arm64'],
+  js:        ['wasm'],
+  linux:     ['386', 'amd64', 'arm', 'arm64', 'loong64', 'mips', 'mipsle', 'mips64', 'mips64le', 'ppc64', 'ppc64le', 'riscv64', 's390x'],
+  netbsd:    ['386', 'amd64', 'arm'],
+  openbsd:   ['386', 'amd64', 'arm', 'arm64'],
+  plan9:     ['386', 'amd64', 'arm'],
+  solaris:   ['amd64'],
+  wasip1:    ['wasm'],
+  windows:   ['386', 'amd64', 'arm', 'arm64']
+};
+
+const ALLOWED_VARIANTS = {
+  arm:   ['v6', 'v7', 'v8'],
+  arm64: ['v8']
+};
+
 export default {
   name: 'CruRegistry',
 
@@ -50,12 +73,21 @@ export default {
       };
     }
 
+    if (!this.value.spec.platforms) {
+      this.value.spec.platforms = [];
+    }
+
     if (this.value.spec.insecure === undefined) this.value.spec.insecure = false;
     if (this.value.spec.caBundle === undefined) this.value.spec.caBundle = '';
 
     if ( this.value.spec.scanInterval === null) {
       this.value.spec.scanInterval = SCAN_INTERVALS.MANUAL;
     }
+
+    const osOptions = Object.keys(VALID_PLATFORMS).map((k) => ({
+      label: k.charAt(0).toUpperCase() + k.slice(1),
+      value: k
+    })).sort((a, b) => a.label.localeCompare(b.label));
 
     return {
       inStore:         this.$store.getters['currentProduct'].inStore,
@@ -65,6 +97,7 @@ export default {
       PAGE,
       PRODUCT_NAME,
       authLoading:     false,
+      osOptions:       osOptions,
     };
   },
 
@@ -217,7 +250,58 @@ export default {
 
     onFileSelected(value) {
       this.value.spec.caBundle = value;
-    }
+    },
+
+    addPlatform() {
+      this.value.spec.platforms.push({
+        os:      '',
+        arch:    '',
+        variant: '',
+      });
+    },
+
+    removePlatform(index) {
+      this.value.spec.platforms.splice(index, 1);
+    },
+
+    getArchOptions(os) {
+      const validArchs = VALID_PLATFORMS[os] || [];
+
+      return validArchs.map((arch) => ({ label: arch, value: arch }));
+    },
+
+    getVariantOptions(arch) {
+      const validVariants = ALLOWED_VARIANTS[arch] || [];
+
+      return validVariants.map((v) => ({ label: v, value: v }));
+    },
+
+    updateOS(platform, newOS) {
+      platform.os = newOS;
+
+      const validArchs = VALID_PLATFORMS[newOS];
+
+      // Default to the first valid arch (usually 'amd64' or similar) to prevent invalid state
+      if (validArchs && validArchs.length > 0) {
+        platform.arch = validArchs.includes('amd64') ? 'amd64' : validArchs[0];
+      } else {
+        platform.arch = '';
+      }
+
+      platform.variant = '';
+    },
+
+    updateArch(platform, newArch) {
+      platform.arch = newArch;
+
+      if (!this.isVariantSupported(newArch)) {
+        platform.variant = '';
+      }
+    },
+
+    isVariantSupported(arch) {
+      return !!ALLOWED_VARIANTS[arch];
+    },
   }
 };
 </script>
@@ -274,6 +358,7 @@ export default {
               label="CA Cert Bundle"
               style="max-height: 110px; overflow-y: auto;"
               data-testid="auth-ca-bundle-input"
+              :placeholder="t('imageScanner.registries.configuration.cru.registry.caBundle.placeholder')"
           />
           <div class="mt-10">
             <FileSelector
@@ -375,6 +460,74 @@ export default {
           />
         </div>
       </div>
+      <div class="registry-input-label mt-24">
+        {{ t('imageScanner.registries.configuration.cru.filters.label') }}
+      </div>
+      <div v-if="value.spec.platforms.length > 0" class="row mb-5">
+        <div class="col span-3">
+          <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.os') || 'OS' }}</label>
+        </div>
+        <div class="col span-3">
+          <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.arch') || 'Architecture' }}</label>
+        </div>
+        <div class="col span-3">
+          <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.variant') || 'Variable' }}</label>
+        </div>
+        <div class="col span-1"></div>
+      </div>
+      <div
+          v-for="(platform, index) in value.spec.platforms"
+          :key="index"
+          class="row mb-10 align-center"
+      >
+        <div class="col span-3">
+          <LabeledSelect
+              v-model:value="platform.os"
+              @update:value="updateOS(platform, $event)"
+              :options="osOptions"
+          />
+        </div>
+
+        <div class="col span-3">
+          <LabeledSelect
+              v-model:value="platform.arch"
+              @update:value="updateArch(platform, $event)"
+              :options="getArchOptions(platform.os)"
+              :disabled="!platform.os"
+          />
+        </div>
+
+        <div class="col span-3">
+          <LabeledSelect
+              v-model:value="platform.variant"
+              :options="getVariantOptions(platform.arch)"
+              :disabled="!isVariantSupported(platform.arch)"
+          />
+        </div>
+        <div class="col span-1">
+          <button
+              v-if="!isView"
+              type="button"
+              class="btn role-link"
+              style="padding: 0;"
+              @click="removePlatform(index)"
+          >
+            {{ t('generic.remove') || 'Remove' }}
+          </button>
+        </div>
+      </div>
+      <div class="row mt-10">
+        <div class="col span-12">
+          <button
+              v-if="!isView"
+              type="button"
+              class="btn role-secondary btn-sm"
+              @click="addPlatform"
+          >
+            {{ t('imageScanner.registries.configuration.cru.filters.add') }}
+          </button>
+        </div>
+      </div>
     </CruResource>
   </div>
 </template>
@@ -391,5 +544,10 @@ export default {
 }
 .mt-24 {
   margin-top: 24px;
+}
+
+.text-label {
+  color: var(--input-label);
+  font-size: 12px;
 }
 </style>
