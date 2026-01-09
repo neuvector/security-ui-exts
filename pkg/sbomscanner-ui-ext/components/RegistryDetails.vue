@@ -104,7 +104,7 @@ export default {
             name:            repo.name,
             matchConditions: [
               {
-                name:  'tags greater than v1.12.0',
+                name:       'tags greater than v1.12.0',
                 expression: '"semver(tag, true).isGreaterThan(semver(\'v1.12.0\'))"',
               },
             ],
@@ -138,7 +138,7 @@ export default {
           value: this.registry.spec.platforms?.length || 0,
           list:  this.registry.spec.platforms || [],
         },
-      }
+      };
     },
   },
 };

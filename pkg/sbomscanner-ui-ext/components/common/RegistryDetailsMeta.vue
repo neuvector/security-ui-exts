@@ -49,10 +49,8 @@
 import PreviewableButton from './PreviewableButton.vue';
 export default {
   name:       'RegistryDetailsMeta',
-  components: {
-    PreviewableButton,
-  },
-  props: {
+  components: { PreviewableButton },
+  props:      {
     properties: {
       type:    Array,
       default: () => []

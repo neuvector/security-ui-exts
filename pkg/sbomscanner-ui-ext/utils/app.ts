@@ -31,4 +31,4 @@ export function trimIntervalSuffix(interval: string): string {
   }
 
   return result || interval;
-} 
+}
