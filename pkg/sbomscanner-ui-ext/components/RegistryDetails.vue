@@ -41,7 +41,7 @@
           />
         </div>
       </div>
-      <RancherMeta :properties="registryMetadata" />
+      <RegistryDetailsMeta :properties="registryMetadata" />
     </div>
     <RegistryDetailScanTable :scan-history="scanHistory" />
   </div>
@@ -51,16 +51,17 @@
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@sbomscanner-ui-ext/types';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
 import Loading from '@shell/components/Loading';
-import RancherMeta from './common/RancherMeta.vue';
+import RegistryDetailsMeta from './common/RegistryDetailsMeta.vue';
 import StatusBadge from './common/StatusBadge.vue';
 import RegistryDetailScanTable from './RegistryDetailScanTable.vue';
 import ScanButton from './common/ScanButton.vue';
 import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
+import { trimIntervalSuffix } from '@sbomscanner-ui-ext/utils/app';
 
 export default {
   name:       'RegistryDetails',
   components: {
-    RancherMeta,
+    RegistryDetailsMeta,
     StatusBadge,
     RegistryDetailScanTable,
     ScanButton,
@@ -81,6 +82,11 @@ export default {
   async fetch() {
     await this.loadData();
   },
+  computed: {
+    scanInterval() {
+      return trimIntervalSuffix(this.registry.spec.scanInterval);
+    }
+  },
   methods: {
     async loadData() {
       this.registry = await this.$store.dispatch('cluster/find', { type: RESOURCE.REGISTRY, id: `${ this.$route.params.ns }/${ this.$route.params.id }` });
@@ -88,35 +94,51 @@ export default {
         return rec.spec.registry === this.registry.metadata.name;
       });
 
-      this.registryMetadata = [
-        {
-          type:  'text',
-          label: this.t('imageScanner.registries.configuration.meta.namespace'),
-          value: this.registry.metadata.namespace
-        },
-        {
-          type:  'text',
-          label: this.t('imageScanner.registries.configuration.meta.repositories'),
-          value: this.registry.spec.repositories?.length || 0
-        },
-        {
-          type:  'text',
-          label: this.t('imageScanner.registries.configuration.meta.schedule')
-        },
-        {
-          type:  'text',
-          label: this.t('imageScanner.registries.configuration.meta.uri'),
-          value: this.registry.spec.uri
-        },
-        {
-          type: 'tags',
-          tags: this.registry.spec.repositories || []
-        },
-        {
-          type:  'text',
-          value: this.registry.spec.scanInterval ? this.t('imageScanner.general.schedule', { i: this.registry.spec.scanInterval }) : '',
+      /*
+      Simulate matchConditions for demo purposes
+      In real implementation, matchConditions should come from backend API
+      */
+      this.registry.spec.repositories = this.registry.spec.repositories?.map((repo) => {
+        if (repo.name === 'library/alpine') {
+          return {
+            name:            repo.name,
+            matchConditions: [
+              {
+                name:  'tags greater than v1.12.0',
+                expression: '"semver(tag, true).isGreaterThan(semver(\'v1.12.0\'))"',
+              },
+            ],
+          };
         }
-      ];
+      }) || [];
+      /*
+      End simulate matchConditions
+      */
+
+      this.registryMetadata = {
+        namespace: {
+          label: this.t('imageScanner.registries.configuration.meta.namespace'),
+          value: this.registry.metadata.namespace,
+        },
+        uri: {
+          label: this.t('imageScanner.registries.configuration.meta.uri'),
+          value: this.registry.spec.uri,
+        },
+        schedule: {
+          label: this.t('imageScanner.registries.configuration.meta.schedule'),
+          value: this.registry.spec.scanInterval ? this.t('imageScanner.general.schedule', { i: this.scanInterval }) : '',
+        },
+        repositories: {
+          label: this.t('imageScanner.registries.configuration.meta.repositories'),
+          value: this.registry.spec.repositories?.length || 0,
+          list:  this.registry.spec.repositories || [],
+        },
+        platforms: {
+          label: this.t('imageScanner.registries.configuration.meta.platforms'),
+          value: this.registry.spec.platforms?.length || 0,
+          list:  this.registry.spec.platforms || [],
+        },
+      }
     },
   },
 };

@@ -147,6 +147,7 @@ imageScanner:
         uri: URI
         repositories: Repositories
         schedule: Schedule
+        platforms: Platforms
       scanTable:
         header:
           status: Status

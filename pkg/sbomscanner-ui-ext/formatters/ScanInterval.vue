@@ -11,6 +11,7 @@
   </div>
 </template>
 <script>
+import { trimIntervalSuffix } from '@sbomscanner-ui-ext/utils/app';
 export default {
   props: {
     value: {
@@ -20,29 +21,7 @@ export default {
   },
   computed: {
     scanInterval() {
-      const regex = /(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/;
-      const matches = this.value.match(regex);
-
-      if (!matches) {
-        return this.value;
-      }
-
-      const [, hours, minutes, seconds] = matches;
-      let result = '';
-
-      if (hours && hours !== '0') {
-        result += `${hours}h`;
-      }
-
-      if (minutes && minutes !== '0') {
-        result += `${minutes}m`;
-      }
-
-      if (seconds && seconds !== '0') {
-        result += `${seconds}s`;
-      }
-
-      return result || this.value;
+      return trimIntervalSuffix(this.value);
     }
   }
 };
