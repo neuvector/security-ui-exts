@@ -1,6 +1,6 @@
 <template>
     <div ref="element">
-        <button ref="button" class="vendor-tag" @click="() => showPreview = true">
+        <button ref="button" class="vendor-tag" @click="() => props.repository.matchConditions ? showPreview = true : null">
             <div>{{ props.repository.name }}</div>
             <div v-if="props.repository.matchConditions" class="icon-filter"></div>
         </button>

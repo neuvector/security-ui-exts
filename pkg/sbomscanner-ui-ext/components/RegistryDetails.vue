@@ -109,6 +109,8 @@ export default {
               },
             ],
           };
+        } else {
+          return { name: repo.name };
         }
       }) || [];
       /*
