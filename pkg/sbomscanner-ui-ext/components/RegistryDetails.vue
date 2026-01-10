@@ -94,29 +94,6 @@ export default {
         return rec.spec.registry === this.registry.metadata.name;
       });
 
-      /*
-      Simulate matchConditions for demo purposes
-      In real implementation, matchConditions should come from backend API
-      */
-      this.registry.spec.repositories = this.registry.spec.repositories?.map((repo) => {
-        if (repo.name === 'library/alpine') {
-          return {
-            name:            repo.name,
-            matchConditions: [
-              {
-                name:       'tags greater than v1.12.0',
-                expression: '"semver(tag, true).isGreaterThan(semver(\'v1.12.0\'))"',
-              },
-            ],
-          };
-        } else {
-          return { name: repo.name };
-        }
-      }) || [];
-      /*
-      End simulate matchConditions
-      */
-
       this.registryMetadata = {
         namespace: {
           label: this.t('imageScanner.registries.configuration.meta.namespace'),
