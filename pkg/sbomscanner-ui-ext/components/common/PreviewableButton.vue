@@ -1,6 +1,6 @@
 <template>
     <div ref="element">
-        <button ref="button" class="vendor-tag" @click="() => props.repository.matchConditions ? showPreview = true : null">
+        <button ref="button" class="vendor-tag" test-id="previewable-button" @click="openPreview">
             <div>{{ props.repository.name }}</div>
             <div v-if="props.repository.matchConditions" class="icon-filter"></div>
         </button>
@@ -8,7 +8,7 @@
             v-if="showPreview"
             :id="previewId"
             class="preview"
-            :value="jsyaml.dump(props.repository)"
+            :value="yamlValue"
             :anchor-element="element"
             aria-live="polite"
             @close="onClose"
@@ -18,10 +18,10 @@
 
 <script setup lang="ts">
 import Preview from '@sbomscanner-ui-ext/components/rancher-rewritten/shell/components/Preview.vue';
-import { nextTick, ref } from 'vue';
+import { nextTick, ref, computed } from 'vue';
 import { randomStr } from '@shell/utils/string';
 import { Type } from '@components/Pill/types';
-import jsyaml from 'js-yaml';
+import * as jsyaml from 'js-yaml';
 
 export interface KeyValueRowProps {
     repository: any;
@@ -32,6 +32,21 @@ const props = defineProps<KeyValueRowProps>();
 const showPreview = ref(false);
 const element = ref<HTMLDivElement | null>(null);
 const button = ref<HTMLButtonElement | null>(null);
+
+const yamlValue = computed(() => {
+  if (!props.repository) return '';
+  try {
+    return jsyaml.dump(props.repository);
+  } catch (e) {
+    return '';
+  }
+});
+
+const openPreview = () => {
+  if (props.repository.matchConditions) {
+    showPreview.value = true;
+  }
+};
 
 const onClose = (keyboardExit: boolean) => {
   showPreview.value = false;

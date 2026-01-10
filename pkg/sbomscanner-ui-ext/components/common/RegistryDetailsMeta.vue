@@ -34,7 +34,7 @@
                 <span class="label">{{ properties.platforms.label }}</span>
                 <span class="value">{{ properties.platforms.value }}</span>
             </div>
-            <div v-if="properties.platforms.value > 0" class="vendor-tags-wrapper">
+            <div test-id="platforms" v-if="properties.platforms.value > 0" class="vendor-tags-wrapper">
                 <div class="vendor-tags">
                     <span v-for="(platform, index) in properties.platforms.list" :key="index" class="vendor-tag active">
                         {{ getPlatformTag(platform)}}
@@ -52,17 +52,16 @@ export default {
   components: { PreviewableButton },
   props:      {
     properties: {
-      type:    Array,
-      default: () => []
+      type:     Object,
+      default:  () => ({}),
+      required: true,
     },
-  },
-  data() {
   },
   methods: {
     getPlatformTag(platform) {
       const { os, arch, variant } = platform;
 
-      return `${os} / ${arch} ${variant ? ` / ${variant}` : ''}`;
+      return `${os} / ${arch}${variant ? ` / ${variant}` : ''}`;
     },
   }
 };

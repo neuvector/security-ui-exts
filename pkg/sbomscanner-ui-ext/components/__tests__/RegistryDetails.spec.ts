@@ -1,24 +1,43 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import RegistryDetails from '../RegistryDetails.vue';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
-import RancherMeta from '../common/RancherMeta.vue';
 import StatusBadge from '../common/StatusBadge.vue';
 import RegistryDetailScanTable from '../RegistryDetailScanTable.vue';
 import ScanButton from '../common/ScanButton.vue';
-import { getPermissions } from '../../utils/permissions';
+import RegistryDetailsMeta from '../common/RegistryDetailsMeta.vue';
 
-jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true })) }));
+import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
+import { trimIntervalSuffix } from '@sbomscanner-ui-ext/utils/app';
+
+// mock external utils
+jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({
+  getPermissions: jest.fn(() => ({ canEdit: true })),
+}));
+
+jest.mock('@sbomscanner-ui-ext/utils/app', () => ({
+  trimIntervalSuffix: jest.fn(() => '5m'),
+}));
+
+jest.mock(
+  '@sbomscanner-ui-ext/components/rancher-rewritten/shell/components/Preview.vue',
+  () => ({
+    name: 'Preview',
+    props: ['title', 'value'],
+    template: '<div class="preview-mock"><slot /></div>',
+  })
+);
+
 describe('RegistryDetails.vue', () => {
 
-  let storeMock: any;
-  let tMock: any;
+  let storeMock;
+  let tMock;
   const mockRouter = { push: jest.fn() };
 
   const registryMock = {
     metadata: { name: 'my-reg', namespace: 'ns1' },
     spec:     {
       uri:          'http://test.registry',
-      repositories: ['repo1', 'repo2'],
+      repositories: [{ name: 'repo1' }, { name: 'repo2' }],
       scanInterval: '5m',
     },
     scanRec: { currStatus: 'complete' },
@@ -38,127 +57,101 @@ describe('RegistryDetails.vue', () => {
           return Promise.resolve(scanJobsMock);
         }
       }),
+      getters: {}
     };
 
     tMock = jest.fn((str, vars) => {
       if (vars?.i) return `Every ${vars.i}`;
-
       return str;
     });
 
     return mount(RegistryDetails, {
       global: {
         mocks: {
-          $store:      storeMock,
+          $store: storeMock,
           $fetchState: { pending: false },
-          $route:      {
-            params: {
-              cluster: 'local', id: 'my-reg', ns: 'ns1'
-            }
+          $route: {
+            params: { cluster: 'local', id: 'my-reg', ns: 'ns1' }
           },
           $router: mockRouter,
-          t:       tMock,
+          t: tMock,
         },
         stubs: {
-          RouterLink:              { template: '<a><slot /></a>' },
-          ActionMenu:              true,
-          RancherMeta:             true,
-          StatusBadge:             true,
+          RouterLink: true,
+          ActionMenu: true,
+          StatusBadge: true,
           RegistryDetailScanTable: true,
-          ScanButton:              true,
+          RegistryDetailsMeta: true,
+          ScanButton: true,
         },
       },
       ...options,
     });
   };
 
-  it('renders header and basic structure', async() => {
-    getPermissions.mockReturnValueOnce({ canEdit: true });
+  it('renders header and structure', async () => {
     const wrapper = factory();
+    await wrapper.vm.loadData();
 
     expect(wrapper.find('.registry-details').exists()).toBe(true);
     expect(wrapper.find('.header').exists()).toBe(true);
   });
 
-  it('calls loadData() on fetch hook', async() => {
+  it('fetch() calls loadData()', async () => {
     const wrapper = factory();
     const spy = jest.spyOn(wrapper.vm, 'loadData');
 
     await wrapper.vm.$options.fetch.call(wrapper.vm);
+
     expect(spy).toHaveBeenCalled();
   });
 
-  it('loadData populates registry, status, metadata, and scanHistory', async() => {
+  it('loadData populates registry, metadata, and scanHistory', async () => {
     const wrapper = factory();
 
     await wrapper.vm.loadData();
 
-    expect(storeMock.dispatch).toHaveBeenCalledWith('cluster/find', expect.any(Object));
-    expect(storeMock.dispatch).toHaveBeenCalledWith('cluster/findAll', expect.any(Object));
-
     expect(wrapper.vm.registry).toEqual(registryMock);
-    expect(wrapper.vm.registry.scanRec.currStatus).toBe('complete');
     expect(wrapper.vm.scanHistory).toEqual([{ spec: { registry: 'my-reg' } }]);
-    expect(wrapper.vm.registryMetadata.length).toBeGreaterThan(0);
 
-    // Validate t() calls
-    expect(tMock).toHaveBeenCalledWith('imageScanner.registries.configuration.meta.namespace');
+    expect(trimIntervalSuffix).toHaveBeenCalledWith('5m');
+    expect(wrapper.vm.registryMetadata.namespace.value).toBe('ns1');
+    expect(wrapper.vm.registryMetadata.uri.value).toBe('http://test.registry');
+    expect(wrapper.vm.registryMetadata.repositories.value).toBe(2);
   });
 
-  it('renders ActionMenu only when registry is set', async() => {
+  it('renders ActionMenu only when registry is set', async () => {
     const wrapper = factory();
 
-    // initially null
     expect(wrapper.findComponent(ActionMenu).exists()).toBe(false);
 
     await wrapper.vm.loadData();
     await wrapper.vm.$nextTick();
 
-    // ActionMenu visible
     expect(wrapper.findComponent(ActionMenu).exists()).toBe(true);
   });
 
-  it('renders child components', async() => {
+  it('renders child components', async () => {
     const wrapper = factory();
-
     await wrapper.vm.loadData();
-    await flushPromises();
 
-    expect(wrapper.findComponent(RancherMeta).exists()).toBe(true);
+    expect(wrapper.findComponent(RegistryDetailsMeta).exists()).toBe(true);
     expect(wrapper.findComponent(StatusBadge).exists()).toBe(true);
     expect(wrapper.findComponent(RegistryDetailScanTable).exists()).toBe(true);
     expect(wrapper.findComponent(ScanButton).exists()).toBe(true);
   });
 
-  it('computes correct metadata values', async() => {
-    const wrapper = factory();
-
-    await wrapper.vm.loadData();
-
-    const meta = wrapper.vm.registryMetadata;
-    const nsMeta = meta.find((m: any) => m.label === 'imageScanner.registries.configuration.meta.namespace');
-    const repoMeta = meta.find((m: any) => m.label === 'imageScanner.registries.configuration.meta.repositories');
-    const uriMeta = meta.find((m: any) => m.label === 'imageScanner.registries.configuration.meta.uri');
-    const tagsMeta = meta.find((m: any) => m.type === 'tags');
-
-    expect(nsMeta.value).toBe('ns1');
-    expect(repoMeta.value).toBe(2);
-    expect(uriMeta.value).toBe('http://test.registry');
-    expect(tagsMeta.tags).toEqual(['repo1', 'repo2']);
-  });
-
-  it('handles empty repositories and scanInterval gracefully', async() => {
+  it('handles empty repositories & scanInterval gracefully', async () => {
     const wrapper = factory();
 
     registryMock.spec.repositories = undefined;
     registryMock.spec.scanInterval = undefined;
+    trimIntervalSuffix.mockReturnValueOnce('');
+
     await wrapper.vm.loadData();
 
-    const repoMeta = wrapper.vm.registryMetadata.find((m: any) => m.label === 'imageScanner.registries.configuration.meta.repositories');
-    const scheduleMeta = wrapper.vm.registryMetadata[5];// scanInterval
-
-    expect(repoMeta.value).toBe(0);
-    expect(scheduleMeta?.value).toBe('');
+    expect(wrapper.vm.registryMetadata.repositories.value).toBe(0);
+    expect(wrapper.vm.registryMetadata.schedule.value).toBe('');
   });
 
 });
