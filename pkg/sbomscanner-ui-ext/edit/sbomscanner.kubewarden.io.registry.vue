@@ -215,6 +215,8 @@ export default {
         delete this.value.spec.scanInterval;
       }
 
+      this.cleanPlatforms();
+
       try {
         await this.save(event);
       } catch (e) {
@@ -302,6 +304,25 @@ export default {
     isVariantSupported(arch) {
       return !!ALLOWED_VARIANTS[arch];
     },
+
+    cleanPlatforms() {
+      if (!this.value.spec.platforms) return;
+      const uniqueSet = new Set();
+
+      this.value.spec.platforms = this.value.spec.platforms.filter((p) => {
+        if (!p.os || !p.arch) {
+          return false;
+        }
+        const key = `${p.os}-${p.arch}-${p.variant || ''}`;
+
+        if (uniqueSet.has(key)) {
+          return false;
+        }
+        uniqueSet.add(key);
+
+        return true;
+      });
+    }
   }
 };
 </script>

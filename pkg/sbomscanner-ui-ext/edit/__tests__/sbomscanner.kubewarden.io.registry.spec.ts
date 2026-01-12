@@ -397,12 +397,38 @@ describe('CruRegistry', () => {
 
     it('should NOT delete scanInterval if not MANUAL', async() => {
       save.mockResolvedValue({});
-      wrapper.vm.value.spec.scanInterval = SCAN_INTERVALS.DAILY;
+      wrapper.vm.value.spec.scanInterval = SCAN_INTERVALS.ONE_HOUR;
       await wrapper.vm.$nextTick();
       await wrapper.vm.finish();
-      expect(wrapper.vm.value.spec.scanInterval).toBe(SCAN_INTERVALS.DAILY);
+      expect(wrapper.vm.value.spec.scanInterval).toBe(SCAN_INTERVALS.ONE_HOUR);
       expect(save).toHaveBeenCalled();
       expect(mockRouter.push).toHaveBeenCalled();
+    });
+
+    it('should remove duplicates and empty platforms before saving', async() => {
+      save.mockResolvedValue({});
+      wrapper.vm.value.spec.platforms = [
+        {
+          os: 'linux', arch: 'amd64', variant: ''
+        },
+        {
+          os: 'linux', arch: 'amd64', variant: ''
+        },
+        {
+          os: '', arch: '', variant: ''
+        },
+        {
+          os: 'windows', arch: 'amd64', variant: ''
+        }
+      ];
+
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.finish();
+
+      expect(wrapper.vm.value.spec.platforms).toHaveLength(2);
+      expect(wrapper.vm.value.spec.platforms[0].os).toBe('linux');
+      expect(wrapper.vm.value.spec.platforms[1].os).toBe('windows');
+      expect(save).toHaveBeenCalled();
     });
 
     it('should set errors and not route on save failure', async() => {
