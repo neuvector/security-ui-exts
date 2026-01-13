@@ -303,11 +303,12 @@ describe('CruRegistry', () => {
       expect(wrapper.vm.value.spec.caBundle).toBe('my-cert-content');
     });
 
-    it('addPlatform should push an empty template to platforms array', () => {
+    it('addPlatform should push a default template (linux/amd64) to platforms array', () => {
       wrapper.vm.addPlatform();
+
       expect(wrapper.vm.value.spec.platforms).toHaveLength(1);
       expect(wrapper.vm.value.spec.platforms[0]).toEqual({
-        os: '', arch: '', variant: ''
+        os: 'linux', arch: 'amd64', variant: ''
       });
     });
 
@@ -429,6 +430,17 @@ describe('CruRegistry', () => {
       expect(wrapper.vm.value.spec.platforms[0].os).toBe('linux');
       expect(wrapper.vm.value.spec.platforms[1].os).toBe('windows');
       expect(save).toHaveBeenCalled();
+    });
+
+    it('should handle undefined platforms gracefully in cleanPlatforms', async() => {
+      save.mockResolvedValue({});
+      wrapper.vm.value.spec.platforms = undefined;
+
+      await wrapper.vm.finish();
+
+      expect(save).toHaveBeenCalled();
+      // Ensure it remains undefined (was not accessed/crashed)
+      expect(wrapper.vm.value.spec.platforms).toBeUndefined();
     });
 
     it('should set errors and not route on save failure', async() => {

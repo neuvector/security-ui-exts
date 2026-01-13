@@ -17,21 +17,21 @@ import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@sbomscanner-ui-ext/types';
 import { SECRET_TYPES } from '@shell/config/secret';
 
 const VALID_PLATFORMS = {
+  linux:     ['amd64', 'arm', 'arm64', 's390x','386', 'loong64', 'mips', 'mipsle', 'mips64', 'mips64le', 'ppc64', 'ppc64le', 'riscv64'],
   aix:       ['ppc64'],
-  android:   ['386', 'amd64', 'arm', 'arm64'],
+  android:   ['amd64', 'arm', 'arm64','386'],
   darwin:    ['amd64', 'arm64'],
   dragonfly: ['amd64'],
-  freebsd:   ['386', 'amd64', 'arm'],
+  freebsd:   ['amd64', 'arm', '386'],
   illumos:   ['amd64'],
   ios:       ['arm64'],
   js:        ['wasm'],
-  linux:     ['386', 'amd64', 'arm', 'arm64', 'loong64', 'mips', 'mipsle', 'mips64', 'mips64le', 'ppc64', 'ppc64le', 'riscv64', 's390x'],
-  netbsd:    ['386', 'amd64', 'arm'],
-  openbsd:   ['386', 'amd64', 'arm', 'arm64'],
-  plan9:     ['386', 'amd64', 'arm'],
+  netbsd:    ['amd64', 'arm', '386'],
+  openbsd:   ['amd64', 'arm', 'arm64', '386'],
+  plan9:     ['amd64', 'arm', '386'],
   solaris:   ['amd64'],
   wasip1:    ['wasm'],
-  windows:   ['386', 'amd64', 'arm', 'arm64']
+  windows:   ['amd64', 'arm', 'arm64', '386']
 };
 
 const ALLOWED_VARIANTS = {
@@ -85,9 +85,9 @@ export default {
     }
 
     const osOptions = Object.keys(VALID_PLATFORMS).map((k) => ({
-      label: k.charAt(0).toUpperCase() + k.slice(1),
+      label: k,
       value: k
-    })).sort((a, b) => a.label.localeCompare(b.label));
+    }));
 
     return {
       inStore:         this.$store.getters['currentProduct'].inStore,
@@ -256,8 +256,8 @@ export default {
 
     addPlatform() {
       this.value.spec.platforms.push({
-        os:      '',
-        arch:    '',
+        os:      'linux',
+        arch:    'amd64',
         variant: '',
       });
     },
@@ -484,7 +484,7 @@ export default {
       <div class="registry-input-label mt-24">
         {{ t('imageScanner.registries.configuration.cru.filters.label') }}
       </div>
-      <div v-if="value.spec.platforms.length > 0" class="row mb-5">
+      <div v-if="value.spec.platforms && value.spec.platforms.length > 0" class="row mb-5">
         <div class="col span-3">
           <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.os') || 'OS' }}</label>
         </div>

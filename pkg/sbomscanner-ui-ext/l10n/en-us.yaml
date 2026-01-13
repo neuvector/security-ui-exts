@@ -110,7 +110,7 @@ imageScanner:
             label: URI
             placeholder: "The registry address URI"
           caBundle:
-            placeholder: "This can be entered either manually in the current text area or by importing it via the button below. Cap the text-area to a max of 5 lines."
+            placeholder: "You can enter this manually or import it from a file using the button below."
           insecure:
             label: "Allow insecure connections"
         proxy:
