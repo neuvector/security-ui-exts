@@ -4,6 +4,7 @@ import Content from '@shell/components/Resource/Detail/Preview/Content.vue';
 import { useBasicSetupFocusTrap } from '@shell/composables/focusTrap';
 import { computed, onMounted, ref } from 'vue';
 import CodeMirror from '@shell/components/CodeMirror.vue';
+import { _VIEW } from '@shell/config/query-params';
 
 export interface Props {
   title: string;
@@ -67,6 +68,7 @@ useBasicSetupFocusTrap('#focus-trap-preview-container-element');
         :value="props.value"
       /> -->
       <CodeMirror
+        :mode="_VIEW"
         :value="props.value"
       />
       <CopyToClipboard

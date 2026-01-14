@@ -92,6 +92,13 @@ export default {
       this.registry = await this.$store.dispatch('cluster/find', { type: RESOURCE.REGISTRY, id: `${ this.$route.params.ns }/${ this.$route.params.id }` });
       this.scanHistory = (await this.$store.dispatch('cluster/findAll', { type: RESOURCE.SCAN_JOB })).filter((rec) => {
         return rec.spec.registry === this.registry.metadata.name;
+      }).map((rec) => {
+        if (rec.statusResult.type === 'Complete' && rec.statusResult.reason === 'NoImagesToScan') {
+          rec.status.imagesCount = 0;
+          rec.status.scannedImagesCount = 0;
+        }
+
+        return rec;
       });
 
       this.registryMetadata = {

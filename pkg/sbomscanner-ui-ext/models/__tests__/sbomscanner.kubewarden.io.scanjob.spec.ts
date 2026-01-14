@@ -96,6 +96,33 @@ describe('Scanjob model', () => {
     expect(result.lastTransitionTime).toBe(1761480970000);
   });
 
+  it('returns actual condition when condition.status=True - no images in the registry', () => {
+    scanjob.status = {
+      conditions: [
+        {
+          status: 'False', type: 'Scheduled', lastTransitionTime: '2025-10-23T12:16:10.000Z'
+        },
+        {
+          status: 'False', type: 'Pending', lastTransitionTime: '2025-10-24T12:16:10.000Z'
+        },
+        {
+          status: 'True', type: 'Complete', reason: 'NoImagesToScan', lastTransitionTime: '2025-10-26T12:16:10.000Z'
+        },
+        {
+          status: 'False', type: 'Failed', lastTransitionTime: '2025-10-25T12:16:10.000Z'
+        },
+      ],
+    };
+
+    const result = scanjob.statusResult;
+
+    expect(result.type).toBe('Complete');
+    expect(result.statusIndex).toBe(2);
+    expect(result.progress).toBe(100);
+    expect(typeof result.lastTransitionTime).toBe('number');
+    expect(result.lastTransitionTime).toBe(1761480970000);
+  });
+
   it('handles progress when scannedImagesCount is 0', () => {
     scanjob.status = {
       conditions: [

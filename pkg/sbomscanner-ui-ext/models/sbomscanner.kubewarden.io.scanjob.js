@@ -20,8 +20,11 @@ export default class Scanjob extends SteveModel {
         type:               this.status.conditions[statusIndex].type,
         lastTransitionTime: new Date(this.status.conditions[statusIndex].lastTransitionTime).getTime(),
         message:            this.status.conditions[statusIndex].message,
+        reason:             this.status.conditions[statusIndex].reason,
         statusIndex,
-        progress:           status.imagesCount && status.scannedImagesCount ? Math.ceil((status.scannedImagesCount / status.imagesCount) * 100) : 0
+        progress:           this.status.conditions[statusIndex].type === 'Complete' && this.status.conditions[statusIndex].reason === 'NoImagesToScan' ?
+          100 :
+          (status.imagesCount && status.scannedImagesCount ? Math.ceil((status.scannedImagesCount / status.imagesCount) * 100) : 0)
       };
     }
 

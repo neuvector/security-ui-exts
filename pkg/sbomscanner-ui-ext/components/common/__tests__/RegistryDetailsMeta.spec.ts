@@ -1,11 +1,12 @@
 import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import RegistryDetailsMeta from '../RegistryDetailsMeta.vue';
+import * as jsyaml from 'js-yaml';
 
-// Mock PreviewableButton since it's child component
-jest.mock('../PreviewableButton.vue', () => ({
-  name: 'PreviewableButton',
-  props: ['repository'],
-  template: '<div class="preview-btn-mock">{{ repository.name }}</div>',
+jest.mock('../../rancher-rewritten/shell/components/KeyValue.vue', () => ({
+  name: 'KeyValue',
+  props: ['propertyName', 'rows'],
+  template: '<div class="key-value-mock">{{ propertyName }} {{ rows.length }}</div><div class="rows-mock">{{ rows }}</div>',
 }));
 
 describe('RegistryDetailsMeta.vue', () => {
@@ -60,16 +61,27 @@ describe('RegistryDetailsMeta.vue', () => {
       propsData: { properties: baseProps }
     });
 
-    // count
-    expect(wrapper.text()).toContain('Repositories');
-    expect(wrapper.text()).toContain('2');
-
     // list
-    const repoButtons = wrapper.findAll('.preview-btn-mock');
-    expect(repoButtons.length).toBe(2);
+    const repoButtons = wrapper.findAll('.key-value-mock');
 
-    expect(repoButtons.at(0).text()).toBe('library/alpine');
-    expect(repoButtons.at(1).text()).toBe('nginx');
+    expect(repoButtons.at(0).text()).toBe('Repositories 2');
+
+    const rows = wrapper.findAll('.rows-mock');
+    const expectedRows = [
+      {
+        "key": "library/alpine",
+        "value": "name: library/alpine\n"
+      },
+      {
+        "key": "nginx",
+        "value": "name: nginx\n"
+      }
+    ]
+    const actualRows = JSON.parse(rows.at(0).text());
+    expect(actualRows[0].key).toBe(expectedRows[0].key);
+    expect(actualRows[0].value).toBe(expectedRows[0].value);
+    expect(actualRows[1].key).toBe(expectedRows[1].key);
+    expect(actualRows[1].value).toBe(expectedRows[1].value);
   });
 
   it('does not render platform tags when value=0', () => {
@@ -124,5 +136,73 @@ describe('RegistryDetailsMeta.vue', () => {
     });
 
     expect(tag).toBe('linux / arm64 / v7');
+  });
+});
+
+describe('RegistryDetailsMeta - repositories computed', () => {
+
+  it('returns mapped repositories with key and YAML value', () => {
+    const wrapper = shallowMount(RegistryDetailsMeta, {
+      propsData: {
+        properties: {
+          repositories: {
+            list: [
+              { name: 'repo1', test: 1 },
+              { name: 'repo2', test: 2 }
+            ]
+          },
+          namespace: { label: '', value: '' },
+          uri: { label: '', value: '' },
+          schedule: { label: '', value: '' },
+          platforms: { label: '', value: 0, list: [] }
+        }
+      },
+      global: {
+        stubs: { KeyValue: true }
+      }
+    });
+
+    expect(wrapper.vm.repositories).toEqual([
+      { key: 'repo1', value: 'name: repo1\ntest: 1\n' },
+      { key: 'repo2', value: 'name: repo2\ntest: 2\n' }
+    ]);
+  });
+
+  it('returns empty array when list is empty', () => {
+    const wrapper = shallowMount(RegistryDetailsMeta, {
+      propsData: {
+        properties: {
+          repositories: { list: [] },
+          namespace: { label: '', value: '' },
+          uri: { label: '', value: '' },
+          schedule: { label: '', value: '' },
+          platforms: { label: '', value: 0, list: [] }
+        }
+      },
+      global: {
+        stubs: { KeyValue: true }
+      }
+    });
+
+    expect(wrapper.vm.repositories).toEqual([]);
+  });
+
+  it('throws if repositories.list is undefined', () => {
+    const wrapper = shallowMount(RegistryDetailsMeta, {
+      propsData: {
+        properties: {
+          repositories: { list: undefined },
+          namespace: { label: '', value: '' },
+          uri: { label: '', value: '' },
+          schedule: { label: '', value: '' },
+          platforms: { label: '', value: 0, list: [] }
+        }
+      },
+      global: {
+        stubs: { KeyValue: true }
+      }
+    });
+
+    expect(wrapper.vm.repositories).toEqual([]);
   });
 });

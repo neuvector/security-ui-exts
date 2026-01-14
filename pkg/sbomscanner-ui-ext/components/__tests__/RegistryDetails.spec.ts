@@ -1,14 +1,16 @@
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import RegistryDetails from '../RegistryDetails.vue';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
 import StatusBadge from '../common/StatusBadge.vue';
 import RegistryDetailScanTable from '../RegistryDetailScanTable.vue';
 import ScanButton from '../common/ScanButton.vue';
-import RegistryDetailsMeta from '../common/RegistryDetailsMeta.vue';
-
-import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 import { trimIntervalSuffix } from '@sbomscanner-ui-ext/utils/app';
 
+jest.mock('../common/RegistryDetailsMeta.vue', () => ({
+  name: 'RegistryDetailsMeta',
+  props: ['metadata'],
+  template: '<div class="registry-details-meta-mock"><slot /></div>',
+}));
 // mock external utils
 jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({
   getPermissions: jest.fn(() => ({ canEdit: true })),
@@ -43,18 +45,41 @@ describe('RegistryDetails.vue', () => {
     scanRec: { currStatus: 'complete' },
   };
 
+  const registryMockNoImages = {
+    metadata: { name: 'my-reg-no-images', namespace: 'ns1' },
+    spec:     {
+      uri:          'http://test.registry',
+      repositories: [{ name: 'repo1' }, { name: 'repo2' }],
+      scanInterval: '5m',
+    },
+    scanRec: { currStatus: 'complete' },
+  };
+
   const scanJobsMock = [
-    { spec: { registry: 'my-reg' } },
-    { spec: { registry: 'other-reg' } },
+    {
+      spec: { registry: 'my-reg' },
+      statusResult: { type: 'Complete' }
+    },
+    {
+      spec: { registry: 'my-reg-no-images' },
+      status: {
+        conditions: [],
+      },
+      statusResult: { type: 'Complete', reason: 'NoImagesToScan' }
+    },
+    {
+      spec: { registry: 'other-reg' },
+      statusResult: { type: 'InProgress' },
+    }
   ];
 
   const factory = (options = {}) => {
     storeMock = {
       dispatch: jest.fn((action) => {
         if (action === 'cluster/find') {
-          return Promise.resolve(registryMock);
+          return Promise.resolve(options.reg);
         } else if (action === 'cluster/findAll') {
-          return Promise.resolve(scanJobsMock);
+          return Promise.resolve(options.scanjob);
         }
       }),
       getters: {}
@@ -90,7 +115,7 @@ describe('RegistryDetails.vue', () => {
   };
 
   it('renders header and structure', async () => {
-    const wrapper = factory();
+    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
     await wrapper.vm.loadData();
 
     expect(wrapper.find('.registry-details').exists()).toBe(true);
@@ -98,7 +123,7 @@ describe('RegistryDetails.vue', () => {
   });
 
   it('fetch() calls loadData()', async () => {
-    const wrapper = factory();
+    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
     const spy = jest.spyOn(wrapper.vm, 'loadData');
 
     await wrapper.vm.$options.fetch.call(wrapper.vm);
@@ -107,12 +132,12 @@ describe('RegistryDetails.vue', () => {
   });
 
   it('loadData populates registry, metadata, and scanHistory', async () => {
-    const wrapper = factory();
+    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
 
     await wrapper.vm.loadData();
 
     expect(wrapper.vm.registry).toEqual(registryMock);
-    expect(wrapper.vm.scanHistory).toEqual([{ spec: { registry: 'my-reg' } }]);
+    expect(wrapper.vm.scanHistory).toEqual([{ spec: { registry: 'my-reg' }, statusResult: { type: 'Complete' } }]);
 
     expect(trimIntervalSuffix).toHaveBeenCalledWith('5m');
     expect(wrapper.vm.registryMetadata.namespace.value).toBe('ns1');
@@ -120,8 +145,20 @@ describe('RegistryDetails.vue', () => {
     expect(wrapper.vm.registryMetadata.repositories.value).toBe(2);
   });
 
+  it('loadData populates registry, metadata, and scanHistory - no images in the registry', async () => {
+    const wrapper = factory({reg: registryMockNoImages, scanjob: scanJobsMock});
+
+    await wrapper.vm.loadData();
+
+    expect(wrapper.vm.registry).toEqual(registryMockNoImages);
+    expect(wrapper.vm.scanHistory[0].spec.registry).toEqual('my-reg-no-images');
+
+    expect(wrapper.vm.scanHistory[0].status.imagesCount).toBe(0);
+    expect(wrapper.vm.scanHistory[0].status.scannedImagesCount).toBe(0);
+  });
+
   it('renders ActionMenu only when registry is set', async () => {
-    const wrapper = factory();
+    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
 
     expect(wrapper.findComponent(ActionMenu).exists()).toBe(false);
 
@@ -132,17 +169,16 @@ describe('RegistryDetails.vue', () => {
   });
 
   it('renders child components', async () => {
-    const wrapper = factory();
+    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
     await wrapper.vm.loadData();
 
-    expect(wrapper.findComponent(RegistryDetailsMeta).exists()).toBe(true);
     expect(wrapper.findComponent(StatusBadge).exists()).toBe(true);
     expect(wrapper.findComponent(RegistryDetailScanTable).exists()).toBe(true);
     expect(wrapper.findComponent(ScanButton).exists()).toBe(true);
   });
 
   it('handles empty repositories & scanInterval gracefully', async () => {
-    const wrapper = factory();
+    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
 
     registryMock.spec.repositories = undefined;
     registryMock.spec.scanInterval = undefined;

@@ -17,39 +17,35 @@
             </div>
         </div>
         <div class="column column-2">
-            <div class="stat-item">
-                <span class="label">{{ properties.repositories.label }}</span>
-                <span class="value">{{ properties.repositories.value }}</span>
-            </div>
-            <div class="vendor-tags-wrapper">
-                <div class="vendor-tags">
-                    <div v-for="(repository, index) in properties.repositories.list" :key="index" >
-                        <PreviewableButton :repository="repository" />
-                    </div>
-                </div>
-            </div>
+          <KeyValue
+            :propertyName="properties.repositories.label"
+            :rows="repositories"
+            type="active"
+            @show-configuration="(returnFocusSelector) => emit('show-configuration', returnFocusSelector, 'labels-and-annotations')"
+          />
         </div>
         <div class="column column-3">
-            <div class="stat-item">
-                <span class="label">{{ properties.platforms.label }}</span>
-                <span class="value">{{ properties.platforms.value }}</span>
-            </div>
-            <div test-id="platforms" v-if="properties.platforms.value > 0" class="vendor-tags-wrapper">
-                <div class="vendor-tags">
-                    <span v-for="(platform, index) in properties.platforms.list" :key="index" class="vendor-tag active">
-                        {{ getPlatformTag(platform)}}
-                    </span>
-                </div>
-            </div>
+          <div class="heading">
+            <span class="title text-deemphasized">{{ properties.platforms.label }}</span>
+            <span class="count">{{ properties.platforms.value }}</span>
+          </div>
+          <div test-id="platforms" v-if="properties.platforms.value > 0" class="vendor-tags-wrapper">
+              <div class="vendor-tags">
+                  <span v-for="(platform, index) in properties.platforms.list" :key="index" class="vendor-tag active">
+                      {{ getPlatformTag(platform)}}
+                  </span>
+              </div>
+          </div>
         </div>
     </div>
 </template>
 
 <script>
-import PreviewableButton from './PreviewableButton.vue';
+import KeyValue from '../rancher-rewritten/shell/components/KeyValue.vue';
+import jsyaml from 'js-yaml';
 export default {
   name:       'RegistryDetailsMeta',
-  components: { PreviewableButton },
+  components: { KeyValue },
   props:      {
     properties: {
       type:     Object,
@@ -63,6 +59,11 @@ export default {
 
       return `${os} / ${arch}${variant ? ` / ${variant}` : ''}`;
     },
+  },
+  computed: {
+    repositories() {
+      return this.properties.repositories.list?.map((repo) => ({ key: repo.name, value: jsyaml.dump(repo) })) || [];
+    }
   }
 };
 </script>
@@ -103,10 +104,10 @@ export default {
   gap: 8px;
   flex: 1 0 0;
 }
+
 .vendor-tags-wrapper {
   position: relative;
   display: inline-block;
-  margin-top: 5px;
 }
 .vendor-tags {
   display: flex;
@@ -118,13 +119,15 @@ export default {
   margin-right: 5px;
   padding: 1px 6px;
   background-color: transparent;
-  border: solid var(--border-width) var(--input-border);
   border-radius: 4px;
-  cursor: pointer;
   user-select: none;
   height: 24px;
   min-height: auto;
   align-items: center;
+  font-family: Lato;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
 }
 
 .icon-filter {
@@ -191,5 +194,13 @@ export default {
       color: var(--text-color);
     }
   }
+}
+
+.count {
+    margin-left: 24px;
+}
+
+.heading {
+    margin-bottom: 8px;
 }
 </style>
