@@ -85,7 +85,6 @@ export function init($plugin: any, store: any) {
     PAGE.IMAGES,
     // PAGE.VULNERABILITIES,
   ]);
-  // Prepend spaces on group name, as Rancher 2.12 render group name align with sidemenu
-  basicType([PAGE.REGISTRIES, PAGE.VEX_MANAGEMENT], '&nbsp;&nbsp;&nbsp;&nbsp;Advanced');
+  basicType([PAGE.REGISTRIES, PAGE.VEX_MANAGEMENT], 'Advanced');
 
 }
