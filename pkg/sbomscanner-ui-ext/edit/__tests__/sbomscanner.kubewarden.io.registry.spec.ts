@@ -34,7 +34,7 @@ const stubs = {
   Banner:            { name: 'Banner', template: '<div><slot /></div>' },
   LabeledSelect:     LabeledSelectStub,
   Checkbox:          {
-    name: 'Checkbox', template: '<input type="checkbox" :checked="value" @change="$emit(\'update:value\', $event.target.checked)" />', props: ['value']
+    name: 'Checkbox', template: '<input type="checkbox" :checked="value" @change="$emit(\'update:value\', $event.target.checked)" />', props: ['value', 'label', 'tooltip']
   },
   FileSelector: { name: 'FileSelector', template: '<button @click="$emit(\'selected\', \'file-content\')">Read</button>' }
 };

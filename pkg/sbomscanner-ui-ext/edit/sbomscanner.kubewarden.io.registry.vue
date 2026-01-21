@@ -383,7 +383,7 @@ export default {
           />
           <div class="mt-10">
             <FileSelector
-                class="btn btn-sm role-secondary"
+                class="btn btn-sm role-tertiary"
                 :label="t('generic.readFromFile')"
                 @selected="onFileSelected"
             />
@@ -394,6 +394,7 @@ export default {
             <Checkbox
                 v-model:value="value.spec.insecure"
                 :label="t('imageScanner.registries.configuration.cru.registry.insecure.label')"
+                :tooltip="t('imageScanner.registries.configuration.cru.registry.insecure.tooltip')"
                 data-testid="auth-insecure-checkbox"
             />
           </div>
@@ -542,7 +543,7 @@ export default {
           <button
               v-if="!isView"
               type="button"
-              class="btn role-secondary btn-sm"
+              class="btn btn-sm role-tertiary"
               @click="addPlatform"
           >
             {{ t('imageScanner.registries.configuration.cru.filters.add') }}

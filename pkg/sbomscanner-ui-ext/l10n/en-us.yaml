@@ -113,6 +113,7 @@ imageScanner:
             placeholder: "You can enter this manually or import it from a file using the button below."
           insecure:
             label: "Allow insecure connections"
+            tooltip: "Skips SSL/TLS certificate verification. Use only for testing or trusted internal networks."
         proxy:
           enable: Use the embedded proxy
           tooltip: "When enabled, Rancher routes all registry traffic through its secure proxy instead of direct connections."
