@@ -1,5 +1,5 @@
 import SteveModel from '@shell/plugins/steve/steve-class';
-import { PRODUCT_NAME, PAGE } from '@sbomscanner-ui-ext/types';
+import { PRODUCT_NAME, PAGE, RESOURCE } from '@sbomscanner-ui-ext/types';
 
 export default class SbomscannerRancherIoVexhub extends SteveModel {
   get _availableActions() {
@@ -141,18 +141,7 @@ export default class SbomscannerRancherIoVexhub extends SteveModel {
     }
   }
 
-  get listLocation() {
-    // if (this.$rootState.targetRoute.params.resource === "sbomscanner.kubewarden.io.vexhub") {
-    //   return this._listLocation;
-    // }
-    return { name: `c-cluster-${ PRODUCT_NAME }-${ PAGE.VEX_MANAGEMENT }` };
-  }
-
-  get doneOverride() {
-    return this.listLocation;
-  }
-
-  get parentLocationOverride() {
-    return this.listLocation;
+  get fullDetailPageOverride() {
+    return true;
   }
 }

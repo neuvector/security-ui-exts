@@ -1,121 +1,128 @@
 <template>
-  <div class="search-filters">
-    <div class="filter-row">
-      <div class="filter-item">
-        <label>{{ t('imageScanner.registries.registrytable.header.registry') }}</label>
-        <div class="filter-input-wrapper">
-          <input
-            v-model="filters.registrySearch"
-            type="text"
-            :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
-            class="filter-input"
-          />
-          <i
-            class="icon icon-search"
-            style="color: #6C6C76; margin-left: 8px;"
-          ></i>
+    <div class="state">
+      State as of
+      <span class="state-date-time">
+        {{ latestUpdateDateText }}&nbsp;&nbsp;&nbsp;&nbsp;{{ latestUpdateTimeText }}
+      </span>
+    </div>
+    <RegistriesOverview />
+    <div class="search-filters">
+      <div class="filter-row">
+        <div class="filter-item">
+          <label>{{ t('imageScanner.registries.registrytable.header.registry') }}</label>
+          <div class="filter-input-wrapper">
+            <input
+              v-model="filters.registrySearch"
+              type="text"
+              :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
+              class="filter-input"
+            />
+            <i
+              class="icon icon-search"
+              style="color: #6C6C76; margin-left: 8px;"
+            ></i>
+          </div>
         </div>
-      </div>
-      <div class="filter-item">
-        <label>{{ t('imageScanner.registries.registrytable.header.namespace') }}</label>
-        <div class="filter-input-wrapper">
-          <input
-            v-model="filters.namespaceSearch"
-            type="text"
-            :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
-            class="filter-input"
-          />
-          <i
-            class="icon icon-search"
-            style="color: #6C6C76; margin-left: 8px;"
-          ></i>
+        <div class="filter-item">
+          <label>{{ t('imageScanner.registries.registrytable.header.namespace') }}</label>
+          <div class="filter-input-wrapper">
+            <input
+              v-model="filters.namespaceSearch"
+              type="text"
+              :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
+              class="filter-input"
+            />
+            <i
+              class="icon icon-search"
+              style="color: #6C6C76; margin-left: 8px;"
+            ></i>
+          </div>
         </div>
-      </div>
-      <div class="filter-item">
-        <label>{{ t('imageScanner.registries.registrytable.header.uri') }}</label>
-        <div class="filter-input-wrapper">
-          <input
-            v-model="filters.uriSearch"
-            type="text"
-            :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.address')"
-            class="filter-input"
-          />
-          <i
-            class="icon icon-search"
-            style="color: #6C6C76; margin-left: 8px;"
-          ></i>
+        <div class="filter-item">
+          <label>{{ t('imageScanner.registries.registrytable.header.uri') }}</label>
+          <div class="filter-input-wrapper">
+            <input
+              v-model="filters.uriSearch"
+              type="text"
+              :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.address')"
+              class="filter-input"
+            />
+            <i
+              class="icon icon-search"
+              style="color: #6C6C76; margin-left: 8px;"
+            ></i>
+          </div>
         </div>
-      </div>
-      <div class="filter-item">
-        <label>{{ t('imageScanner.registries.registrytable.header.repos') }}</label>
-        <div class="filter-input-wrapper">
-          <input
-            v-model="filters.repositorySearch"
-            type="text"
-            :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
-            class="filter-input"
-          />
-          <i
-            class="icon icon-search"
-            style="color: #6C6C76; margin-left: 8px;"
-          ></i>
+        <div class="filter-item">
+          <label>{{ t('imageScanner.registries.registrytable.header.repos') }}</label>
+          <div class="filter-input-wrapper">
+            <input
+              v-model="filters.repositorySearch"
+              type="text"
+              :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
+              class="filter-input"
+            />
+            <i
+              class="icon icon-search"
+              style="color: #6C6C76; margin-left: 8px;"
+            ></i>
+          </div>
         </div>
-      </div>
-      <div class="filter-item">
-        <label>{{ t('imageScanner.registries.registrytable.header.status') }}</label>
-        <LabeledSelect
-          v-model:value="filters.statusSearch"
-          :options="filterStatusOptions"
-          :close-on-select="true"
-          :multiple="false"
-        />
+        <div class="filter-item">
+          <label>{{ t('imageScanner.registries.registrytable.header.status') }}</label>
+          <LabeledSelect
+            v-model:value="filters.statusSearch"
+            :options="filterStatusOptions"
+            :close-on-select="true"
+            :multiple="false"
+          />
+        </div>
       </div>
     </div>
-  </div>
-  <PaginatedResourceTable
-    ref="registryTable"
-    :headers="headers"
-    :schema="schema"
-    :namespaced="false"
-    :table-actions="true"
-    :row-actions="true"
-    :search="false"
-    :key-field="'id'"
-    :fetch-secondary-resources="fetchSecondaryResources"
-    :fetch-page-secondary-resources="fetchPageSecondaryResources"
-    :local-filter="filterRowsLocal"
-    :api-filter="filterRowsApi"
-    :use-query-params-for-simple-filtering="useQueryParamsForSimpleFiltering"
-    @selection="onSelectionChange"
-  >
-    <template #header-left>
-      <div class="table-top-left">
-        <ScanButton
-          v-if="canEdit"
-          class="table-btn"
-          :selected-registries="selectedRows?.map(row => {return {name: row.metadata.name, namespace: row.metadata.namespace, currStatus: row.currStatus}})"
-        />
-        <button
-          v-if="canDelete"
-          class="btn role-primary table-btn"
-          :disabled="!(selectedRows && selectedRows.length)"
-          @click="promptRemoveRegistry()"
-        >
-          <i
-            class="icon icon-delete"
-            style="margin-right: 8px;"
-          ></i>
-          {{ t('imageScanner.registries.button.delete') || 'Delete' }}
-        </button>
-        <div
-          v-if="selectedRows.length > 0"
-          class="selected-count"
-        >
-          {{ selectedRows.length }} {{ selectedRows.length > 1 ? t('imageScanner.registries.registrytable.selection.registries') : t('imageScanner.registries.registrytable.selection.registry') }}
+    <PaginatedResourceTable
+      ref="registryTable"
+      :headers="headers"
+      :schema="schema"
+      :namespaced="false"
+      :table-actions="true"
+      :row-actions="true"
+      :search="false"
+      :key-field="'id'"
+      :fetch-secondary-resources="fetchSecondaryResources"
+      :fetch-page-secondary-resources="fetchPageSecondaryResources"
+      :local-filter="filterRowsLocal"
+      :api-filter="filterRowsApi"
+      :use-query-params-for-simple-filtering="useQueryParamsForSimpleFiltering"
+      @selection="onSelectionChange"
+    >
+      <template #header-left>
+        <div class="table-top-left">
+          <ScanButton
+            v-if="canEdit"
+            class="table-btn"
+            :selected-registries="selectedRows?.map(row => {return {name: row.metadata.name, namespace: row.metadata.namespace, currStatus: row.currStatus}})"
+          />
+          <button
+            v-if="canDelete"
+            class="btn role-primary table-btn"
+            :disabled="!(selectedRows && selectedRows.length)"
+            @click="promptRemoveRegistry()"
+          >
+            <i
+              class="icon icon-delete"
+              style="margin-right: 8px;"
+            ></i>
+            {{ t('imageScanner.registries.button.delete') || 'Delete' }}
+          </button>
+          <div
+            v-if="selectedRows.length > 0"
+            class="selected-count"
+          >
+            {{ selectedRows.length }} {{ selectedRows.length > 1 ? t('imageScanner.registries.registrytable.selection.registries') : t('imageScanner.registries.registrytable.selection.registry') }}
+          </div>
         </div>
-      </div>
-    </template>
-  </PaginatedResourceTable>
+      </template>
+    </PaginatedResourceTable>
 </template>
 
 <script>
@@ -129,6 +136,9 @@ import LabeledSelect from '@shell/components/form/LabeledSelect';
 import _ from 'lodash';
 import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 import { FilterArgs, PaginationFilterField, PaginationParamFilter } from '@shell/types/store/pagination.types';
+import RegistriesOverview from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/RegistriesConfiguration.vue';
+import Masthead from '@shell/components/ResourceList/Masthead.vue';
+import day from 'dayjs';
 
 export default {
   name:       'Registries',
@@ -136,6 +146,8 @@ export default {
     PaginatedResourceTable,
     LabeledSelect,
     ScanButton,
+    RegistriesOverview,
+    Masthead,
   },
   props: {
     statusFilterLink: {
@@ -154,7 +166,8 @@ export default {
     ];
 
     return {
-      headers:      REGISTRY_SCAN_TABLE,
+      headers:          REGISTRY_SCAN_TABLE,
+      latestUpdateTime: new Date(),
       selectedRows: [],
       filters:      {
         registrySearch:   '',
@@ -303,6 +316,12 @@ export default {
       const args = { id: RESOURCE.REGISTRY };
 
       return this.$store.getters[`cluster/paginationEnabled`]?.(args);
+    },
+    latestUpdateDateText() {
+      return day(new Date(this.latestUpdateTime).getTime()).format('MMM D, YYYY');
+    },
+    latestUpdateTimeText() {
+      return day(new Date(this.latestUpdateTime).getTime()).format('h:mm a');
     },
   },
 };

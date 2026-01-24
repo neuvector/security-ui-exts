@@ -2,6 +2,7 @@
 import {
   PRODUCT_NAME,
   PAGE,
+  RESOURCE
 } from '@sbomscanner-ui-ext/types';
 export default {
   name:  'RegistryCellLink',
@@ -19,13 +20,28 @@ export default {
     return {
       PRODUCT_NAME,
       PAGE,
+      RESOURCE,
     };
+  },
+  computed: {
+    registryDetailLink() {
+      return {
+        name:   'c-cluster-product-resource-namespace-id',
+        params: {
+          cluster:   this.$route.params.cluster,
+          product:   PRODUCT_NAME,
+          resource:  RESOURCE.REGISTRY,
+          namespace: this.row.metadata.namespace,
+          id:        this.value,
+        }
+      };
+    }
   }
 };
 </script>
 
 <template>
-  <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.REGISTRIES}/${row.metadata.namespace}/${value}`">
+  <RouterLink :to="registryDetailLink">
     {{ `${row.metadata.namespace}/${value}` }}
   </RouterLink>
 </template>

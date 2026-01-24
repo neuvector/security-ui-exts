@@ -77,19 +77,6 @@ describe('SbomscannerRancherIoVexhub', () => {
   });
 
   describe('getters', () => {
-    it('should return correct listLocation', () => {
-      expect(wrapper.listLocation).toEqual({ name: `c-cluster-${ PRODUCT_NAME }-${ PAGE.VEX_MANAGEMENT }` });
-      expect(wrapper.listLocation).toEqual({ name: 'c-cluster-test-product-test-page-vex' });
-    });
-
-    it('should return listLocation for doneOverride', () => {
-      expect(wrapper.doneOverride).toStrictEqual(wrapper.listLocation);
-    });
-
-    it('should return listLocation for parentLocationOverride', () => {
-      expect(wrapper.parentLocationOverride).toStrictEqual(wrapper.listLocation);
-    });
-
     describe('canDelete', () => {
       it('should be true if enabled and super.canDelete is true', () => {
         wrapper.spec = { enabled: true };

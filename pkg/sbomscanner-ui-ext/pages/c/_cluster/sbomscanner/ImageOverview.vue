@@ -4,26 +4,6 @@
       <div class="title">
         {{ t("imageScanner.images.title") }}
       </div>
-      <!-- <div class="filter-dropdown">
-        <LabeledSelect
-          v-model:value="selectedCveFilter"
-          :options="filterCveOptions"
-          :close-on-select="true"
-          :multiple="false"
-          disabled
-          @selecting="changeCveFilter"
-        />
-      </div>
-      <div class="filter-dropdown">
-        <LabeledSelect
-          v-model:value="selectedImageFilter"
-          :options="filterImageOptions"
-          :close-on-select="true"
-          :multiple="false"
-          disabled
-          @selecting="changeImageFilter"
-        />
-      </div> -->
       <div>
         <button
           mat-button
@@ -38,10 +18,6 @@
         </button>
       </div>
     </div>
-    <!-- <div class="summary-section">
-      <TopRiskyImagesChart v-if="preprocessedDataset.topRiskyImages" :topRiskyImages="preprocessedDataset.topRiskyImages"/>
-      <ImageRiskAssessment v-if="preprocessedDataset.chartData" :chartData="preprocessedDataset.chartData" :filterFn="filterBySeverity"/>
-    </div> -->
     <div class="search-filters">
       <div class="filter-row">
         <div class="filter-item">
@@ -179,8 +155,6 @@
 <script>
 import SortableTable from '@shell/components/SortableTable';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
-// import TopRiskyImagesChart from '@sbomscanner-ui-ext/components/TopRiskyImagesChart';
-// import ImageRiskAssessment from '@sbomscanner-ui-ext/components/ImageRiskAssessment';
 import ActionMenu from '@shell/components/ActionMenuShell.vue';
 import { IMAGE_LIST_TABLE, REPO_BASED_TABLE, REPO_BASED_IMAGE_LIST_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 import { Checkbox } from '@components/Form/Checkbox';
@@ -196,8 +170,6 @@ export default {
   name:       'ImageOverview',
   components: {
     LabeledSelect,
-    // TopRiskyImagesChart,
-    // ImageRiskAssessment,
     SortableTable,
     Checkbox,
     ActionMenu
@@ -467,35 +439,6 @@ export default {
         }, { root: true });
       }
     },
-    // applyFilters() {
-    //   let filtered = _.cloneDeep(this.preprocessedImagesBak);
-
-    //   if (this.selectedImageFilter.value === 'excludeBaseImages' || this.selectedImageFilter === 'excludeBaseImages') {
-    //     filtered = filtered.filter((image) => !image.spec.isBaseImage);
-    //   } else if (this.selectedImageFilter.value === 'includeBaseImages' || this.selectedImageFilter === 'includeBaseImages') {
-    //     filtered = filtered.filter((image) => image.spec.isBaseImage);
-    //   }
-    //   if (this.selectedCveFilter.value === 'affectingCvesOnly' || this.selectedCveFilter === 'affectingCvesOnly') {
-    //     filtered = filtered.filter((image) => image.spec.hasAffectedPackages);
-    //   }
-    //   this.preprocessedDataset = this.preprocessData(filtered);
-    // },
-
-    // changeImageFilter(selectedImageFilter) {
-    //   this.selectedImageFilter = selectedImageFilter;
-    //   this.applyFilters();
-    // },
-
-    // changeCveFilter(selectedCveFilter) {
-    //   this.selectedCveFilter = selectedCveFilter;
-    //   this.applyFilters();
-    // },
-    // filterBySeverity(severity) {
-    //   this.preprocessedDataset.preprocessedImages = _.cloneDeep(this.preprocessedImagesBak);
-    //   if (severity) {
-    //     this.preprocessedDataset.preprocessedImages = this.preprocessedDataset.preprocessedImages.filter((image) => (image.severity.toLowerCase() === severity.toLowerCase()));
-    //   }
-    // },
     onSelectionChange(selected) {
       this.selectedRows = selected || [];
     },

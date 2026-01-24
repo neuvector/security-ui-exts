@@ -10,7 +10,7 @@
           >
             <RouterLink
               class="resource-link"
-              :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.REGISTRIES}`"
+              :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${RESOURCE.REGISTRY}`"
             >
               {{ t('imageScanner.registries.title') }}:
             </RouterLink>
@@ -29,7 +29,7 @@
         <div class="resource-header-actions">
           <ScanButton
             v-if="canEdit"
-            :selected-registries="[{name: $route.params.id, namespace: $route.params.ns, currStatus: registry?.scanRec.currStatus}]"
+            :selected-registries="[{name: $route.params.id, namespace: $route.params.namespace, currStatus: registry?.scanRec.currStatus}]"
             :reload-fn="loadData"
           />
           <ActionMenu
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     async loadData() {
-      this.registry = await this.$store.dispatch('cluster/find', { type: RESOURCE.REGISTRY, id: `${ this.$route.params.ns }/${ this.$route.params.id }` });
+      this.registry = await this.$store.dispatch('cluster/find', { type: RESOURCE.REGISTRY, id: `${ this.$route.params.namespace }/${ this.$route.params.id }` });
       this.scanHistory = (await this.$store.dispatch('cluster/findAll', { type: RESOURCE.SCAN_JOB })).filter((rec) => {
         return rec.spec.registry === this.registry.metadata.name;
       }).map((rec) => {

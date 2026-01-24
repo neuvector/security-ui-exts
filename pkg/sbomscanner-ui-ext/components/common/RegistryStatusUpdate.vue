@@ -5,7 +5,7 @@
   >
     <RouterLink
       class="registry-name"
-      :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${ PAGE.REGISTRIES }/${ registryStatus.namespace }/${ registryStatus.registryName }`"
+      :to="registryDetailLink"
     >
       {{ registryStatus.registryName }}
     </RouterLink>
@@ -39,6 +39,7 @@ import { elapsedTime } from '@shell/utils/time';
 import {
   PRODUCT_NAME,
   PAGE,
+  RESOURCE,
 } from '@sbomscanner-ui-ext/types';
 export default {
   name:       'RegistryStatusUpdate',
@@ -53,11 +54,26 @@ export default {
     return {
       PRODUCT_NAME,
       PAGE,
+      RESOURCE,
     };
   },
   methods: {
     statusUpdateTime(lastTransitionTime) {
       return `${ elapsedTime(Math.ceil(Date.now() / 1000) - Math.ceil((new Date(lastTransitionTime).getTime() / 1000))).label } ${ this.t('imageScanner.general.ago') }`;
+    }
+  },
+  computed: {
+    registryDetailLink() {
+      return {
+        name:   'c-cluster-product-resource-namespace-id',
+        params: {
+          cluster:  this.$route.params.cluster,
+          product:  PRODUCT_NAME,
+          resource: RESOURCE.REGISTRY,
+          namespace:       this.registryStatus.namespace,
+          id:       this.registryStatus.registryName,
+        }
+      };
     }
   }
 };

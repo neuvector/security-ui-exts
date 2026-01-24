@@ -52,21 +52,6 @@ export default class Registry extends SteveModel {
     return out;
   }
 
-  get listLocation() {
-    // if (this.$rootState.targetRoute.params.resource === "sbomscanner.kubewarden.io.registry") {
-    //   return this._listLocation;
-    // }
-    return { name: `c-cluster-${ PRODUCT_NAME }-${ PAGE.REGISTRIES }` };
-  }
-
-  get doneOverride() {
-    return this.listLocation;
-  }
-
-  get parentLocationOverride() {
-    return this.listLocation;
-  }
-
   get repositoryiesDisplay() {
     if (!this.spec || !this.spec.repositories) {
       return '';
@@ -158,5 +143,9 @@ export default class Registry extends SteveModel {
     }
 
     return await this.$store.dispatch(`cluster/findAll`, { type: RESOURCE.SCAN_JOB });
+  }
+
+  get fullDetailPageOverride() {
+    return true;
   }
 }

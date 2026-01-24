@@ -1,5 +1,5 @@
 <template>
-  <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${ PAGE.REGISTRIES }/${ row.metadata.namespace }/${ row.metadata.name }`">
+  <RouterLink :to="registryDetailLink">
     {{ row.metadata.name }}
   </RouterLink>
 </template>
@@ -7,6 +7,7 @@
 import {
   PRODUCT_NAME,
   PAGE,
+  RESOURCE
 } from '@sbomscanner-ui-ext/types';
 export default {
   props: {
@@ -19,7 +20,22 @@ export default {
     return {
       PRODUCT_NAME,
       PAGE,
+      RESOURCE,
     };
   },
+  computed: {
+    registryDetailLink() {
+      return {
+        name:   'c-cluster-product-resource-namespace-id',
+        params: {
+          cluster:   this.$route.params.cluster,
+          product:   PRODUCT_NAME,
+          resource:  RESOURCE.REGISTRY,
+          namespace: this.row.metadata.namespace,
+          id:        this.row.metadata.name,
+        }
+      };
+    }
+  }
 };
 </script>

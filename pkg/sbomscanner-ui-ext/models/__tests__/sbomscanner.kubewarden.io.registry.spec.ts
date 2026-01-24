@@ -94,14 +94,6 @@ describe('Registry model', () => {
     });
   });
 
-  describe('listLocation and navigation getters', () => {
-    it('returns correct route info', () => {
-      expect(registry.listLocation.name).toContain('registries');
-      expect(registry.doneOverride).toEqual(registry.listLocation);
-      expect(registry.parentLocationOverride).toEqual(registry.listLocation);
-    });
-  });
-
   describe('repositoryiesDisplay', () => {
     function createModel(overrides = {}) {
       return new Registry({

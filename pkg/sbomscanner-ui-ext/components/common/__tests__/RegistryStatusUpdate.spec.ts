@@ -9,6 +9,7 @@ jest.mock('@shell/utils/time', () => ({ elapsedTime: jest.fn() }));
 jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'test-product',
   PAGE:         { REGISTRIES: 'test-registries' },
+  RESOURCE:     { REGISTRY: 'test-registries-res' },
 }));
 
 const mockElapsedTime = elapsedTime as jest.Mock;
@@ -59,9 +60,27 @@ describe('RegistryStatusUpdate.vue', () => {
     it('renders the registry name as a RouterLink', () => {
       const link = wrapper.findComponent(RouterLinkStub);
 
+      const expectedLink =  {
+        "name": "c-cluster-product-resource-namespace-id",
+        "params": {
+          "cluster": "c-12345",
+          "id": "my-registry",
+          "namespace": "default",
+          "product": "test-product",
+          "resource": "test-registries-res"
+        }
+      };
+
+      const receivedLink = link.props('to');
+
       expect(link.exists()).toBe(true);
       expect(link.text()).toBe('my-registry');
-      expect(link.props('to')).toBe('/c/c-12345/test-product/test-registries/default/my-registry');
+      expect(receivedLink.name).toBe(expectedLink.name);
+      expect(receivedLink.params.cluster).toBe(expectedLink.params.cluster);
+      expect(receivedLink.params.id).toBe(expectedLink.params.id);
+      expect(receivedLink.params.namespace).toBe(expectedLink.params.namespace);
+      expect(receivedLink.params.product).toBe(expectedLink.params.product);
+      expect(receivedLink.params.resource).toBe(expectedLink.params.resource);
     });
 
     it('renders the registry URI', () => {

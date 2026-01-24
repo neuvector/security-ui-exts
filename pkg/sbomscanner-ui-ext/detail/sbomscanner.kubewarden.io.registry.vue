@@ -1,6 +1,5 @@
 <script>
-import DetailPage from '@rancher/shell/components/Resource/Detail/Page.vue';
-import RegistryDetailScanTable from '@sbomscanner-ui-ext/components/RegistryDetailScanTable.vue';
+import RegistryDetails from '@sbomscanner-ui-ext/components/RegistryDetails.vue';
 
 export default {
   name:  'CruRegistry',
@@ -14,16 +13,11 @@ export default {
     return {};
   },
   components: {
-    DetailPage,
-    RegistryDetailScanTable,
+    RegistryDetails,
   },
 };
 </script>
 
 <template>
-  <DetailPage>
-    <template #bottom-area>
-      <RegistryDetailScanTable :registry="value" />
-    </template>
-  </DetailPage>
+    <RegistryDetails/>
 </template>

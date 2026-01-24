@@ -105,48 +105,9 @@ describe('VexManagement', () => {
   });
 
   describe('Component Initialization', () => {
-    it('should render the component', () => {
-      expect(wrapper.exists()).toBe(true);
-    });
-
-    it('should display the correct title', () => {
-      expect(wrapper.find('.title').text()).toContain('imageScanner.vexManagement.title');
-    });
 
     it('should display the correct description', () => {
       expect(wrapper.find('.description').text()).toContain('imageScanner.vexManagement.description');
-    });
-
-    it('should display the create button', () => {
-      const createButton = wrapper.find('.btn.role-primary');
-
-      expect(createButton.exists()).toBe(true);
-      expect(createButton.text()).toContain('imageScanner.vexManagement.button.create');
-    });
-  });
-
-  describe('Navigation', () => {
-    it('should navigate to create VEX hub page when create button is clicked', () => {
-      const createButton = wrapper.find('.btn.role-primary');
-
-      createButton.trigger('click');
-
-      expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
-        name:   'imageScanner-c-cluster-resource-create',
-        params: {
-          resource: RESOURCE.VEX_HUB,
-          cluster:  'test-cluster',
-          product:  'imageScanner'
-        }
-      });
-    });
-  });
-
-  describe('Component Structure', () => {
-    it('should render VexHubList component', () => {
-      const vexHubList = wrapper.findComponent({ name: 'VexHubList' });
-
-      expect(vexHubList.exists()).toBe(true);
     });
   });
 });

@@ -1,6 +1,7 @@
 <script>
 import {
   PRODUCT_NAME,
+  RESOURCE,
   PAGE,
 } from '@sbomscanner-ui-ext/types';
 export default {
@@ -18,14 +19,28 @@ export default {
   data() {
     return {
       PRODUCT_NAME,
+      RESOURCE,
       PAGE,
     };
   },
+  computed: {
+    vexDetailLink() {
+      return {
+        name:   'c-cluster-product-resource-id',
+        params: {
+          cluster:  this.$route.params.cluster,
+          product:  PRODUCT_NAME,
+          resource: RESOURCE.VEX_HUB,
+          id:       this.value,
+        }
+      };
+    }
+  }
 };
 </script>
 
 <template>
-  <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${ PAGE.VEX_MANAGEMENT }/${row.id}`">
+  <RouterLink :to="vexDetailLink">
     {{ value }}
   </RouterLink>
 </template>

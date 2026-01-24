@@ -4,7 +4,8 @@ import RegistryCellLink from '../RegistryCellLink.vue';
 
 jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'mocked-product',
-  PAGE:         { REGISTRIES: 'mocked-registries-page' }
+  PAGE:         { REGISTRIES: 'mocked-registries-page' },
+  RESOURCE:     { REGISTRY: 'mocked-registries-resource' }
 }));
 
 describe('RegistryCellLink.vue', () => {
@@ -32,8 +33,24 @@ describe('RegistryCellLink.vue', () => {
 
     expect(linkStub.text()).toBe(expectedText);
 
-    const expectedUrl = `/c/${ mockClusterId }/mocked-product/mocked-registries-page/my-namespace/my-registry`;
+    const expectedLink = {
+      "name": "c-cluster-product-resource-namespace-id",
+      "params": {
+        "cluster": "c-m-xyz123",
+        "id": "my-registry",
+        "namespace": "my-namespace",
+        "product": "mocked-product",
+        "resource": "mocked-registries-resource"
+      }
+    };
 
-    expect(linkStub.props('to')).toBe(expectedUrl);
+    const receivedLink = linkStub.props('to');
+
+    expect(receivedLink.name).toBe(expectedLink.name);
+    expect(receivedLink.params.cluster).toBe(expectedLink.params.cluster);
+    expect(receivedLink.params.id).toBe(expectedLink.params.id);
+    expect(receivedLink.params.namespace).toBe(expectedLink.params.namespace);
+    expect(receivedLink.params.product).toBe(expectedLink.params.product);
+    expect(receivedLink.params.resource).toBe(expectedLink.params.resource);
   });
 });

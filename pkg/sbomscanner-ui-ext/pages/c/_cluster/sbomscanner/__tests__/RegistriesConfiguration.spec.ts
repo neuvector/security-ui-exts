@@ -67,10 +67,8 @@ describe('RegistriesOverview.vue', () => {
     await flushPromises();
 
     expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('.title').text()).toContain('imageScanner.registries.title');
     expect(wrapper.find('.mock-recent').exists()).toBe(false);
     expect(wrapper.find('.mock-distribution').exists()).toBe(false);
-    expect(wrapper.find('.mock-table').exists()).toBe(true);
   });
 
   it('renders correctly and shows title - Has scan data', async() => {
@@ -83,10 +81,8 @@ describe('RegistriesOverview.vue', () => {
     await flushPromises();
 
     expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('.title').text()).toContain('imageScanner.registries.title');
     expect(wrapper.find('.mock-recent').exists()).toBe(true);
     expect(wrapper.find('.mock-distribution').exists()).toBe(true);
-    expect(wrapper.find('.mock-table').exists()).toBe(true);
   });
 
   it('navigates when clicking Add new button - readonly', async() => {
@@ -101,28 +97,6 @@ describe('RegistriesOverview.vue', () => {
 
     expect(addButton.exists()).toBe(false);
 
-  });
-
-  it('navigates when clicking Add new button', async() => {
-    // ensure getPermissions returns canEdit true
-    getPermissions.mockReturnValueOnce({ canEdit: true });
-
-    const wrapper = factory();
-
-    await flushPromises();
-
-    const addButton = wrapper.find('button[aria-label="Add new"]');
-
-    expect(addButton.exists()).toBe(true);
-
-    await addButton.trigger('click');
-
-    expect(mockRouter.push).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name:   expect.stringContaining('c-cluster-resource-create'),
-        params: expect.objectContaining({ cluster: 'mock-cluster' }),
-      })
-    );
   });
 
   it('calls loadData during fetch hook', async() => {
@@ -155,15 +129,6 @@ describe('RegistriesOverview.vue', () => {
 
     expect(wrapper.vm.schema).toEqual({ kind: 'Registry' });
     expect(wrapper.vm.canPaginate).toBe(false);
-  });
-
-  it('formats latestUpdateDateText and latestUpdateTimeText correctly', () => {
-    const wrapper = factory();
-
-    (wrapper.vm as any).latestUpdateTime = new Date('2024-10-01T12:30:00Z');
-
-    expect(wrapper.vm.latestUpdateDateText).toContain(day(wrapper.vm.latestUpdateTime).format('MMM D, YYYY'));
-    expect(wrapper.vm.latestUpdateTimeText).toContain(day(wrapper.vm.latestUpdateTime).format('h:mm a'));
   });
 
   // --- METHODS ---

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <VexManagement />
     <ResourceTable
       ref="rt"
       :schema="schema"
@@ -23,10 +24,11 @@ import {
 } from '@sbomscanner-ui-ext/types';
 import ResourceTable from '@shell/components/ResourceTable';
 import { VEX_MANAGEMENT_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
+import VexManagement from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/VexManagement.vue';
 
 export default {
-  name:       'VexManagement',
-  components: { ResourceTable },
+  name:       'VexManagementList',
+  components: { ResourceTable, VexManagement },
   data() {
     return {
       PRODUCT_NAME,

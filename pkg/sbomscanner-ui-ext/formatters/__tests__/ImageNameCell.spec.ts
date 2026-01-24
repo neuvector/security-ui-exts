@@ -35,9 +35,21 @@ describe('ImageNameCell.vue', () => {
     const wrapper = mountComponent(mockRow);
     const linkStub = wrapper.findComponent(RouterLinkStub);
 
+    const expectedLink = {
+      "name": "c-cluster-mocked-product-mocked-images-page-id",
+      "params": {
+        "cluster": mockClusterId,
+        "id": mockRow.metadata.name,
+      }
+    };
+
+    const receivedLink = linkStub.props('to');
+
     expect(linkStub.exists()).toBe(true);
     expect(linkStub.text()).toBe(expectedDisplayName);
-    expect(linkStub.props('to')).toBe(expectedUrl);
+    expect(receivedLink.name).toBe(expectedLink.name);
+    expect(receivedLink.params.cluster).toBe(expectedLink.params.cluster);
+    expect(receivedLink.params.id).toBe(expectedLink.params.id);
   });
 
   it('should handle missing imageMetadata gracefully', () => {
@@ -49,8 +61,20 @@ describe('ImageNameCell.vue', () => {
     const wrapper = mountComponent(mockRow);
     const linkStub = wrapper.findComponent(RouterLinkStub);
 
+    const expectedLink = {
+      "name": "c-cluster-mocked-product-mocked-images-page-id",
+      "params": {
+        "cluster": mockClusterId,
+        "id": mockRow.metadata.name,
+      }
+    };
+
+    const receivedLink = linkStub.props('to');
+
     expect(linkStub.exists()).toBe(true);
     expect(linkStub.text()).toBe(expectedDisplayName);
-    expect(linkStub.props('to')).toBe(expectedUrl);
+    expect(receivedLink.name).toBe(expectedLink.name);
+    expect(receivedLink.params.cluster).toBe(expectedLink.params.cluster);
+    expect(receivedLink.params.id).toBe(expectedLink.params.id);
   });
 });

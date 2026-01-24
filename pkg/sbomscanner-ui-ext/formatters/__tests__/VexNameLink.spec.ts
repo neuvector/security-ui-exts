@@ -20,12 +20,27 @@ describe('VexNameLink.vue', () => {
 
     const linkStub = wrapper.findComponent(RouterLinkStub);
 
+    const expectedLink = {
+      "name": "c-cluster-product-resource-id",
+      "params": {
+        "cluster": mockClusterId,
+        "id": mockValue,
+        "product": "imageScanner",
+        "resource": "sbomscanner.kubewarden.io.vexhub"
+      }
+    };
+
+    const receivedLink = linkStub.props('to');
+
+    expect(receivedLink.name).toBe(expectedLink.name);
+    expect(receivedLink.params.cluster).toBe(expectedLink.params.cluster);
+    expect(receivedLink.params.id).toBe(expectedLink.params.id);
+    expect(receivedLink.params.product).toBe(expectedLink.params.product);
+    expect(receivedLink.params.resource).toBe(expectedLink.params.resource);
+
     expect(linkStub.exists()).toBe(true);
 
     expect(linkStub.text()).toBe(mockValue);
 
-    const expectedUrl = `/c/${ mockClusterId }/imageScanner/vex_management/${ mockRow.id }`;
-
-    expect(linkStub.props('to')).toBe(expectedUrl);
   });
 });

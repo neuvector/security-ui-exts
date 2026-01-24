@@ -1,5 +1,5 @@
 <template>
-  <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${ PAGE.IMAGES }/${ row.metadata.name }`">
+  <RouterLink :to="imageDetailLink">
     {{ displayName }}
   </RouterLink>
 </template>
@@ -7,6 +7,7 @@
 import {
   PRODUCT_NAME,
   PAGE,
+  RESOURCE,
 } from '@sbomscanner-ui-ext/types';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 export default {
@@ -20,11 +21,21 @@ export default {
     return {
       PRODUCT_NAME,
       PAGE,
+      RESOURCE,
     };
   },
   computed: {
     displayName() {
       return this.row.imageReference ? this.row.imageReference : constructImageName(this.row.imageMetadata);
+    },
+    imageDetailLink() {
+      return {
+        name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-id`,
+        params: {
+          cluster: this.$route.params.cluster,
+          id:      this.row.metadata.name,
+        }
+      };
     }
   }
 };

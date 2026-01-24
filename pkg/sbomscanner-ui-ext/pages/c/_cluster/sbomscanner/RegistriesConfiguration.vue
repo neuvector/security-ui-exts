@@ -1,49 +1,17 @@
 <template>
-  <div class="page">
-    <div class="header-section">
-      <div class="header-left">
-        <div class="title-wrap">
-          <div class="title">
-            {{ t('imageScanner.registries.title') }}
-          </div>
-        </div>
-        <div class="state">
-          State as of
-          <span class="state-date-time">
-            {{ latestUpdateDateText }}&nbsp;&nbsp;&nbsp;&nbsp;{{ latestUpdateTimeText }}
-          </span>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="header-btn">
-          <button
-            v-if="canEdit"
-            mat-button
-            class="btn role-primary"
-            aria-label="Add new"
-            type="button"
-            @click="openAddEditRegistry()"
-          >
-            {{ t('imageScanner.registries.button.addNew') }}
-          </button>
-        </div>
-      </div>
-    </div>
-    <div
-      v-if="scanJobCRD && scanJobCRD.length > 0"
-      class="summary-section"
-    >
-      <RecentUpdatedRegistries :registry-status-list="registryStatusList" />
-      <DistributionChart
-        :filter-fn="filterByStatus"
-        :chart-data="statusSummary"
-        :title="t('imageScanner.registries.StatusDistribution.title')"
-        color-prefix="status"
-        :description="t('imageScanner.registries.StatusDistribution.subTitle')"
-        :tooltip="t('imageScanner.registries.StatusDistribution.tooltip')"
-      />
-    </div>
-    <RegistryResourceTable :status-filter-link="selectedStatus" />
+  <div
+    v-if="scanJobCRD && scanJobCRD.length > 0"
+    class="summary-section"
+  >
+    <RecentUpdatedRegistries :registry-status-list="registryStatusList" />
+    <DistributionChart
+      :filter-fn="filterByStatus"
+      :chart-data="statusSummary"
+      :title="t('imageScanner.registries.StatusDistribution.title')"
+      color-prefix="status"
+      :description="t('imageScanner.registries.StatusDistribution.subTitle')"
+      :tooltip="t('imageScanner.registries.StatusDistribution.tooltip')"
+    />
   </div>
 </template>
 
@@ -56,9 +24,7 @@ import {
 import RecentUpdatedRegistries from '@sbomscanner-ui-ext/components/RecentUpdatedRegistries';
 import DistributionChart from '@sbomscanner-ui-ext/components/DistributionChart';
 import { REGISTRY_SCAN_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
-import day from 'dayjs';
 import { findBy } from '@shell/utils/array';
-import RegistryResourceTable from '@sbomscanner-ui-ext/list/sbomscanner.kubewarden.io.registry.vue';
 import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 
 export default {
@@ -66,7 +32,6 @@ export default {
   components: {
     RecentUpdatedRegistries,
     DistributionChart,
-    RegistryResourceTable,
   },
   data() {
     const STATUS_OPTIONS = [
@@ -125,7 +90,7 @@ export default {
     },
     openAddEditRegistry() {
       this.$router.push({
-        name:   `${ PRODUCT_NAME }-c-cluster-resource-create`,
+        name:   `c-cluster-${ PRODUCT_NAME }-resource-create`,
         params: {
           resource: RESOURCE.REGISTRY,
           cluster:  this.$route.params.cluster,
@@ -146,7 +111,6 @@ export default {
       }
     },
     getSummaryData(scanJobCRD) {
-      this.latestUpdateTime = new Date();
       const registryStatusMap = new Map();
       const registryStatusList = [];
       const statusSummary = {
@@ -311,12 +275,6 @@ export default {
     },
     canPaginate() {
       return this.$store.getters[`cluster/paginationEnabled`](RESOURCE.REGISTRY);
-    },
-    latestUpdateDateText() {
-      return day(new Date(this.latestUpdateTime).getTime()).format('MMM D, YYYY');
-    },
-    latestUpdateTimeText() {
-      return day(new Date(this.latestUpdateTime).getTime()).format('h:mm a');
     },
   },
 };

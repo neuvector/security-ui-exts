@@ -224,7 +224,7 @@ export default {
       } finally {
         if (!this.errors || this.errors.length === 0) {
           this.$router.push({
-            name:   `c-cluster-${ PRODUCT_NAME }-${ PAGE.REGISTRIES }`,
+            name:   `c-cluster-${ PRODUCT_NAME }-resource`,
             params: {
               cluster: this.$route.params.cluster,
               product: PRODUCT_NAME
