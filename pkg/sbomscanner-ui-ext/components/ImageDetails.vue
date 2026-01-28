@@ -165,9 +165,10 @@ export default {
           value: this.currentImage.imageMetadata?.repository || this.t('imageScanner.general.unknown'),
         },
         {
-          type:  'text',
+          type:  'route',
           label: this.t('imageScanner.imageDetails.registry'),
-          value: this.currentImage.imageMetadata?.registry || this.t('imageScanner.general.unknown'),
+          value: this.currentImage.imageMetadata?.registry && this.currentImage.metadata?.namespace ? `${this.currentImage.metadata.namespace}/${this.currentImage.imageMetadata.registry}` : this.t('imageScanner.general.unknown'),
+          route: this.currentImage.imageMetadata?.registry && this.currentImage.metadata?.namespace ? this.registryDetailLink : null,
         },
         {
           type:  'text',
@@ -299,6 +300,19 @@ export default {
 
       return 'none';
     },
+
+    registryDetailLink() {
+      return {
+        name:   'c-cluster-product-resource-namespace-id',
+        params: {
+          cluster:   this.$route.params.cluster,
+          product:   PRODUCT_NAME,
+          resource:  RESOURCE.REGISTRY,
+          namespace: this.currentImage.metadata.namespace,
+          id:        this.currentImage.imageMetadata?.registry,
+        }
+      };
+    }
   },
 
   methods: {

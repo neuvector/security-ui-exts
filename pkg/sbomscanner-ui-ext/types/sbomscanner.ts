@@ -54,8 +54,9 @@ export const PAGE = {
   VEX_MANAGEMENT:  'vex_management',
 };
 export interface MetadataProperty {
-  type: 'text' | 'tags' | 'link';
+  type: 'text' | 'tags' | 'link' | 'route';
   label?: string;
   value?: string;
   tags?: string[];
+  route: object;
 }

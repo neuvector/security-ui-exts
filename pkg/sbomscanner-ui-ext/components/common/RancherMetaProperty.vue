@@ -16,6 +16,14 @@
         {{ property.value }}
       </div>
     </div>
+    <div v-if="property.type === 'route'" class="text">
+      <div v-if="property.label" class="label">
+        {{ property.label }}
+      </div>
+      <RouterLink v-if="property.value && property.route" class="link" :to="property.route">
+        {{ property.value }}
+      </RouterLink>
+    </div>
     <div v-else-if="property.type === 'tags'" class="tags">
       <div class="tags">
         <div v-for="tag in property.tags" :key="tag" class="tag">

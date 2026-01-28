@@ -18,7 +18,8 @@ jest.mock('@sbomscanner-ui-ext/types', () => ({
   RESOURCE:     {
     IMAGE:                'image',
     SBOM:                 'sbom',
-    VULNERABILITY_REPORT: 'vulnerabilityReport'
+    VULNERABILITY_REPORT: 'vulnerabilityReport',
+    REGISTRY:             'registry'
   },
   PAGE: { IMAGES: 'images' }
 }));
@@ -37,8 +38,9 @@ describe('ImageDetails.vue', () => {
           if (resource === 'image') {
             return [
               {
-                metadata:      { name: 'test-image' },
+                metadata:      { name: 'test-image', namespace: 'default' },
                 imageMetadata: {
+                  registry:    'demo-02',
                   registryURI: 'docker.io',
                   repository:  'nginx',
                   tag:         'latest',
@@ -70,6 +72,18 @@ describe('ImageDetails.vue', () => {
     });
 
     await flushPromises();
+  });
+
+  it('gets registryDetailLink', async() => {
+    const _registryDetailLink = wrapper.vm.registryDetailLink;
+
+    // Assertions
+    expect(_registryDetailLink.name).toBe('c-cluster-product-resource-namespace-id');
+    expect(_registryDetailLink.params.cluster).toBe('test-cluster');
+    expect(_registryDetailLink.params.product).toBe('mockProduct');
+    expect(_registryDetailLink.params.resource).toBe('registry');
+    expect(_registryDetailLink.params.namespace).toBe('default');
+    expect(_registryDetailLink.params.id).toBe('demo-02');
   });
 
   it('calls loadImageData when route param id exists', async() => {
