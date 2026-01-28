@@ -417,4 +417,16 @@ export default {
     border-top: 1px solid #DCDEE7;
   }
 
+  .state-date-time {
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    line-clamp: 1;
+    color: var(--disabled-text);
+    text-overflow: ellipsis;
+    font-family: Lato;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 21px;
+  }
 </style>

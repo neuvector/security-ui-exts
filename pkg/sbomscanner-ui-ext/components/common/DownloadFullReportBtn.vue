@@ -8,7 +8,7 @@
       @click="downloadFullReport"
       @focusout="handleClickOutside"
     >
-      <i class="icon icon-download"></i>&nbsp;
+      <i class="icon icon-download me-3"></i>
       {{ t('imageScanner.images.downloadReport') }}
     </button>
     <button
@@ -193,12 +193,14 @@ export default {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-right: none;
+  // font-size: 16px;
+  padding: 0 16px;
 }
 
 .dropdown-toggle {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  padding: 8px 12px;
+  padding: 8px 8px;
   min-width: auto;
 }
 
@@ -211,16 +213,16 @@ export default {
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  min-width: 200px;
+  min-width: 215px;//236px;
   margin-top: 4px;
+  padding: 16px;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  padding: 12px 16px;
   border: none;
   background: none;
   text-align: left;
@@ -228,6 +230,7 @@ export default {
   color: #141419;
   cursor: pointer;
   transition: background-color 0.2s;
+  padding: 0;
 }
 
 .dropdown-item:hover {
@@ -242,5 +245,9 @@ export default {
 .dropdown-item:last-child {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
+}
+
+.me-3 {
+  margin-right: 12px;
 }
 </style>

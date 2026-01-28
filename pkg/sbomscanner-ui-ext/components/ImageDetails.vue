@@ -58,106 +58,12 @@
       />
     </div>
 
-    <!-- Search Filters -->
-    <div class="search-filters">
-      <div class="filter-row">
-        <div class="filter-item">
-          <label>CVE</label>
-          <div class="filter-input-wrapper">
-            <input
-              v-model="filters.cveSearch"
-              type="text"
-              placeholder="Search by ID"
-              class="filter-input"
-            />
-            <i
-              class="icon icon-search"
-              style="color: #6C6C76; margin-left: 8px;"
-            ></i>
-          </div>
-        </div>
-        <div
-          class="filter-item"
-          style="min-width: 190px;"
-        >
-          <label>{{ t('imageScanner.imageDetails.score') }}</label>
-          <div class="filter-input-wrapper score-range-wrapper">
-            <input
-              v-model="filters.scoreMin"
-              type="number"
-              min="0"
-              max="10"
-              step="0.1"
-              placeholder="0"
-              class="filter-input score-input"
-            />
-            <span class="score-separator">-</span>
-            <input
-              v-model="filters.scoreMax"
-              type="number"
-              min="0"
-              max="10"
-              step="0.1"
-              placeholder="9.9"
-              class="filter-input score-input"
-            />
-            <i
-              class="icon icon-filter_alt"
-              style="color: #6C6C76; margin-left: 8px;"
-            ></i>
-          </div>
-        </div>
-        <div class="filter-item">
-          <label>{{ t('imageScanner.imageDetails.table.headers.package') }}</label>
-          <div class="filter-input-wrapper">
-            <input
-              v-model="filters.packageSearch"
-              type="text"
-              :placeholder="t('imageScanner.imageDetails.searchByName')"
-              class="filter-input"
-            />
-            <i
-              class="icon icon-search"
-              style="color: #6C6C76; margin-left: 8px;"
-            ></i>
-          </div>
-        </div>
-        <div class="filter-item">
-          <label>{{ t('imageScanner.imageDetails.fixAvailable') }}</label>
-          <LabeledSelect
-            v-model:value="filters.fixAvailable"
-            :options="filterFixAvailableOptions"
-            :close-on-select="true"
-            :multiple="false"
-          />
-        </div>
-        <div class="filter-item">
-          <label>{{ t('imageScanner.imageDetails.severity') }}</label>
-          <LabeledSelect
-            v-model:value="filters.severity"
-            :options="filterSeverityOptions"
-            :close-on-select="true"
-            :multiple="false"
-          />
-        </div>
-        <div class="filter-item">
-          <label>{{ t('imageScanner.imageDetails.exploitability') }}</label>
-          <LabeledSelect
-            v-model:value="filters.exploitability"
-            :options="filterExploitabilityOptions"
-            :close-on-select="true"
-            :multiple="false"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Vulnerability Table -->
-    <VulnerabilityTable
-      :cached-filtered-vulnerabilities="cachedFilteredVulnerabilities"
-      :image-name="imageName"
-      :current-image="currentImage"
+    <!-- Vulnerability table with column based filters -->
+    <VulnerabilityTableSet
+      :vulnerabilityDetails="vulnerabilityDetails"
+      :severity="severity"
     />
+
   </div>
 </template>
 
@@ -165,66 +71,38 @@
 import { BadgeState } from '@components/BadgeState';
 import { PRODUCT_NAME, RESOURCE, PAGE } from '@sbomscanner-ui-ext/types';
 import day from 'dayjs';
-import LabeledSelect from '@shell/components/form/LabeledSelect';
 import Loading from '@shell/components/Loading';
 import DistributionChart from '@sbomscanner-ui-ext/components/DistributionChart';
 import RancherMeta from './common/RancherMeta.vue';
 import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
-import VulnerabilityTable from './common/VulnerabilityTable';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import { getHighestScore, getSeverityNum, getScoreNum } from '../utils/report';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
+import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 
 export default {
   name:       'ImageDetails',
   components: {
     BadgeState,
     DistributionChart,
-    LabeledSelect,
     RancherMeta,
     MostSevereVulnerabilities,
-    VulnerabilityTable,
     DownloadSBOMBtn,
     DownloadFullReportBtn,
     Loading,
+    VulnerabilityTableSet,
   },
   data() {
     return {
       imageName:                     '',
+      severity:                      '',
       loadedVulnerabilityReport:     null,
       loadedSbom:                    null,
       // Cache filtered results to prevent selection issues
       cachedFilteredVulnerabilities: [],
       // Download dropdown state
       showDownloadDropdown:          false,
-      filters:                       {
-        cveSearch:      '',
-        scoreMin:       '',
-        scoreMax:       '',
-        packageSearch:  '',
-        fixAvailable:   'any',
-        severity:       'any',
-        exploitability: 'any',
-      },
-      filterFixAvailableOptions: [
-        { label: this.t('imageScanner.imageDetails.any'), value: 'any' },
-        { label: this.t('imageScanner.imageDetails.available'), value: 'available' },
-        { label: this.t('imageScanner.imageDetails.notAvailable'), value: 'not-available' },
-      ],
-      filterSeverityOptions: [
-        { label: this.t('imageScanner.imageDetails.any'), value: 'any' },
-        { label: this.t('imageScanner.enum.cve.critical'), value: 'critical' },
-        { label: this.t('imageScanner.enum.cve.high'), value: 'high' },
-        { label: this.t('imageScanner.enum.cve.medium'), value: 'medium' },
-        { label: this.t('imageScanner.enum.cve.low'), value: 'low' },
-        { label: this.t('imageScanner.enum.cve.none'), value: 'unknown' },
-      ],
-      filterExploitabilityOptions: [
-        { label: this.t('imageScanner.imageDetails.any'), value: 'any' },
-        { label: this.t('imageScanner.imageDetails.affected'), value: 'affected' },
-        { label: this.t('imageScanner.imageDetails.suppressed'), value: 'suppressed' },
-      ],
       PRODUCT_NAME,
       RESOURCE,
       PAGE,
@@ -423,78 +301,10 @@ export default {
     },
   },
 
-  watch: {
-    // Watch for changes in vulnerability details and reset selection if needed
-    vulnerabilityDetails: {
-      handler(newVal, oldVal) {
-        // If the data changes significantly, clear selection to prevent errors
-        if (newVal && oldVal && newVal.length !== oldVal.length) {
-          this.selectedVulnerabilities = [];
-        }
-        // Update cached filtered results
-        this.updateFilteredVulnerabilities();
-      },
-      deep: true
-    },
-    // Watch for filter changes and update cache
-    filters: {
-      handler() {
-        this.updateFilteredVulnerabilities();
-      },
-      deep: true
-    },
-  },
-
   methods: {
 
     filterBySeverity(severity) {
-      this.filters.severity = severity;
-    },
-
-    updateFilteredVulnerabilities() {
-      let filtered = [...this.vulnerabilityDetails];
-
-      // CVE search filter
-      if (this.filters.cveSearch && this.filters.cveSearch.trim()) {
-        filtered = filtered.filter((v) => v.cveId && v.cveId.toLowerCase().includes(this.filters.cveSearch.toLowerCase())
-        );
-      }
-
-      // Score range filter
-      if (this.filters.scoreMin || this.filters.scoreMax) {
-        filtered = filtered.filter((v) => {
-          if (!v.score) return false;
-          const vulnScore = parseFloat(v.score.split(' ')[0]) || 0;
-          const minScore = this.filters.scoreMin ? parseFloat(this.filters.scoreMin) : 0;
-          const maxScore = this.filters.scoreMax ? parseFloat(this.filters.scoreMax) : 10;
-
-          return vulnScore >= minScore && vulnScore <= maxScore;
-        });
-      }
-
-      // Package search filter
-      if (this.filters.packageSearch && this.filters.packageSearch.trim()) {
-        filtered = filtered.filter((v) => v.package && v.package.toLowerCase().includes(this.filters.packageSearch.toLowerCase())
-        );
-      }
-
-      // Fix available filter
-      if (this.filters.fixAvailable !== 'any') {
-        const hasFix = this.filters.fixAvailable === 'available';
-
-        filtered = filtered.filter((v) => v.fixAvailable === hasFix);
-      }
-
-      // Severity filter
-      if (this.filters.severity !== 'any') {
-        filtered = filtered.filter((v) => v.severity === this.filters.severity);
-      }
-
-      // Exploitability filter
-      if (this.filters.exploitability !== 'any') {
-        filtered = filtered.filter((v) => v.exploitability.toLowerCase() === this.filters.exploitability.toLowerCase());
-      }
-      this.cachedFilteredVulnerabilities = filtered;
+      this.severity = severity;
     },
 
     async loadImageData() {
@@ -739,105 +549,6 @@ export default {
 
 .search-filters {
   margin-bottom: 0;
-}
-
-.filter-row {
-  display: flex;
-  gap: 24px;
-}
-
-.filter-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-  min-width: 100px;
-}
-
-.filter-item label {
-  font-weight: 400;
-  color: var(--disabled-text);
-  font-size: 14px;
-}
-
-.filter-input-wrapper {
-  display: flex;
-  align-items: center;
-  border: solid var(--border-width) var(--input-border);
-  border-radius: 6px;
-  padding: 0 12px;
-  background: var(--input-bg);
-}
-
-.filter-input {
-  flex: 1;
-  padding: 10px 0;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-  line-height: 19px;
-  color: var(--body-text);
-}
-
-.score-range-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.score-input {
-  flex: 1;
-  min-width: 60px;
-  text-align: center;
-}
-
-.score-input::placeholder {
-  color: #BEC1D2;
-}
-
-.score-separator {
-  color: var(--disabled-text);
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.score-filter-icon {
-  color: #6C6C76;
-  margin-left: 8px;
-  font-size: 16px;
-}
-
-.filter-input:focus {
-  outline: none;
-}
-
-.filter-input-wrapper:focus-within {
-  border-color: var(--outline);
-  box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
-}
-
-.filter-select {
-  padding: 10px 14px;
-  border: 1px solid #DCDEE7;
-  border-radius: 6px;
-  font-size: 14px;
-  background: #FFF;
-  outline: none;
-}
-
-.filter-select:focus {
-  border-color: #007cba;
-  box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
-}
-
-.filter-actions {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 8px;
-  padding-top: 16px;
-  border-top: 1px solid #DCDEE7;
 }
 
 /* Download Dropdown Styles */

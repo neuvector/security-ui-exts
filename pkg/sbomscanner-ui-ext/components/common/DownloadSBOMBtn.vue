@@ -1,11 +1,11 @@
 <template>
   <button
-    class="btn role-secondary"
+    class="btn role-secondary btn-text-report"
     aria-label="Download SBOM"
     type="button"
     @click="downloadSBOM"
   >
-    <i class="icon icon-download"></i>&nbsp;
+    <i class="icon icon-download me-3"></i>
     {{ t('imageScanner.images.downloadSBOM') }}
   </button>
 </template>
@@ -58,5 +58,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.btn-text-report {
+  // font-size: 16px;
+  padding: 0 16px;
+}
 
+.me-3 {
+  margin-right: 12px;
+}
 </style>

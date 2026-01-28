@@ -14,25 +14,25 @@
       >
         <div
           v-if="vuln.cveId"
-          class="row"
+          class="row cve-row"
         >
-          <div class="col" style="width: 200px;">
+          <div class="col cve-cell" style="width: 200px;">
             <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.VULNERABILITIES}/${vuln.cveId}`">
               {{ vuln.cveId }}
             </RouterLink>
           </div>
-          <div class="col span-3">
+          <div class="col  cve-cell span-3">
             <ScoreBadge
               :score="vuln.score ? vuln.score.split(' ')[0] : ''"
               :score-type="vuln.score ? vuln.score.split(' ')[1].replace(/[()]/g, '') : ''"
               :severity="vuln.severity"
             />
           </div>
-          <div class="col span-4">
+          <div class="col  cve-cell span-3">
             {{ vuln.package }}
           </div>
-          <div class="col span-1">
-            <FixAvailableIcon :fix-available="vuln.fixAvailable" />
+          <div class="col  cve-cell span-2" style="text-align: center">
+            <FixAvailableIcon :fix-available="vuln.fixAvailable" style="margin-top: 4px"/>
           </div>
         </div>
         <div
@@ -148,7 +148,6 @@ export default {
   align-items: flex-start;
   gap: 12px;
   flex: 1;
-  min-width: 0;
 }
 
 .vulnerabilities-section {
@@ -167,7 +166,6 @@ export default {
 .vulnerabilities-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   width: 100%;
 }
 
@@ -196,6 +194,20 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.cve-row {
+  display: table-row;
+  padding: 4px;
+  height: 32px;
+  &:hover {
+    background-color: #F4F5FA;
+  }
+}
+
+.cve-cell {
+  display: table-cell;
+  vertical-align: middle;
 }
 
 </style>
