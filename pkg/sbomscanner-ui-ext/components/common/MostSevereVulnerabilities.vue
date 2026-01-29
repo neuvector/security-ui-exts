@@ -201,7 +201,7 @@ export default {
   padding: 4px;
   height: 32px;
   &:hover {
-    background-color: #F4F5FA;
+    background-color: var(--sortable-table-selected-bg);
   }
 }
 

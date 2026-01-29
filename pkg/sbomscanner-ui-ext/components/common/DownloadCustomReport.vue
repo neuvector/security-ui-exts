@@ -36,9 +36,5 @@ export default {
   font-size: 16px;
   padding: 0 16px;
 }
-
-.me-3 {
-  margin-right: 12px;
-}
 </style>
 
