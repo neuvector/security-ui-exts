@@ -333,19 +333,6 @@ export default {
     font-style: normal;
     font-weight: 400;
     line-height: 21px; /* 150% */
-
-    .state-date-time {
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      line-clamp: 1;
-      color: var(--disabled-text);
-      text-overflow: ellipsis;
-      font-family: Lato;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 21px;
-    }
   }
 
   .header-right {
@@ -384,7 +371,7 @@ export default {
     border-radius: 6px;
     border: solid var(--border-width) var(--input-border);
     background: var(--input-bg);
-    margin: 24px 0 0 0;
+    // margin: 24px 0 0 0;
   }
 
   .score-input {

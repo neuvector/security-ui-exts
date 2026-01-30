@@ -1,10 +1,10 @@
 <template>
-    <div class="state">
+    <!-- <div class="state">
       State as of
       <span class="state-date-time">
         {{ latestUpdateDateText }}&nbsp;&nbsp;&nbsp;&nbsp;{{ latestUpdateTimeText }}
       </span>
-    </div>
+    </div> -->
     <RegistriesOverview />
     <div class="search-filters">
       <div class="filter-row">
@@ -317,12 +317,12 @@ export default {
 
       return this.$store.getters[`cluster/paginationEnabled`]?.(args);
     },
-    latestUpdateDateText() {
-      return day(new Date(this.latestUpdateTime).getTime()).format('MMM D, YYYY');
-    },
-    latestUpdateTimeText() {
-      return day(new Date(this.latestUpdateTime).getTime()).format('h:mm a');
-    },
+    // latestUpdateDateText() {
+    //   return day(new Date(this.latestUpdateTime).getTime()).format('MMM D, YYYY');
+    // },
+    // latestUpdateTimeText() {
+    //   return day(new Date(this.latestUpdateTime).getTime()).format('h:mm a');
+    // },
   },
 };
 </script>
@@ -417,16 +417,16 @@ export default {
     border-top: 1px solid #DCDEE7;
   }
 
-  .state-date-time {
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    line-clamp: 1;
-    color: var(--disabled-text);
-    text-overflow: ellipsis;
-    font-family: Lato;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 21px;
-  }
+  // .state-date-time {
+  //   overflow: hidden;
+  //   -webkit-box-orient: vertical;
+  //   line-clamp: 1;
+  //   color: var(--disabled-text);
+  //   text-overflow: ellipsis;
+  //   font-family: Lato;
+  //   font-size: 14px;
+  //   font-style: normal;
+  //   font-weight: 400;
+  //   line-height: 21px;
+  // }
 </style>
