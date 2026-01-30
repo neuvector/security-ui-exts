@@ -36,10 +36,10 @@ describe('ImageNameCell.vue', () => {
     const linkStub = wrapper.findComponent(RouterLinkStub);
 
     const expectedLink = {
-      "name": "c-cluster-mocked-product-mocked-images-page-id",
-      "params": {
-        "cluster": mockClusterId,
-        "id": mockRow.metadata.name,
+      'name':   'c-cluster-mocked-product-mocked-images-page-id',
+      'params': {
+        'cluster': mockClusterId,
+        'id':      mockRow.metadata.name,
       }
     };
 
@@ -62,10 +62,10 @@ describe('ImageNameCell.vue', () => {
     const linkStub = wrapper.findComponent(RouterLinkStub);
 
     const expectedLink = {
-      "name": "c-cluster-mocked-product-mocked-images-page-id",
-      "params": {
-        "cluster": mockClusterId,
-        "id": mockRow.metadata.name,
+      'name':   'c-cluster-mocked-product-mocked-images-page-id',
+      'params': {
+        'cluster': mockClusterId,
+        'id':      mockRow.metadata.name,
       }
     };
 

@@ -14,6 +14,7 @@ const props = defineProps<{
 }>();
 
 const vexhub = props.value;
+
 console.log('vexhub in detail page:', vexhub);
 
 const defaultMastheadProps = computed(() => {

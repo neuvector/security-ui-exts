@@ -34,13 +34,13 @@ describe('RegistryCellLink.vue', () => {
     expect(linkStub.text()).toBe(expectedText);
 
     const expectedLink = {
-      "name": "c-cluster-product-resource-namespace-id",
-      "params": {
-        "cluster": "c-m-xyz123",
-        "id": "my-registry",
-        "namespace": "my-namespace",
-        "product": "mocked-product",
-        "resource": "mocked-registries-resource"
+      'name':   'c-cluster-product-resource-namespace-id',
+      'params': {
+        'cluster':   'c-m-xyz123',
+        'id':        'my-registry',
+        'namespace': 'my-namespace',
+        'product':   'mocked-product',
+        'resource':  'mocked-registries-resource'
       }
     };
 

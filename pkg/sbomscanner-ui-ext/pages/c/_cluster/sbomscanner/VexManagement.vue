@@ -11,9 +11,7 @@
 </template>
 
 <script>
-export default {
-  name: 'VexManagement',
-};
+export default { name: 'VexManagement' };
 </script>
 
 <style lang="scss" scoped>
