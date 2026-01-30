@@ -7,24 +7,20 @@ import ScanButton from '../common/ScanButton.vue';
 import { trimIntervalSuffix } from '@sbomscanner-ui-ext/utils/app';
 
 jest.mock('../common/RegistryDetailsMeta.vue', () => ({
-  name: 'RegistryDetailsMeta',
-  props: ['metadata'],
+  name:     'RegistryDetailsMeta',
+  props:    ['metadata'],
   template: '<div class="registry-details-meta-mock"><slot /></div>',
 }));
 // mock external utils
-jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({
-  getPermissions: jest.fn(() => ({ canEdit: true })),
-}));
+jest.mock('@sbomscanner-ui-ext/utils/permissions', () => ({ getPermissions: jest.fn(() => ({ canEdit: true })) }));
 
-jest.mock('@sbomscanner-ui-ext/utils/app', () => ({
-  trimIntervalSuffix: jest.fn(() => '5m'),
-}));
+jest.mock('@sbomscanner-ui-ext/utils/app', () => ({ trimIntervalSuffix: jest.fn(() => '5m') }));
 
 jest.mock(
   '@sbomscanner-ui-ext/components/rancher-rewritten/shell/components/Preview.vue',
   () => ({
-    name: 'Preview',
-    props: ['title', 'value'],
+    name:     'Preview',
+    props:    ['title', 'value'],
     template: '<div class="preview-mock"><slot /></div>',
   })
 );
@@ -57,18 +53,16 @@ describe('RegistryDetails.vue', () => {
 
   const scanJobsMock = [
     {
-      spec: { registry: 'my-reg' },
+      spec:         { registry: 'my-reg' },
       statusResult: { type: 'Complete' }
     },
     {
-      spec: { registry: 'my-reg-no-images' },
-      status: {
-        conditions: [],
-      },
+      spec:         { registry: 'my-reg-no-images' },
+      status:       { conditions: [] },
       statusResult: { type: 'Complete', reason: 'NoImagesToScan' }
     },
     {
-      spec: { registry: 'other-reg' },
+      spec:         { registry: 'other-reg' },
       statusResult: { type: 'InProgress' },
     }
   ];
@@ -87,43 +81,47 @@ describe('RegistryDetails.vue', () => {
 
     tMock = jest.fn((str, vars) => {
       if (vars?.i) return `Every ${vars.i}`;
+
       return str;
     });
 
     return mount(RegistryDetails, {
       global: {
         mocks: {
-          $store: storeMock,
+          $store:      storeMock,
           $fetchState: { pending: false },
-          $route: {
-            params: { cluster: 'local', id: 'my-reg', ns: 'ns1' }
+          $route:      {
+            params: {
+              cluster: 'local', id: 'my-reg', ns: 'ns1'
+            }
           },
           $router: mockRouter,
-          t: tMock,
+          t:       tMock,
         },
         stubs: {
-          RouterLink: true,
-          ActionMenu: true,
-          StatusBadge: true,
+          RouterLink:              true,
+          ActionMenu:              true,
+          StatusBadge:             true,
           RegistryDetailScanTable: true,
-          RegistryDetailsMeta: true,
-          ScanButton: true,
+          RegistryDetailsMeta:     true,
+          ScanButton:              true,
         },
       },
       ...options,
     });
   };
 
-  it('renders header and structure', async () => {
-    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
+  it('renders header and structure', async() => {
+    const wrapper = factory({ reg: registryMock, scanjob: scanJobsMock });
+
     await wrapper.vm.loadData();
 
     expect(wrapper.find('.registry-details').exists()).toBe(true);
     expect(wrapper.find('.header').exists()).toBe(true);
   });
 
-  it('fetch() calls loadData()', async () => {
-    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
+  it('fetch() calls loadData()', async() => {
+    const wrapper = factory({ reg: registryMock, scanjob: scanJobsMock });
     const spy = jest.spyOn(wrapper.vm, 'loadData');
 
     await wrapper.vm.$options.fetch.call(wrapper.vm);
@@ -131,8 +129,8 @@ describe('RegistryDetails.vue', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('loadData populates registry, metadata, and scanHistory', async () => {
-    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
+  it('loadData populates registry, metadata, and scanHistory', async() => {
+    const wrapper = factory({ reg: registryMock, scanjob: scanJobsMock });
 
     await wrapper.vm.loadData();
 
@@ -145,8 +143,8 @@ describe('RegistryDetails.vue', () => {
     expect(wrapper.vm.registryMetadata.repositories.value).toBe(2);
   });
 
-  it('loadData populates registry, metadata, and scanHistory - no images in the registry', async () => {
-    const wrapper = factory({reg: registryMockNoImages, scanjob: scanJobsMock});
+  it('loadData populates registry, metadata, and scanHistory - no images in the registry', async() => {
+    const wrapper = factory({ reg: registryMockNoImages, scanjob: scanJobsMock });
 
     await wrapper.vm.loadData();
 
@@ -157,8 +155,8 @@ describe('RegistryDetails.vue', () => {
     expect(wrapper.vm.scanHistory[0].status.scannedImagesCount).toBe(0);
   });
 
-  it('renders ActionMenu only when registry is set', async () => {
-    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
+  it('renders ActionMenu only when registry is set', async() => {
+    const wrapper = factory({ reg: registryMock, scanjob: scanJobsMock });
 
     expect(wrapper.findComponent(ActionMenu).exists()).toBe(false);
 
@@ -168,8 +166,9 @@ describe('RegistryDetails.vue', () => {
     expect(wrapper.findComponent(ActionMenu).exists()).toBe(true);
   });
 
-  it('renders child components', async () => {
-    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
+  it('renders child components', async() => {
+    const wrapper = factory({ reg: registryMock, scanjob: scanJobsMock });
+
     await wrapper.vm.loadData();
 
     expect(wrapper.findComponent(StatusBadge).exists()).toBe(true);
@@ -177,8 +176,8 @@ describe('RegistryDetails.vue', () => {
     expect(wrapper.findComponent(ScanButton).exists()).toBe(true);
   });
 
-  it('handles empty repositories & scanInterval gracefully', async () => {
-    const wrapper = factory({reg: registryMock, scanjob: scanJobsMock});
+  it('handles empty repositories & scanInterval gracefully', async() => {
+    const wrapper = factory({ reg: registryMock, scanjob: scanJobsMock });
 
     registryMock.spec.repositories = undefined;
     registryMock.spec.scanInterval = undefined;

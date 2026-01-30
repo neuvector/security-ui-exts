@@ -61,13 +61,13 @@ describe('RegistryStatusUpdate.vue', () => {
       const link = wrapper.findComponent(RouterLinkStub);
 
       const expectedLink =  {
-        "name": "c-cluster-product-resource-namespace-id",
-        "params": {
-          "cluster": "c-12345",
-          "id": "my-registry",
-          "namespace": "default",
-          "product": "test-product",
-          "resource": "test-registries-res"
+        'name':   'c-cluster-product-resource-namespace-id',
+        'params': {
+          'cluster':   'c-12345',
+          'id':        'my-registry',
+          'namespace': 'default',
+          'product':   'test-product',
+          'resource':  'test-registries-res'
         }
       };
 

@@ -21,12 +21,12 @@ describe('VexNameLink.vue', () => {
     const linkStub = wrapper.findComponent(RouterLinkStub);
 
     const expectedLink = {
-      "name": "c-cluster-product-resource-id",
-      "params": {
-        "cluster": mockClusterId,
-        "id": mockValue,
-        "product": "imageScanner",
-        "resource": "sbomscanner.kubewarden.io.vexhub"
+      'name':   'c-cluster-product-resource-id',
+      'params': {
+        'cluster':  mockClusterId,
+        'id':       mockValue,
+        'product':  'imageScanner',
+        'resource': 'sbomscanner.kubewarden.io.vexhub'
       }
     };
 

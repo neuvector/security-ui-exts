@@ -67,11 +67,11 @@ export default {
       return {
         name:   'c-cluster-product-resource-namespace-id',
         params: {
-          cluster:  this.$route.params.cluster,
-          product:  PRODUCT_NAME,
-          resource: RESOURCE.REGISTRY,
-          namespace:       this.registryStatus.namespace,
-          id:       this.registryStatus.registryName,
+          cluster:   this.$route.params.cluster,
+          product:   PRODUCT_NAME,
+          resource:  RESOURCE.REGISTRY,
+          namespace: this.registryStatus.namespace,
+          id:        this.registryStatus.registryName,
         }
       };
     }

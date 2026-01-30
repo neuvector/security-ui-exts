@@ -168,8 +168,8 @@ export default {
     return {
       headers:          REGISTRY_SCAN_TABLE,
       latestUpdateTime: new Date(),
-      selectedRows: [],
-      filters:      {
+      selectedRows:     [],
+      filters:          {
         registrySearch:   '',
         namespaceSearch:  '',
         uriSearch:        '',

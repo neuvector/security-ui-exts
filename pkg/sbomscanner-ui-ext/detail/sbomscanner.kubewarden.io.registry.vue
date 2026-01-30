@@ -12,9 +12,7 @@ export default {
   data() {
     return {};
   },
-  components: {
-    RegistryDetails,
-  },
+  components: { RegistryDetails },
 };
 </script>
 

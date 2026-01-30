@@ -28,7 +28,7 @@ import { VEX_MANAGEMENT_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 
 export default {
   name:       'VexManagementList',
-  components: { 
+  components: {
     ResourceTable,
     // VexManagement
   },

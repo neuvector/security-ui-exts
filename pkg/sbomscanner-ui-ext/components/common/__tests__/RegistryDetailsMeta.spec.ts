@@ -4,8 +4,8 @@ import RegistryDetailsMeta from '../RegistryDetailsMeta.vue';
 import * as jsyaml from 'js-yaml';
 
 jest.mock('../../rancher-rewritten/shell/components/KeyValue.vue', () => ({
-  name: 'KeyValue',
-  props: ['propertyName', 'rows'],
+  name:     'KeyValue',
+  props:    ['propertyName', 'rows'],
   template: '<div class="key-value-mock">{{ propertyName }} {{ rows.length }}</div><div class="rows-mock">{{ rows }}</div>',
 }));
 
@@ -26,7 +26,7 @@ describe('RegistryDetailsMeta.vue', () => {
     repositories: {
       label: 'Repositories',
       value: 2,
-      list: [
+      list:  [
         { name: 'library/alpine' },
         { name: 'nginx' },
       ],
@@ -34,17 +34,17 @@ describe('RegistryDetailsMeta.vue', () => {
     platforms: {
       label: 'Platforms',
       value: 2,
-      list: [
+      list:  [
         { os: 'linux', arch: 'amd64' },                          // no variant
-        { os: 'linux', arch: 'arm64', variant: 'v8' },          // with variant
+        {
+          os: 'linux', arch: 'arm64', variant: 'v8'
+        },          // with variant
       ],
     },
   };
 
   it('renders namespace, uri, and schedule correctly', () => {
-    const wrapper = mount(RegistryDetailsMeta, {
-      propsData: { properties: baseProps }
-    });
+    const wrapper = mount(RegistryDetailsMeta, { propsData: { properties: baseProps } });
 
     expect(wrapper.text()).toContain('Namespace');
     expect(wrapper.text()).toContain('default');
@@ -57,9 +57,7 @@ describe('RegistryDetailsMeta.vue', () => {
   });
 
   it('renders repository count and list with PreviewableButton', () => {
-    const wrapper = mount(RegistryDetailsMeta, {
-      propsData: { properties: baseProps }
-    });
+    const wrapper = mount(RegistryDetailsMeta, { propsData: { properties: baseProps } });
 
     // list
     const repoButtons = wrapper.findAll('.key-value-mock');
@@ -69,15 +67,16 @@ describe('RegistryDetailsMeta.vue', () => {
     const rows = wrapper.findAll('.rows-mock');
     const expectedRows = [
       {
-        "key": "library/alpine",
-        "value": "name: library/alpine\n"
+        'key':   'library/alpine',
+        'value': 'name: library/alpine\n'
       },
       {
-        "key": "nginx",
-        "value": "name: nginx\n"
+        'key':   'nginx',
+        'value': 'name: nginx\n'
       }
-    ]
+    ];
     const actualRows = JSON.parse(rows.at(0).text());
+
     expect(actualRows[0].key).toBe(expectedRows[0].key);
     expect(actualRows[0].value).toBe(expectedRows[0].value);
     expect(actualRows[1].key).toBe(expectedRows[1].key);
@@ -86,21 +85,19 @@ describe('RegistryDetailsMeta.vue', () => {
 
   it('does not render platform tags when value=0', () => {
     const propsNoPlatforms = JSON.parse(JSON.stringify(baseProps));
+
     propsNoPlatforms.platforms.value = 0;
     propsNoPlatforms.platforms.list = [];
 
-    const wrapper = mount(RegistryDetailsMeta, {
-      propsData: { properties: propsNoPlatforms }
-    });
+    const wrapper = mount(RegistryDetailsMeta, { propsData: { properties: propsNoPlatforms } });
 
     const platformWrapper = wrapper.find('[test-id="platforms"]');
+
     expect(platformWrapper.exists()).toBe(false);
   });
 
   it('renders platform tags when value > 0', () => {
-    const wrapper = mount(RegistryDetailsMeta, {
-      propsData: { properties: baseProps }
-    });
+    const wrapper = mount(RegistryDetailsMeta, { propsData: { properties: baseProps } });
 
     const platformTags = wrapper.findAll('.vendor-tag.active');
 
@@ -111,12 +108,10 @@ describe('RegistryDetailsMeta.vue', () => {
   });
 
   it('getPlatformTag returns correct format (variant missing)', () => {
-    const wrapper = mount(RegistryDetailsMeta, {
-      propsData: { properties: baseProps }
-    });
+    const wrapper = mount(RegistryDetailsMeta, { propsData: { properties: baseProps } });
 
     const tag = wrapper.vm.getPlatformTag({
-      os: 'linux',
+      os:   'linux',
       arch: 'amd64'
       // no variant
     });
@@ -125,13 +120,11 @@ describe('RegistryDetailsMeta.vue', () => {
   });
 
   it('getPlatformTag returns correct format (variant present)', () => {
-    const wrapper = mount(RegistryDetailsMeta, {
-      propsData: { properties: baseProps }
-    });
+    const wrapper = mount(RegistryDetailsMeta, { propsData: { properties: baseProps } });
 
     const tag = wrapper.vm.getPlatformTag({
-      os: 'linux',
-      arch: 'arm64',
+      os:      'linux',
+      arch:    'arm64',
       variant: 'v7'
     });
 
@@ -152,14 +145,14 @@ describe('RegistryDetailsMeta - repositories computed', () => {
             ]
           },
           namespace: { label: '', value: '' },
-          uri: { label: '', value: '' },
-          schedule: { label: '', value: '' },
-          platforms: { label: '', value: 0, list: [] }
+          uri:       { label: '', value: '' },
+          schedule:  { label: '', value: '' },
+          platforms: {
+            label: '', value: 0, list: []
+          }
         }
       },
-      global: {
-        stubs: { KeyValue: true }
-      }
+      global: { stubs: { KeyValue: true } }
     });
 
     expect(wrapper.vm.repositories).toEqual([
@@ -173,15 +166,15 @@ describe('RegistryDetailsMeta - repositories computed', () => {
       propsData: {
         properties: {
           repositories: { list: [] },
-          namespace: { label: '', value: '' },
-          uri: { label: '', value: '' },
-          schedule: { label: '', value: '' },
-          platforms: { label: '', value: 0, list: [] }
+          namespace:    { label: '', value: '' },
+          uri:          { label: '', value: '' },
+          schedule:     { label: '', value: '' },
+          platforms:    {
+            label: '', value: 0, list: []
+          }
         }
       },
-      global: {
-        stubs: { KeyValue: true }
-      }
+      global: { stubs: { KeyValue: true } }
     });
 
     expect(wrapper.vm.repositories).toEqual([]);
@@ -192,15 +185,15 @@ describe('RegistryDetailsMeta - repositories computed', () => {
       propsData: {
         properties: {
           repositories: { list: undefined },
-          namespace: { label: '', value: '' },
-          uri: { label: '', value: '' },
-          schedule: { label: '', value: '' },
-          platforms: { label: '', value: 0, list: [] }
+          namespace:    { label: '', value: '' },
+          uri:          { label: '', value: '' },
+          schedule:     { label: '', value: '' },
+          platforms:    {
+            label: '', value: 0, list: []
+          }
         }
       },
-      global: {
-        stubs: { KeyValue: true }
-      }
+      global: { stubs: { KeyValue: true } }
     });
 
     expect(wrapper.vm.repositories).toEqual([]);
