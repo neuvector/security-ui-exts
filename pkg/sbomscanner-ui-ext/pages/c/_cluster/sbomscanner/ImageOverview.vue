@@ -1,4 +1,5 @@
 <template>
+  <Loading v-if="$fetchState.pending" />
   <div class="page">
     <div class="header-section mb-20">
       <div class="title">

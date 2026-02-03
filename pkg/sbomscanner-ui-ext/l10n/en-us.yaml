@@ -198,6 +198,7 @@ imageScanner:
         platform: Platform
         vulnerabilities: Vulnerabilities
         container: Container
+        affectingCVEs: Affecting CVEs
       filters:
         placeholder:
           image: Search by name
@@ -268,6 +269,7 @@ imageScanner:
         exploitability: Exploitability
         packageVersion: Package version
         packagePath: Package path
+        images: Images
   vulnerabilities:
     title: Vulnerabilities
     vulnerabilitiesBySeverityChart:

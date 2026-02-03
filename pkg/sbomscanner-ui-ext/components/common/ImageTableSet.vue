@@ -94,7 +94,7 @@
         <div class="table-top-left">
           <button
             mat-button
-            class="btn role-primary"
+            class="btn role-primary btn-text-report"
             aria-label="Download custom report"
             :disabled="!(selectedRows && selectedRows.length)"
             type="button"
@@ -560,7 +560,7 @@ export default {
   .filter-row {
     display: flex;
     gap: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .filter-item {
@@ -633,6 +633,10 @@ export default {
     gap: 8px;
     padding-top: 16px;
     border-top: 1px solid #DCDEE7;
+  }
+
+  .btn-text-report {
+    padding: 0 16px;
   }
 
   .me-3 {
