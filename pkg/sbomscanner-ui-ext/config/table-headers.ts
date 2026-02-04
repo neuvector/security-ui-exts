@@ -464,7 +464,7 @@ export const WORKLOAD_VULNERABILITY_DETAILS_TABLE = [
   {
     name:     'images',
     labelKey: 'imageScanner.imageDetails.table.headers.images',
-    value:    'images',
+    value:    (row: any) => row.images ? row.images.length : 0,
     sort:     'images',
   },
 ];
