@@ -255,6 +255,8 @@ imageScanner:
     selection:
       vulnerability: vulnerability selected
       vulnerabilities: vulnerabilities selected
+      workload: workload selected
+      workloads: workloads selected
     table:
       headers:
         cveId: CVE ID
@@ -270,6 +272,16 @@ imageScanner:
         packageVersion: Package version
         packagePath: Package path
         images: Images
+    tabs:
+      vulnerabilities: Vulnerabilities
+      workloads: Workloads
+    severityFilterOptions:
+      any: Any
+      critical: Critical
+      high: High
+      medium: Medium
+      low: Low
+      unknown: Unknown
   vulnerabilities:
     title: Vulnerabilities
     vulnerabilitiesBySeverityChart:
@@ -343,6 +355,14 @@ imageScanner:
     tabs:
       images: Images
       affectingCVEs: Affecting CVEs
+    table:
+      headers:
+        workloadName: Workload name
+        namespace: Namespace
+        type: Type
+        affectingCVEs: Affecting CVEs
+        severity: Severity
+        imagesUsed: Images used
   enum:
     cve:
       critical: Critical

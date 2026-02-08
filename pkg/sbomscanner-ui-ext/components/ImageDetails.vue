@@ -38,32 +38,51 @@
       <RancherMeta :properties="imageDetails" />
     </div>
 
-    <!-- Summary Section -->
-    <div
-      v-if="vulnerabilityDetails.length > 0"
-      class="summary-section"
+    <ResourceTabs
+      :needRelated="false"
+      :needEvents="false"
     >
-      <!-- Most Severe Vulnerabilities Section -->
-      <MostSevereVulnerabilities :vulnerability-report="loadedVulnerabilityReport" />
+      <Tab
+        name="vulnerabilities"
+        :weight="2"
+        :label="t('imageScanner.imageDetails.tabs.vulnerabilities')"
+      >
+         <!-- Summary Section -->
+        <div
+          v-if="vulnerabilityDetails.length > 0"
+          class="summary-section"
+        >
+          <!-- Most Severe Vulnerabilities Section -->
+          <MostSevereVulnerabilities :vulnerability-report="loadedVulnerabilityReport" />
 
-      <!-- Severity Distribution Section -->
-      <DistributionChart
-        v-if="severityDistribution"
-        :title="t('imageScanner.imageDetails.severityDistribution.title')"
-        :chart-data="severityDistribution"
-        color-prefix="cve"
-        :description="t('imageScanner.imageDetails.severityDistribution.subTitle')"
-        :filter-fn="filterBySeverity"
-        :tooltip="t('imageScanner.imageDetails.severityDistribution.tooltip')"
-      />
-    </div>
+          <!-- Severity Distribution Section -->
+          <DistributionChart
+            v-if="severityDistribution"
+            :title="t('imageScanner.imageDetails.severityDistribution.title')"
+            :chart-data="severityDistribution"
+            color-prefix="cve"
+            :description="t('imageScanner.imageDetails.severityDistribution.subTitle')"
+            :filter-fn="filterBySeverity"
+            :tooltip="t('imageScanner.imageDetails.severityDistribution.tooltip')"
+          />
+        </div>
 
-    <!-- Vulnerability table with column based filters -->
-    <VulnerabilityTableSet
-      :vulnerabilityDetails="vulnerabilityDetails"
-      :severity="severity"
-    />
-
+        <VulnerabilityTableSet
+          :vulnerabilityDetails="vulnerabilityDetails"
+          :severity="severity"
+        />
+      </Tab>
+      <Tab
+        name="workloads"
+        :weight="1"
+        :label="t('imageScanner.imageDetails.tabs.workloads')"
+      >
+        <WorkloadTableSet
+          :workloads="loadedWorkloads"
+          :is-in-image-context="true"
+        />
+      </Tab>
+    </ResourceTabs>
   </div>
 </template>
 
@@ -80,6 +99,10 @@ import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import { getHighestScore, getSeverityNum, getScoreNum } from '../utils/report';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
+import Tab from '@shell/components/Tabbed/Tab';
+import ResourceTabs from '@shell/components/form/ResourceTabs';
+import { workloads } from '@sbomscanner-ui-ext/tmp/workloads';
+import WorkloadTableSet from './common/WorkloadTableSet.vue';
 
 export default {
   name:       'ImageDetails',
@@ -92,6 +115,9 @@ export default {
     DownloadFullReportBtn,
     Loading,
     VulnerabilityTableSet,
+    Tab,
+    ResourceTabs,
+    WorkloadTableSet,
   },
   data() {
     return {
@@ -99,6 +125,7 @@ export default {
       severity:                      '',
       loadedVulnerabilityReport:     null,
       loadedSbom:                    null,
+      loadedWorkloads:               null,
       // Cache filtered results to prevent selection issues
       cachedFilteredVulnerabilities: [],
       // Download dropdown state
@@ -106,6 +133,7 @@ export default {
       PRODUCT_NAME,
       RESOURCE,
       PAGE,
+      workloads,
     };
   },
 
@@ -119,6 +147,9 @@ export default {
 
     // Load the image resource and its associated data
     await this.loadImageData();
+
+    // Load the workloads resource
+    this.loadWorkloads();
   },
 
   computed: {
@@ -375,6 +406,10 @@ export default {
       }
     },
 
+    loadWorkloads() {
+      this.loadedWorkloads = this.workloads;
+    },
+
     getPackagePath(purl) {
       const packagePaths = typeof purl === 'string' ? purl.match(/(?<=:)([^@]+?)(?=@)/) : [];
 
@@ -508,6 +543,7 @@ export default {
   align-self: stretch;
   border-radius: 6px;
   border: solid var(--border-width) var(--input-border);
+  margin-bottom: 24px;;
 }
 
 .severity-section {
