@@ -257,7 +257,7 @@ export const REPO_BASED_TABLE = [
   {
     name:      'cves',
     labelKey:  'imageScanner.images.listTable.headers.vulnerabilities',
-    value:     'cveCntByRepo',
+    value:     'cveSummary',
     formatter: 'IdentifiedCVEsPercentageCell',
     sort:      'cveCntByRepo',
     width:     300,

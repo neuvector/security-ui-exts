@@ -479,20 +479,37 @@ export default {
       const severityKeys = ['critical', 'high', 'medium', 'low', 'unknown'];
       const repoMap = new Map();
 
+      // TODO: Determine the correct routing path for the Image Overview page and update this link.
+      let summaryLink = '#';
+      if (this.isInWorkloadContext && this.$route) {
+        summaryLink = `${this.$route.path}#affectingCVEs`;
+      }
+
       vulReports.forEach((report) => {
         let repoRec = {};
         const mapKey = `${ report.imageMetadata.repository },${ report.imageMetadata.registry }`;
         const currImageScanResult = {};
+        let currentImageTotal = 0;
 
         for (const key of severityKeys) {
+          const count = report.report.summary[key] || 0;
           currImageScanResult[key] = report.report.summary[key];
+          currentImageTotal += count;
         }
         if (repoMap.has(mapKey)) {
           const currRepo = repoMap.get(mapKey);
 
           for (const key of severityKeys) {
             currRepo.cveCntByRepo[key] += report.report.summary[key];
+            if(currRepo.cveSummary && currRepo.cveSummary.cveAmount) {
+              currRepo.cveSummary.cveAmount[key] += currImageScanResult[key];
+            }
           }
+
+          if (currRepo.cveSummary) {
+            currRepo.cveSummary.total += currentImageTotal;
+          }
+
           currRepo.images.push(
             {
               id:             report.id,
@@ -510,6 +527,11 @@ export default {
             registry:     report.imageMetadata.registry,
             metadata:     { namespace: report.metadata.namespace },
             cveCntByRepo: { ...currImageScanResult },
+            cveSummary: {
+              cveAmount: { ...currImageScanResult },
+              total: currentImageTotal,
+              link: summaryLink,
+            },
             images:       [
               {
                 id:             report.id,

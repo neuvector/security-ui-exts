@@ -27,11 +27,12 @@ const SortableTableStub = {
       <slot name="header-left" />
       <slot name="header-right" />
       <slot
+        v-if="rows && rows[0]"
         name="sub-row"
         :row="rows?.[0]"
         :fullColspan="3"
       />
-      <slot name="row-actions" :row="rows?.[0]" />
+      <slot v-if="rows && rows[0]" name="row-actions" :row="rows?.[0]" />
     </table>
   `,
 };
@@ -45,22 +46,27 @@ const CheckboxStub = {
 const LabeledSelectStub = {
   props:    ['value'],
   emits:    ['update:value'],
-  template: `<select />`,
+  template: `<div></div>`,
 };
 
-const factory = (props = {}, storeOverrides = {}) => {
+const factory = (props = {}, storeOverrides = {}, routeOverrides = {}) => {
   const dispatch = jest.fn();
+
+  const $route = {
+    path: '/c/local/explorer',
+    ...routeOverrides
+  };
 
   return shallowMount(ImageTableSet, {
     props: {
       rows:       [],
-      rowsByRepo: [],
       ...props,
     },
     global: {
       mocks: {
         $store:      { dispatch },
         $fetchState: { pending: false },
+        $route,
         t:           (k) => k,
       },
       stubs: {
@@ -249,36 +255,65 @@ describe('ImageOverview.vue', () => {
     );
   });
 
-  test('aggregates reports by repo', () => {
-    const wrapper = factory();
-
-    const result = wrapper.vm.preprocessData([
+  describe('preprocessData', () => {
+    const mockReports = [
       {
         id:            '1',
         imageMetadata: { repository: 'repo' , registry: 'reg' },
         metadata:      { namespace: 'ns', name: 'img1' },
         report:        {
           summary: {
-            critical: 1, high: 0, medium: 0, low: 0, unknown: 0
+            critical: 1, high: 0, medium: 2, low: 0, unknown: 0
           }
         },
       },
       {
         id:            '2',
-        imageMetadata: { repository: 'repo' , registry: 'reg' },
+        imageMetadata: { repository: 'repo' , registry: 'reg' }, // Same repo
         metadata:      { namespace: 'ns', name: 'img2' },
         report:        {
           summary: {
-            critical: 2, high: 0, medium: 0, low: 0, unknown: 0
+            critical: 2, high: 0, medium: 0, low: 1, unknown: 0
           }
         },
       },
-    ]);
+    ];
 
-    expect(result[0].cveCntByRepo.critical).toBe(3);
-    expect(result[0].images.length).toBe(2);
+    test('aggregates reports by repo', () => {
+    const wrapper = factory({ isInWorkloadContext: false });
+
+    const result = wrapper.vm.preprocessData(mockReports);
+
+    expect(result.length).toBe(1);
+
+    const repo = result[0];
+
+    expect(repo.images.length).toBe(2);
+
+    expect(repo.cveCntByRepo.critical).toBe(3);
+    expect(repo.cveCntByRepo.medium).toBe(2);
+    expect(repo.cveCntByRepo.low).toBe(1);
+
+    expect(repo.cveSummary).toBeDefined();
+    expect(repo.cveSummary.total).toBe(6);
+    expect(repo.cveSummary.cveAmount.critical).toBe(3);
+    expect(repo.cveSummary.link).toBe('#');
   });
 
+    test('generates dynamic link in cveSummary when isInWorkloadContext is true', () => {
+      const mockRoutePath = '/c/local/explorer/workload/my-deployment';
+      const wrapper = factory(
+        { isInWorkloadContext: true },
+        {},
+        { path: mockRoutePath } // Pass mock route
+      );
+
+      const result = wrapper.vm.preprocessData([mockReports[0]]);
+      const repo = result[0];
+
+      expect(repo.cveSummary.link).toBe(`${mockRoutePath}#affectingCVEs`);
+    });
+  });
 
   test('repositoryOptions returns "Any" when registryCrds is empty', () => {
     const wrapper = factory();
@@ -509,28 +544,15 @@ describe('ImageOverview.vue - fetch', () => {
         if (action === 'cluster/findAll') {
           return Promise.resolve(registryCrds);
         }
-
         return Promise.resolve();
       }),
       getters: {},
     };
 
-    const t = (k: string) => k;
+    const wrapper = factory({}, store);
 
-    const wrapper = factory({
-      global: {
-        mocks: {
-          $store: store, $t: t, t, $fetchState: { pending: false }
-        }
-      }
-    });
-
-    // `fetch` is a component hook and not exposed directly on `vm` in the test harness.
-    // Call it via the component options with the vm as context.
-    await (wrapper.vm as any).$options.fetch.call(wrapper.vm); // <-- manually trigger
-    await nextTick(); // flush any reactive updates
-
-    // expect((wrapper.vm as any).registryCrds).toStrictEqual(registryCrds);
+    await (wrapper.vm as any).$options.fetch.call(wrapper.vm);
+    await nextTick();
   });
 });
 

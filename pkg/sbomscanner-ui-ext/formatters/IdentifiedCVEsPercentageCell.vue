@@ -1,20 +1,26 @@
 <template>
   <div style="margin-right: 32px;">
-    <AmountBarBySeverity
-      :cve-amount="value"
-      :is-collapsed="true"
+    <VulnerabilityHoverCell
+        :cve-amount="value.cveAmount"
+        :header-title="`${value.total} ${t('imageScanner.images.listTable.headers.vulnerabilities')}`"
+        :view-all-link="value.link"
     />
   </div>
 </template>
 <script>
-import AmountBarBySeverity from '@sbomscanner-ui-ext/components/common/AmountBarBySeverity';
+import VulnerabilityHoverCell from "@sbomscanner-ui-ext/components/common/VulnerabilityHoverCell.vue";
 export default {
   props: {
     value: {
       type:     Object,
-      required: true
+      required: true,
+      default: () => ({
+        cveAmount: {},
+        total: 0,
+        link: ''
+      })
     }
   },
-  components: { AmountBarBySeverity },
+  components: {VulnerabilityHoverCell },
 };
 </script>
