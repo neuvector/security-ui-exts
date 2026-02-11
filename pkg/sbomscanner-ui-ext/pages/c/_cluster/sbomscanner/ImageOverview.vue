@@ -125,57 +125,6 @@ export default {
         }, { root: true });
       }
     },
-    preprocessData(vulReports) {
-      const severityKeys = ['critical', 'high', 'medium', 'low', 'unknown'];
-      const repoMap = new Map();
-
-      vulReports.forEach((report) => {
-        let repoRec = {};
-        const mapKey = `${ report.imageMetadata.repository },${ report.imageMetadata.registry }`;
-        const currImageScanResult = {};
-
-        for (const key of severityKeys) {
-          currImageScanResult[key] = report.report.summary[key];
-        }
-        if (repoMap.has(mapKey)) {
-          const currRepo = repoMap.get(mapKey);
-
-          for (const key of severityKeys) {
-            currRepo.cveCntByRepo[key] += report.report.summary[key];
-          }
-          currRepo.images.push(
-            {
-              id:             report.id,
-              imageMetadata:  report.imageMetadata,
-              metadata:       { name: report.metadata.name },
-              imageReference: constructImageName(report.imageMetadata),
-              scanResult:     currImageScanResult,
-            }
-          );
-          repoMap.set(mapKey, currRepo);
-        } else {
-          repoRec = {
-            id:           mapKey,
-            repository:   report.imageMetadata.repository,
-            registry:     report.imageMetadata.registry,
-            metadata:     { namespace: report.metadata.namespace },
-            cveCntByRepo: { ...currImageScanResult },
-            images:       [
-              {
-                id:             report.id,
-                imageMetadata:  report.imageMetadata,
-                metadata:       { name: report.metadata.name },
-                imageReference: constructImageName(report.imageMetadata),
-                scanResult:     currImageScanResult,
-              }
-            ]
-          };
-          repoMap.set(mapKey, repoRec);
-        }
-      });
-
-      return Array.from(repoMap.values());
-    },
   },
 };
 

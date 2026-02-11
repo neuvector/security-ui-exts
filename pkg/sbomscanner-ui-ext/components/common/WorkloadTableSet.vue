@@ -100,7 +100,7 @@ export default {
   },
 
   fetch() {
-    this.workloads.forEach((wl) => {
+    Object.values(this.workloads).forEach((wl) => {
       const typeOption = { label: wl.type, value: wl.type };
 
       if (!this.filterTypeOptions.some((opt) => opt.value === typeOption.value)) {

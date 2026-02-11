@@ -55,6 +55,7 @@ export function init($plugin: any, store: any) {
   weightType(PAGE.IMAGES, 97, true);
   // weightType(PAGE.VULNERABILITIES, 96, true);
   weightType(PAGE.VEX_MANAGEMENT, 95, true);
+  weightType(RESOURCE.REGISTRY, 96, true);
 
   basicType([
     PAGE.DASHBOARD,

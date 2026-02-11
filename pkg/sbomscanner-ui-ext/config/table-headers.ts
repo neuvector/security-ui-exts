@@ -618,7 +618,7 @@ export const WORKLOADS_TABLE = [
   {
     name:      'workloadName',
     labelKey:  'imageScanner.workloads.table.headers.workloadName',
-    value:     'workloadName',
+    value:     'name',
     formatter: 'WorkloadNameCell',
     sort:      'workloadName',
     width:     200,
@@ -652,9 +652,9 @@ export const WORKLOADS_TABLE = [
   {
     name:      'severity',
     labelKey:  'imageScanner.workloads.table.headers.severity',
-    value:     'severity',
+    value:     'summary',
     formatter: 'IdentifiedCVEsCell',
-    sort:      ['severity.critical','severity.high','severity.medium','severity.low','severity.unknown'],
+    sort:      ['summary.critical','summary.high','summary.medium','summary.low','summary.unknown'],
     width:     300,
   },
 ];

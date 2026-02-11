@@ -1,3 +1,4 @@
+import { POD, WORKLOAD_TYPES, INGRESS, SERVICE, WORKLOAD_TYPE_TO_KIND_MAPPING } from '@shell/config/types';
 // Utility method to decode base64 strings
 export function decodeBase64(str: string) {
   try {
@@ -31,4 +32,22 @@ export function trimIntervalSuffix(interval: string): string {
   }
 
   return result || interval;
+}
+
+export function getWorkloadLink(row: any, cluster: string, hash?: string): string {
+  const namespace = row.namespace || 'default';
+  const baseUrl = `/c/${cluster}/explorer`;
+
+  const routeMap = {
+    Pod:                                                          POD,
+    [WORKLOAD_TYPE_TO_KIND_MAPPING[WORKLOAD_TYPES.CRON_JOB]]:     WORKLOAD_TYPES.CRON_JOB,
+    [WORKLOAD_TYPE_TO_KIND_MAPPING[WORKLOAD_TYPES.DAEMON_SET]]:   WORKLOAD_TYPES.DAEMON_SET,
+    Deployment:                                                   WORKLOAD_TYPES.DEPLOYMENT,
+    [WORKLOAD_TYPE_TO_KIND_MAPPING[WORKLOAD_TYPES.JOB]]:          WORKLOAD_TYPES.JOB,
+    [WORKLOAD_TYPE_TO_KIND_MAPPING[WORKLOAD_TYPES.STATEFUL_SET]]: WORKLOAD_TYPES.STATEFUL_SET,
+    Ingress:                                                      INGRESS,
+    Service:                                                      SERVICE
+  };
+
+  return `${baseUrl}/${routeMap[row.type] || ''}/${namespace}/${row.name}${hash ? `#${hash}` : ''}`;
 }
