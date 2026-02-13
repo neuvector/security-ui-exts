@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { decodeBase64 } from '../app';
+import { decodeBase64, getWorkloadLink } from '../app';
 
 const mockAtob = jest.fn();
 
@@ -38,3 +38,99 @@ describe('decodeBase64', () => {
     expect(mockAtob).toHaveBeenCalledTimes(1);
   });
 });
+
+// Mock constants
+jest.mock('@shell/config/types', () => ({
+  POD: 'pod',
+  SERVICE: 'service',
+  INGRESS: 'ingress',
+  WORKLOAD_TYPES: {
+    CRON_JOB: 'cronjob',
+    DAEMON_SET: 'daemonset',
+    DEPLOYMENT: 'deployment',
+    JOB: 'job',
+    STATEFUL_SET: 'statefulset'
+  },
+  WORKLOAD_TYPE_TO_KIND_MAPPING: {
+    cronjob: 'CronJob',
+    daemonset: 'DaemonSet',
+    job: 'Job',
+    statefulset: 'StatefulSet'
+  }
+}));
+
+describe('getWorkloadLink', () => {
+  const cluster = 'local';
+
+  it('should generate pod link correctly', () => {
+    const row = {
+      type: 'Pod',
+      namespace: 'kube-system',
+      name: 'nginx'
+    };
+
+    const result = getWorkloadLink(row, cluster);
+
+    expect(result).toBe('/c/local/explorer/pod/kube-system/nginx');
+  });
+
+  it('should default namespace to "default" if not provided', () => {
+    const row = {
+      type: 'Pod',
+      name: 'nginx'
+    };
+
+    const result = getWorkloadLink(row, cluster);
+
+    expect(result).toBe('/c/local/explorer/pod/default/nginx');
+  });
+
+  it('should generate deployment link correctly', () => {
+    const row = {
+      type: 'Deployment',
+      namespace: 'apps',
+      name: 'frontend'
+    };
+
+    const result = getWorkloadLink(row, cluster);
+
+    expect(result).toBe('/c/local/explorer/deployment/apps/frontend');
+  });
+
+  it('should append hash if provided', () => {
+    const row = {
+      type: 'Pod',
+      namespace: 'default',
+      name: 'nginx'
+    };
+
+    const result = getWorkloadLink(row, cluster, 'details');
+
+    expect(result).toBe('/c/local/explorer/pod/default/nginx#details');
+  });
+
+  it('should return empty route segment if type not mapped', () => {
+    const row = {
+      type: 'UnknownType',
+      namespace: 'default',
+      name: 'test'
+    };
+
+    const result = getWorkloadLink(row, cluster);
+
+    expect(result).toBe('/c/local/explorer//default/test');
+  });
+
+  it('should handle cronjob mapping correctly', () => {
+    const row = {
+      type: 'CronJob',
+      namespace: 'batch',
+      name: 'nightly'
+    };
+
+    const result = getWorkloadLink(row, cluster);
+
+    expect(result).toBe('/c/local/explorer/cronjob/batch/nightly');
+  });
+});
+

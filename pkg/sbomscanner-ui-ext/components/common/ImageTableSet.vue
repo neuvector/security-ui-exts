@@ -101,11 +101,11 @@
             @click="downloadCSVReport(selectedRows, isGrouped)"
           >
             <i class="icon icon-download me-3"></i>
-            {{ t('imageScanner.images.buttons.downloadCustomReport') }}
+            {{ isInWorkloadContext ? t('imageScanner.workloads.buttons.downloadReport') : t('imageScanner.images.buttons.downloadCustomReport')}}
           </button>
         </div>
       </template>
-      <template #header-right>
+      <template #header-right v-if="!isInWorkloadContext">
         <Checkbox
           v-model:value="isGrouped"
           style="margin: auto 0;"

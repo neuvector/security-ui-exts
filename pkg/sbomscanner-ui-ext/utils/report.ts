@@ -142,3 +142,10 @@ export function getScoreNum(scoreStr: string): number {
 
   return 0;
 }
+
+
+export function getPackagePath(purl: string): string {
+  const packagePaths = typeof purl === 'string' ? purl.match(/(?<=:)([^@]+?)(?=@)/) : [];
+
+  return packagePaths && Array.isArray(packagePaths) ? packagePaths[0] : '';
+}

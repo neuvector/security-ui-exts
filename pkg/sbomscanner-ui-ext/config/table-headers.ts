@@ -219,8 +219,8 @@ export const WORKLOAD_IMAGE_LIST_TABLE = [
   },{
     name:     'container',
     labelKey: 'imageScanner.images.listTable.headers.container',
-    value:    'imageMetadata.container',
-    sort:     'imageMetadata.container',
+    value:    'metadata.container',
+    sort:     'metadata.container',
   },{
     name:     'repository',
     labelKey: 'imageScanner.images.listTable.headers.repository',

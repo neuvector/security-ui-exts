@@ -315,18 +315,6 @@ describe('ImageDetails.vue', () => {
     expect(mockStore.dispatch).toHaveBeenCalled();
   });
 
-  it('handles getPackagePath correctly', () => {
-    const path = wrapper.vm.getPackagePath('pkg:apk/alpine/openssl@1.1.1');
-
-    expect(path).toBe('apk/alpine/openssl');
-  });
-
-  it('handles missing purl in getPackagePath gracefully', () => {
-    const path = wrapper.vm.getPackagePath(null);
-
-    expect(path ?? '').toBe('');
-  });
-
   it('computes overallSeverity based on vulnerability distribution', () => {
     wrapper.vm.loadedVulnerabilityReport = {
       report: {

@@ -96,7 +96,7 @@ import RancherMeta from './common/RancherMeta.vue';
 import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import DownloadSBOMBtn from './common/DownloadSBOMBtn';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
-import { getHighestScore, getSeverityNum, getScoreNum } from '../utils/report';
+import { getHighestScore, getSeverityNum, getScoreNum, getPackagePath } from '../utils/report';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 import Tab from '@shell/components/Tabbed/Tab';
@@ -274,7 +274,7 @@ export default {
           scoreNum:         getScoreNum(score),
           package:          vuln.packageName,
           packageVersion:   vuln.installedVersion,
-          packagePath:      this.getPackagePath(vuln.purl),
+          packagePath:      getPackagePath(vuln.purl),
           fixAvailable:     vuln.fixedVersions && vuln.fixedVersions.length > 0,
           fixVersion:       vuln.fixedVersions ? vuln.fixedVersions.join(', ') : '',
           severity:         vuln.severity?.toLowerCase() || this.t('imageScanner.general.unknown'),
@@ -436,12 +436,6 @@ export default {
           message: `Failed to load image data: ${ error.message }`
         }, { root: true });
       }
-    },
-
-    getPackagePath(purl) {
-      const packagePaths = typeof purl === 'string' ? purl.match(/(?<=:)([^@]+?)(?=@)/) : [];
-
-      return packagePaths && Array.isArray(packagePaths) ? packagePaths[0] : '';
     },
   },
 };

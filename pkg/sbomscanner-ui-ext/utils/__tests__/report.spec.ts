@@ -1,5 +1,5 @@
 import {
-  imageDetailsToCSV, downloadCSV, downloadJSON, getScore, getSeverityNum, getScoreNum, getHighestScore
+  imageDetailsToCSV, downloadCSV, downloadJSON, getScore, getSeverityNum, getScoreNum, getHighestScore, getPackagePath
 } from '../report';
 
 describe('imageDetailsToCSV', () => {
@@ -435,5 +435,28 @@ describe('getHighestScore', () => {
     const cvss = { nvd: { v3score: 6 } };
 
     expect(getHighestScore(cvss)).toBe('6.0 (v3)');
+  });
+});
+
+describe('getPackagePath', () => {
+  it('should extract package path between ":" and "@"', () => {
+    const purl = 'pkg:apk/alpine/busybox@1.36.1-r19?arch=x86&distro=3.19.2';
+    const result = getPackagePath(purl);
+
+    expect(result).toBe('apk/alpine/busybox');
+  });
+
+  it('should return empty string if no match exists', () => {
+    const purl = 'invalid-string-without-pattern';
+    const result = getPackagePath(purl);
+
+    expect(result).toBe('');
+  });
+
+  it('should extract correct value for different package types', () => {
+    const purl = 'pkg:maven/org.apache.commons/commons-lang3@3.12.0';
+    const result = getPackagePath(purl);
+
+    expect(result).toBe('maven/org.apache.commons/commons-lang3');
   });
 });
