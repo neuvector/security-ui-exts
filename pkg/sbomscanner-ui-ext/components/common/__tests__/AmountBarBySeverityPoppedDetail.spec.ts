@@ -1,5 +1,5 @@
-import { shallowMount, mount } from '@vue/test-utils';
-import VulnerabilityHoverCell from '../VulnerabilityHoverCell.vue';
+import { shallowMount } from '@vue/test-utils';
+import VulnerabilityHoverCell from '../AmountBarBySeverityPoppedDetail.vue';
 
 const AmountBarBySeverityStub = {
   template: '<div class="amount-bar-stub"></div>',
@@ -71,7 +71,7 @@ describe('VulnerabilityHoverCell.vue', () => {
     it('displays default header title with count when no title prop provided', () => {
       const wrapper = createWrapper();
       const title = wrapper.find('.title');
-      expect(title.text()).toContain('50 vulnerabilities');
+      expect(title.text()).toContain('50 %imageScanner.images.listTable.headers.vulnerabilities%');
     });
 
     it('displays custom headerTitle when provided', () => {
@@ -125,7 +125,11 @@ describe('VulnerabilityHoverCell.vue', () => {
     it('toggles "showOnTop" (CSS class) based on viewport calculation', async () => {
       const wrapper = createWrapper();
       const vm = wrapper.vm as any;
-      window.innerHeight = 1000;
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 1000
+      });
       Element.prototype.getBoundingClientRect = jest.fn(() => ({
         bottom: 100, // 900px remaining space ( > 300 threshold)
         top: 0, left: 0, right: 0, width: 0, height: 0

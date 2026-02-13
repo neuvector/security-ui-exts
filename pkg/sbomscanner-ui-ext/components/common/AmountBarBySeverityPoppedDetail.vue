@@ -17,7 +17,7 @@
     >
       <div class="header">
         <div class="title">
-          {{ headerTitle || `${totalVulnerabilities} vulnerabilities` }}
+          {{ headerTitle || `${totalVulnerabilities} ${t('imageScanner.images.listTable.headers.vulnerabilities')}` }}
         </div>
         <a
             v-if="viewAllLink"
@@ -25,7 +25,7 @@
             class="view-all"
             @click.stop="$emit('view-all')"
         >
-          View all
+          {{ t('imageScanner.vulnerabilities.popup.viewAll') }}
         </a>
       </div>
 
@@ -56,7 +56,7 @@
 import AmountBarBySeverity from './AmountBarBySeverity.vue';
 
 export default {
-  name: 'VulnerabilityHoverCell',
+  name: 'AmountBarBySeverityPoppedDetail',
   components: { AmountBarBySeverity },
   props: {
     cveAmount: {
@@ -75,7 +75,7 @@ export default {
     footerProvider: {
       type: String,
       default: 'SBOMScanner'
-    }
+    },
   },
   data() {
     return {
@@ -92,7 +92,7 @@ export default {
   computed: {
     totalVulnerabilities() {
       return Object.values(this.cveAmount).reduce((a, b) => a + (Number(b) || 0), 0);
-    }
+    },
   },
   methods: {
     checkPosition() {
@@ -116,14 +116,19 @@ export default {
 $gap-size: 10px;
 
 .vulnerability-hover-cell {
+
+  --severity-critical: #{$critical-color};
+  --severity-high: #{$high-color};
+  --severity-medium: #{$medium-color};
+  --severity-low: #{$low-color};
+  --severity-unknown: #{$na-color};
+
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
   height: 100%;
-  cursor: pointer;
 
-  // Show popup on hover
   &:hover .hover-overlay {
     display: block;
     visibility: visible;
@@ -147,8 +152,7 @@ $gap-size: 10px;
   display: none;
   position: absolute;
   top: calc(100% + #{$gap-size});
-  right: 0; // Align to right of cell
-
+  right: 10px;
   width: 320px;
   background: var(--popover-bg);
   border: var(--popover-border);
@@ -157,7 +161,7 @@ $gap-size: 10px;
   padding: 16px;
   z-index: 100;
   font-family: Lato, sans-serif;
-  color: #141419;
+  color: var(--text-primary);
 
   &::before {
     content: '';
@@ -180,7 +184,6 @@ $gap-size: 10px;
   }
 }
 
-// --- Header ---
 .header {
   display: flex;
   justify-content: space-between;
@@ -190,18 +193,17 @@ $gap-size: 10px;
   .title {
     font-weight: 700;
     font-size: 16px;
+    color: var(--text-primary);
   }
 
   .view-all {
     font-size: 14px;
-    color: #004ecc;
     text-decoration: none;
     cursor: pointer;
     &:hover { text-decoration: underline; }
   }
 }
 
-// --- List Rows ---
 .severity-row {
   display: flex;
   align-items: center;
@@ -211,14 +213,14 @@ $gap-size: 10px;
   .label {
     width: 60px;
     text-decoration: underline;
-    text-decoration-color: #eee;
+    text-decoration-color: var(--border);
     text-underline-offset: 3px;
   }
 
   .bar-container {
     flex-grow: 1;
     height: 8px;
-    background-color: #ebedf6;
+    background-color: var(--disabled-bg);
     border-radius: 4px;
     margin: 0 12px;
     overflow: hidden;
@@ -234,24 +236,22 @@ $gap-size: 10px;
     width: 30px;
     text-align: right;
     font-weight: 600;
-    color: #5d5d5d;
+    color: var(--text-secondary);
   }
 }
 
-// --- Footer ---
 .footer {
   margin-top: 12px;
   text-align: right;
   font-size: 12px;
-  color: #8d9096;
+  color: var(--text-secondary);
 
   .provider-name {
     text-decoration: underline;
-    color: #5d5d5d;
+    color: var(--text-secondary);
   }
 }
 
-// --- Colors (Map to variables) ---
 .critical { background-color: $critical-color; }
 .high     { background-color: $high-color; }
 .medium   { background-color: $medium-color; }
