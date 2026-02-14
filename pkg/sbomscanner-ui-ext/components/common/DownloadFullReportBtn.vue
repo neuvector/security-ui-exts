@@ -5,7 +5,7 @@
       class="btn role-primary dropdown-main"
       aria-label="Download full report"
       type="button"
-      @click="downloadFullReport"
+      @click="downloadFullCsvReport(reportMeta?.mainResourceIndex === 1 ? csvReportData1 : csvReportData2, reportMeta?.mainResourceIndex === 1 ? reportMeta?.resourceName1 : reportMeta?.resourceName2)"
       @focusout="handleClickOutside"
     >
       <i class="icon icon-download me-3"></i>
@@ -27,17 +27,25 @@
     >
       <button
         class="dropdown-item"
-        @click="downloadFullReport"
+        @click="downloadFullCsvReport(csvReportData1, reportMeta?.resourceName1)"
       >
         <i class="icon icon-download"></i>
-        {{ t('imageScanner.images.downloadImageDetailReport') }}
+        {{ reportMeta?.csvReportBtnName1 }}
+      </button>
+      <button
+        v-if="reportMeta?.csvReportBtnName2"
+        class="dropdown-item"
+        @click="downloadFullCsvReport(csvReportData2, reportMeta?.resourceName2)"
+      >
+        <i class="icon icon-download"></i>
+        {{ reportMeta?.csvReportBtnName2 }}
       </button>
       <button
         class="dropdown-item"
-        @click="downloadVulnerabilityReport"
+        @click="downloadVulnerabilityJsonReport(jsonReportData, reportMeta?.resourceName1)"
       >
         <i class="icon icon-download"></i>
-        {{ t('imageScanner.images.downloadVulnerabilityReport') }}
+        {{ reportMeta?.jsonReportBtnName }}
       </button>
     </div>
   </div>
@@ -49,20 +57,35 @@ import day from 'dayjs';
 export default {
   name:  'DownloadFullReportBtn',
   props: {
-    vulnerabilityDetails: {
+    csvReportData1: {
       type:    Array,
       default: () => {
         return [];
       },
     },
-    vulnerabilityReport: {
+    csvReportData2: {
+      type:    Array,
+      default: () => {
+        return [];
+      },
+    },
+    jsonReportData: {
       type:    Object,
       default: null,
     },
-    imageName: {
-      type:    String,
-      default: '',
-    },
+    /**
+     * The data object for reportMeta
+     * @property {string} csvReportBtnName1
+     * @property {string?} csvReportBtnName2
+     * @property {string} jsonReportBtnName
+     * @property {string} resourceName1
+     * @property {string?} resourceName2
+     * @property {number} mainResourceIndex
+     */
+    reportMeta: {
+      type:    Object,
+      default: null,
+    }
   },
   data() {
     return { showDownloadDropdown: false };
@@ -74,9 +97,9 @@ export default {
     document.removeEventListener('mousedown', this.handleClickOutside);
   },
   methods: {
-    downloadFullReport() {
+    downloadFullCsvReport(csvRepostData, resourceName) {
       try {
-        if (!this.vulnerabilityDetails) {
+        if (!csvRepostData || csvRepostData.length === 0) {
           this.$store.dispatch('growl/error', {
             title:   'Error',
             message: 'No vulnerability report available for download'
@@ -86,9 +109,9 @@ export default {
         }
 
         // Generate CSV from vulnerability report data
-        const csvData = this.generateCSVFromVulnerabilityReport(this.vulnerabilityDetails);
+        // const csvData = this.generateCSVFromVulnerabilityReport(this.vulnerabilityDetails);
 
-        downloadCSV(csvData, `${ this.imageName }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`);
+        downloadCSV(csvRepostData, `${ resourceName }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`);
 
         this.$store.dispatch('growl/success', {
           title:   'Success',
@@ -102,42 +125,9 @@ export default {
         }, { root: true });
       }
     },
-    generateCSVFromVulnerabilityReport(vulnerabilityDetails) {
-      const headers = [
-        'CVE_ID',
-        'SCORE',
-        'PACKAGE',
-        'FIX AVAILABLE',
-        'SEVERITY',
-        'EXPLOITABILITY',
-        'PACKAGE VERSION',
-        'PACKAGE PATH',
-        'DESCRIPTION',
-      ];
-
-      const csvRows = [headers.join(',')];
-
-      vulnerabilityDetails.forEach((vuln) => {
-        const row = [
-          `"${ vuln.cveId || '' }"`,
-          `"${ vuln.score || '' }"`,
-          `"${ vuln.package || '' }"`,
-          `"${ vuln.fixVersion || '' }"`,
-          `"${ vuln.severity || '' }"`,
-          `"${ vuln.exploitability || '' }"`,
-          `"${ vuln.installedVersion || '' }"`,
-          `"${ vuln.packagePath || '' }"`,
-          `"${ (vuln.description || '').replace(/"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
-        ];
-
-        csvRows.push(row.join(','));
-      });
-
-      return csvRows.join('\n');
-    },
-    downloadVulnerabilityReport() {
+    downloadVulnerabilityJsonReport(jsonReportData, resourceName) {
       try {
-        if (!this.vulnerabilityReport) {
+        if (!jsonReportData || (Array.isArray(jsonReportData) && jsonReportData.length === 0)) {
           this.$store.dispatch('growl/error', {
             title:   'Error',
             message: 'No vulnerability report data available for download'
@@ -147,9 +137,9 @@ export default {
         }
 
         // Generate JSON vulnerability report
-        const reportData = JSON.stringify(this.vulnerabilityReport.report, null, 2);
+        const reportData = JSON.stringify(jsonReportData, null, 2);
 
-        downloadJSON(reportData, `${ this.imageName }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`);
+        downloadJSON(reportData, `${ resourceName }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`);
 
         this.$store.dispatch('growl/success', {
           title:   'Success',
@@ -160,7 +150,7 @@ export default {
       } catch (error) {
         this.$store.dispatch('growl/error', {
           title:   'Error',
-          message: 'Failed to download vulnerability report'
+          message: `Failed to download vulnerability report: ${ error.message }`
         }, { root: true });
       }
     },

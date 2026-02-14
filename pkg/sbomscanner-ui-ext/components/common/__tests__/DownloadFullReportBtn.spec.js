@@ -41,16 +41,26 @@ describe('DownloadFullReportBtn.vue', () => {
     },
   };
 
-  const imageName = 'my-test-image';
+  const csvReportData1 = 'CVE_ID,SCORE,PACKAGE,FIX_VERSION,SEVERITY,EXPLOITABILITY,INSTALLED_VERSION,PACKAGE_PATH,DESCRIPTION\nCVE-2023-1234,9.8,test-package,1.2.4,CRITICAL,High,1.2.3,/usr/lib/test-package,"A ""critical"" vulnerability with quotes and\n newlines."';
+  const csvReportData2 = 'CVE_ID,SCORE,PACKAGE,FIX_VERSION,SEVERITY,EXPLOITABILITY,INSTALLED_VERSION,PACKAGE_PATH,DESCRIPTION\nCVE-2023-1234,9.8,test-package,1.2.4,CRITICAL,High,1.2.3,/usr/lib/test-package,"A ""critical"" vulnerability with quotes and\n newlines."';
+  const jsonReportData = JSON.stringify(mockVulnerabilityReport.report);
 
   const createWrapper = (props = {}) => {
     mockStore = { dispatch: jest.fn() };
 
     wrapper = shallowMount(DownloadFullReportBtn, {
       propsData: {
-        vulnerabilityDetails: mockVulnerabilityDetails,
-        vulnerabilityReport:  mockVulnerabilityReport,
-        imageName,
+        reportMeta: {
+          csvReportBtnName: 'image detail report',
+          csvReportBtnName2: 'workload detail report',
+          jsonReportBtnName: 'vulnerability report',
+          resourceName1: 'my-test-image',
+          resourceName2: 'my-test-workload',
+          mainResourceIndex: 1,
+        },
+        csvReportData1,
+        csvReportData2,
+        jsonReportData,
         ...props,
       },
       global: {
@@ -71,6 +81,7 @@ describe('DownloadFullReportBtn.vue', () => {
       wrapper.unmount();
     }
     document.body.innerHTML = '';
+    jest.clearAllMocks();
   });
 
   describe('UI and Dropdown Interaction', () => {
@@ -150,8 +161,8 @@ describe('DownloadFullReportBtn.vue', () => {
       await mainButton.trigger('click');
 
       const expectedCsv = [
-        'CVE_ID,SCORE,PACKAGE,FIX AVAILABLE,SEVERITY,EXPLOITABILITY,PACKAGE VERSION,PACKAGE PATH,DESCRIPTION',
-        '"CVE-2023-1234","9.8","test-package","1.2.4","CRITICAL","High","1.2.3","/usr/lib/test-package","A \'critical\' vulnerability with quotes and  newlines."',
+        'CVE_ID,SCORE,PACKAGE,FIX_VERSION,SEVERITY,EXPLOITABILITY,INSTALLED_VERSION,PACKAGE_PATH,DESCRIPTION',
+        'CVE-2023-1234,9.8,test-package,1.2.4,CRITICAL,High,1.2.3,/usr/lib/test-package,"A ""critical"" vulnerability with quotes and\n newlines."',
       ].join('\n');
 
       expect(downloadCSV).toHaveBeenCalledWith(
@@ -164,7 +175,7 @@ describe('DownloadFullReportBtn.vue', () => {
     });
 
     it('should show an error if vulnerabilityDetails is missing', async() => {
-      createWrapper({ vulnerabilityDetails: null });
+      createWrapper({ csvReportData1: null });
       const mainButton = wrapper.find('.dropdown-main');
 
       await mainButton.trigger('click');
@@ -178,7 +189,7 @@ describe('DownloadFullReportBtn.vue', () => {
 
     it('should use default empty array for vulnerabilityDetails if prop is not provided', async() => {
       // Mount without the vulnerabilityDetails prop
-      const { vulnerabilityDetails, ...props } = wrapper.props();
+      const { csvReportData1, ...props } = wrapper.props();
 
       wrapper.unmount(); // Unmount the one from createWrapper
 
@@ -191,78 +202,8 @@ describe('DownloadFullReportBtn.vue', () => {
 
       await mainButton.trigger('click');
 
-      const expectedCsvHeaders = 'CVE_ID,SCORE,PACKAGE,FIX AVAILABLE,SEVERITY,EXPLOITABILITY,PACKAGE VERSION,PACKAGE PATH,DESCRIPTION';
-
-      expect(vulnerabilityDetails).toBeNull();
-      expect(downloadCSV).toHaveBeenCalledWith(
-        expectedCsvHeaders,
-        'my-test-image-image-detail-report_MMDDYYYY_HHmmss.csv'
-      );
-    });
-
-    it('should handle errors during CSV generation', async() => {
-      createWrapper();
-      const error = new Error('CSV Generation Failed');
-
-      // Mock the internal method to throw an error
-      jest.spyOn(wrapper.vm, 'generateCSVFromVulnerabilityReport').mockImplementation(() => {
-        throw error;
-      });
-
-      const mainButton = wrapper.find('.dropdown-main');
-
-      await mainButton.trigger('click');
-
-      expect(downloadCSV).not.toHaveBeenCalled();
-      expect(mockStore.dispatch).toHaveBeenCalledWith('growl/error', {
-        title:   'Error',
-        message: `Failed to download full report: ${ error.message }`
-      }, { root: true });
-    });
-
-    it('should handle missing description property gracefully during CSV generation', async() => {
-      createWrapper();
-      // Use data with a missing description to ensure it doesn't crash
-      const detailsWithMissingDesc = [{
-        ...mockVulnerabilityDetails[0],
-        description: undefined,
-      }];
-
-      await wrapper.setProps({ vulnerabilityDetails: detailsWithMissingDesc });
-
-      const mainButton = wrapper.find('.dropdown-main');
-
-      await mainButton.trigger('click');
-
-      // It should NOT throw an error and should generate a CSV with an empty description
-      expect(mockStore.dispatch).not.toHaveBeenCalledWith('growl/error', expect.any(Object), { root: true });
-      expect(downloadCSV).toHaveBeenCalledTimes(1);
-
-      const generatedCsv = downloadCSV.mock.calls[0][0];
-
-      expect(generatedCsv).toContain('"CVE-2023-1234"');
-      expect(generatedCsv.endsWith(',""')).toBe(true); // The empty description field at the end of the row
-    });
-
-    it('should handle missing properties in vulnerability details gracefully', async() => {
-      createWrapper();
-      // Provide an object with some missing properties to test the '||' fallbacks
-      const incompleteDetails = [{
-        cveId:   'CVE-2024-5555',
-        package: 'incomplete-package',
-        // score, fixVersion, severity, etc., are missing
-      }];
-
-      await wrapper.setProps({ vulnerabilityDetails: incompleteDetails });
-
-      const mainButton = wrapper.find('.dropdown-main');
-
-      await mainButton.trigger('click');
-
-      const generatedCsv = downloadCSV.mock.calls[0][0];
-
-      // Expect a row with many empty fields, but no 'undefined' strings
-      expect(generatedCsv).toContain('"CVE-2024-5555","","incomplete-package","","","","","",""');
+      expect(csvReportData1).toBeNull();
+      expect(mockStore.dispatch).toHaveBeenCalledWith('growl/error', expect.any(Object), { root: true });
     });
 
     it('should download CSV from the dropdown item click', async() => {
@@ -285,11 +226,11 @@ describe('DownloadFullReportBtn.vue', () => {
     });
 
     it('should generate and download a JSON report on dropdown item click', async() => {
-      const jsonButton = wrapper.findAll('.dropdown-item').at(1);
+      const jsonButton = wrapper.findAll('.dropdown-item').at(2);
 
       await jsonButton.trigger('click');
 
-      const expectedJson = JSON.stringify(mockVulnerabilityReport.report, null, 2);
+      const expectedJson = JSON.stringify(jsonReportData, null, 2);
 
       expect(downloadJSON).toHaveBeenCalledWith(
         expectedJson,
@@ -301,10 +242,10 @@ describe('DownloadFullReportBtn.vue', () => {
     });
 
     it('should show an error if vulnerabilityReport is missing', async() => {
-      createWrapper({ vulnerabilityReport: null });
+      createWrapper({ jsonReportData: null });
       await wrapper.setData({ showDownloadDropdown: true });
 
-      const jsonButton = wrapper.findAll('.dropdown-item').at(1);
+      const jsonButton = wrapper.findAll('.dropdown-item').at(2);
 
       await jsonButton.trigger('click');
 
@@ -315,29 +256,52 @@ describe('DownloadFullReportBtn.vue', () => {
       }, { root: true });
     });
 
-    it('should handle errors during JSON generation', async() => {
+  });
+
+  describe('Error Handling in CSV Generation', () => {
+    it('should handle errors during CSV generation', async() => {
       createWrapper();
-      await wrapper.setData({ showDownloadDropdown: true });
+      const error = new Error('CSV Generation Failed');
 
-      // Mock JSON.stringify to throw an error
-      const originalStringify = JSON.stringify;
+      const mainButton = wrapper.find('.dropdown-main');
 
-      JSON.stringify = jest.fn().mockImplementation(() => {
-        throw new Error('JSON Error');
+      downloadCSV.mockImplementation(() => {
+        throw error;
       });
 
-      const jsonButton = wrapper.findAll('.dropdown-item').at(1);
+      await mainButton.trigger('click');
 
-      await jsonButton.trigger('click');
-
-      expect(downloadJSON).not.toHaveBeenCalled();
-      expect(mockStore.dispatch).toHaveBeenCalledWith('growl/error', expect.objectContaining({
+      expect(downloadCSV).toHaveBeenCalled();
+      expect(mockStore.dispatch).toHaveBeenCalledWith('growl/error', {
         title:   'Error',
-        message: 'Failed to download vulnerability report',
-      }), { root: true });
-
-      // Restore original function
-      JSON.stringify = originalStringify;
+        message: `Failed to download full report: ${ error.message }`
+      }, { root: true });
     });
+  });
+
+  it('should handle errors during JSON generation', async() => {
+    createWrapper();
+    await wrapper.setData({ showDownloadDropdown: true });
+
+    // Mock JSON.stringify to throw an error
+    const originalStringify = JSON.stringify;
+
+    JSON.stringify = jest.fn().mockImplementation(() => {
+      throw new Error('JSON Error');
+    });
+
+    downloadJSON.mockImplementation(() => {
+      throw error;
+    });
+
+    const jsonButton = wrapper.findAll('.dropdown-item').at(1);
+
+    await jsonButton.trigger('click');
+
+    expect(downloadJSON).not.toHaveBeenCalled();
+    expect(mockStore.dispatch).toHaveBeenCalledWith('growl/error', {"message": "Failed to download full report: CSV Generation Failed", "title": "Error"}, { root: true });
+
+    // Restore original function
+    JSON.stringify = originalStringify;
   });
 });

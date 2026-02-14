@@ -17,5 +17,8 @@
     "yarn-error.log": true,
     "pkg/**/.shell": true,
     "pkg/**/node_modules": true,
+  },
+  "files.watcherExclude": {
+    "**/target": true
   }
 }

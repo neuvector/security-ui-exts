@@ -5,9 +5,9 @@ import Tab from '@shell/components/Tabbed/Tab.vue';
 import Tabbed from '@shell/components/Tabbed/index.vue';
 import { Banner } from '@components/Banner';
 import ImageTableSet from './common/ImageTableSet.vue';
-import { images } from '@sbomscanner-ui-ext/tmp/images';
 import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
 import { getHighestScore, getSeverityNum, getScoreNum, getPackagePath } from '@sbomscanner-ui-ext/utils/report';
+import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -17,6 +17,7 @@ export default {
     Tab,
     Tabbed,
     Banner,
+    DownloadFullReportBtn,
   },
   data() {
     return {
@@ -115,18 +116,27 @@ export default {
 </script>
 
 <template>
-  <Banner color="info" class="mt-0">
-    <span>Data provided by</span>
-    <span class="text-underline">SBOMScanner</span>
-    <span>, Want to learn more about this extension? Read our</span>
-    <a
-      href="https://docs.rancher.com/security/sbom-scanner-extension"
-      class="text-underline"
-      target="_blank">
-      documentation
-      <i class="icon icon-external-link icon-underline"></i>
-    </a>
-  </Banner>
+  <div class="vul-header">
+    <Banner color="info" class="vul-banner">
+      <span>Data provided by</span>
+      <span class="text-underline">SBOMScanner</span>
+      <span>, Want to learn more about this extension? Read our</span>
+      <a
+        href="https://docs.rancher.com/security/sbom-scanner-extension"
+        class="text-underline"
+        target="_blank">
+        documentation
+        <i class="icon icon-external-link icon-underline"></i>
+      </a>
+    </Banner>
+    <!-- Download Full Report Dropdown -->
+    <DownloadFullReportBtn
+      class="vul-report-menu-btn"
+      :image-name="''"
+      :vulnerability-details="[]"
+      :vulnerability-report="[]"
+    />
+  </div>
   <div>
       <Tabbed
         :showExtensionTabs="false"
@@ -160,5 +170,23 @@ export default {
 }
 .icon-underline {
   font-size: 10px;
+}
+.vul-header {
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: -1px;
+  .vul-banner {
+    display: flex;
+    padding: 10px 16px;
+    align-items: center;
+    gap: 4px;
+    flex: 1 0 0;
+    padding-left: 0;
+  }
+}
+.workload-tabs {
+  margin-top: 24px;
 }
 </style>

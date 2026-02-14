@@ -31,6 +31,9 @@
             :image-name="imageName"
             :vulnerability-details="vulnerabilityDetails"
             :vulnerability-report="vulnerabilityReport"
+            :reportMeta="reportMeta"
+            :csv-report-data1="generateCSVFromVulnerabilityReport(vulnerabilityDetails)"
+            :json-report-data="vulnerabilityReport?.report"
           />
         </div>
       </div>
@@ -132,6 +135,12 @@ export default {
       PRODUCT_NAME,
       RESOURCE,
       PAGE,
+      reportMeta:                    {
+        csvReportBtnName1: this.t('imageScanner.images.downloadImageDetailReport'),
+        jsonReportBtnName: this.t('imageScanner.images.downloadVulnerabilityReport'),
+        resourceName1:     this.$route.params.id,
+        mainResourceIndex: 1,
+      }
     };
   },
 
@@ -436,6 +445,39 @@ export default {
           message: `Failed to load image data: ${ error.message }`
         }, { root: true });
       }
+    },
+    generateCSVFromVulnerabilityReport(vulnerabilityDetails) {
+      const headers = [
+        'CVE_ID',
+        'SCORE',
+        'PACKAGE',
+        'FIX AVAILABLE',
+        'SEVERITY',
+        'EXPLOITABILITY',
+        'PACKAGE VERSION',
+        'PACKAGE PATH',
+        'DESCRIPTION',
+      ];
+
+      const csvRows = [headers.join(',')];
+
+      vulnerabilityDetails.forEach((vuln) => {
+        const row = [
+          `"${ vuln.cveId || '' }"`,
+          `"${ vuln.score || '' }"`,
+          `"${ vuln.package || '' }"`,
+          `"${ vuln.fixVersion || '' }"`,
+          `"${ vuln.severity || '' }"`,
+          `"${ vuln.exploitability || '' }"`,
+          `"${ vuln.installedVersion || '' }"`,
+          `"${ vuln.packagePath || '' }"`,
+          `"${ (vuln.description || '').replace(/"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
+        ];
+
+        csvRows.push(row.join(','));
+      });
+
+      return csvRows.join('\n');
     },
   },
 };

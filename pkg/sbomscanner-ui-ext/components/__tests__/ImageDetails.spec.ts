@@ -349,4 +349,87 @@ describe('ImageDetails.vue', () => {
     expect(result.low).toBe(0);
     expect(result.unknown).toBe(0);
   });
+
+  it('should generate CSV with correct headers', () => {
+    const result = wrapper.vm.generateCSVFromVulnerabilityReport([]);
+
+    expect(result.startsWith(
+      'CVE_ID,SCORE,PACKAGE,FIX AVAILABLE,SEVERITY,EXPLOITABILITY,PACKAGE VERSION,PACKAGE PATH,DESCRIPTION'
+    )).toBe(true);
+  });
+
+  it('should generate correct CSV row', () => {
+    const data = [
+      {
+        cveId: 'CVE-2023-1234',
+        score: '9.8',
+        package: 'test-package',
+        fixVersion: '1.2.4',
+        severity: 'CRITICAL',
+        exploitability: 'High',
+        installedVersion: '1.2.3',
+        packagePath: '/usr/lib/test-package',
+        description: 'Test vulnerability'
+      }
+    ];
+
+    const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
+
+    expect(result).toContain('"CVE-2023-1234"');
+    expect(result).toContain('"9.8"');
+    expect(result).toContain('"test-package"');
+    expect(result).toContain('"1.2.4"');
+    expect(result).toContain('"CRITICAL"');
+    expect(result).toContain('"High"');
+    expect(result).toContain('"1.2.3"');
+    expect(result).toContain('"/usr/lib/test-package"');
+    expect(result).toContain('"Test vulnerability"');
+  });
+
+  it('should replace double quotes in description with single quotes', () => {
+    const data = [
+      {
+        description: 'A "critical" issue'
+      }
+    ];
+
+    const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
+
+    expect(result).toContain('"A \'critical\' issue"');
+  });
+
+  it('should replace newlines in description with spaces', () => {
+    const data = [
+      {
+        description: 'Line1\nLine2\r\nLine3'
+      }
+    ];
+
+    const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
+
+    expect(result).toContain('"Line1 Line2 Line3"');
+  });
+
+  it('should fallback to empty string for missing fields', () => {
+    const data = [{}];
+
+    const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
+
+    // All values should be empty quotes
+    expect(result).toContain('"","","","","","","","",""');
+  });
+
+  it('should generate multiple rows correctly', () => {
+    const data = [
+      { cveId: 'CVE-1' },
+      { cveId: 'CVE-2' }
+    ];
+
+    const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
+    const rows = result.split('\n');
+
+    expect(rows.length).toBe(3); // header + 2 rows
+    expect(rows[1]).toContain('"CVE-1"');
+    expect(rows[2]).toContain('"CVE-2"');
+  });
 });
