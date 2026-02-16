@@ -163,7 +163,6 @@ export default [
       "cypress/videos/**",
       "cypress/screenshots/**",
       "**/vendor/**",
-      "**/tmp/**"
     ],
   },
 ];

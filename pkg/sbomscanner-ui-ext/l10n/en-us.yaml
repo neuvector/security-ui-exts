@@ -194,10 +194,9 @@ imageScanner:
         identifiedCVEs: CVEs
         repository: Repository
         registry: Registry
-        imageId: Digest
+        imageId: Image ID
         platform: Platform
         vulnerabilities: Vulnerabilities
-        container: Container
       filters:
         placeholder:
           image: Search by name
@@ -207,7 +206,6 @@ imageScanner:
           repository: Repository
           registry: Registry
           platform: Platform
-          container: Container
   imageDetails:
     status: Status
     vulnerabilities: Vulnerabilities
@@ -337,10 +335,6 @@ imageScanner:
         tooltip: Controls whether this VEX entry is active in vulnerability assessments.
     detail:
       description: VEX management hub description, if any
-  workloads:
-    tabs:
-      images: Images
-      affectingCVEs: Affecting CVEs
   enum:
     cve:
       critical: Critical

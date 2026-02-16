@@ -169,81 +169,32 @@ export const IMAGE_LIST_TABLE = [
       'report.summary.unknown',
     ],
     width: 300,
-  },{
-    name:     'repository',
-    labelKey: 'imageScanner.images.listTable.headers.repository',
-    value:    'imageMetadata.repository',
-    sort:     'imageMetadata.repository',
-  },{
-    name:      'registry',
-    labelKey:  'imageScanner.images.listTable.headers.registry',
-    value:     'imageMetadata.registry',
-    formatter: 'RegistryCellLink',
-    sort:      ['metadata.namespace','imageMetadata.registry'],
-  },{
-    name:     'platform',
-    labelKey: 'imageScanner.images.listTable.headers.platform',
-    value:    'imageMetadata.platform',
-    sort:     'imageMetadata.platform',
-  },{
-    name:      'imageId',
-    labelKey:  'imageScanner.images.listTable.headers.imageId',
-    formatter: 'ImageIdCell',
-    value:     'imageMetadata.digest',
-    sort:      'imageMetadata.digest',
-  }
-];
-
-export const WORKLOAD_IMAGE_LIST_TABLE = [
-  {
-    name:      'name',
-    labelKey:  'imageScanner.images.listTable.headers.imageName',
-    value:     'imageReference',
-    formatter: 'ImageNameCell',
-    sort:      'imageReference',
-    width:     200,
   },
   {
-    name:      'cves',
-    labelKey:  'imageScanner.images.listTable.headers.identifiedCVEs',
-    value:     'report.summary',
-    formatter: 'IdentifiedCVEsCell',
-    sort:      [
-      'report.summary.critical',
-      'report.summary.high',
-      'report.summary.medium',
-      'report.summary.low',
-      'report.summary.unknown',
-    ],
-    width: 300,
-  },{
-    name:     'container',
-    labelKey: 'imageScanner.images.listTable.headers.container',
-    value:    'imageMetadata.container',
-    sort:     'imageMetadata.container',
-  },{
-    name:     'repository',
-    labelKey: 'imageScanner.images.listTable.headers.repository',
-    value:    'imageMetadata.repository',
-    sort:     'imageMetadata.repository',
-  },{
+    name:      'imageId',
+    labelKey:  'imageScanner.images.listTable.headers.imageId',
+    formatter: 'ImageIdCell',
+    value:     'imageMetadata.digest',
+    sort:      'imageMetadata.digest',
+  },
+  {
     name:      'registry',
     labelKey:  'imageScanner.images.listTable.headers.registry',
     value:     'imageMetadata.registry',
     formatter: 'RegistryCellLink',
     sort:      ['metadata.namespace','imageMetadata.registry'],
   },{
+    name:     'repository',
+    labelKey: 'imageScanner.images.listTable.headers.repository',
+    value:    'imageMetadata.repository',
+    sort:     'imageMetadata.repository',
+  },
+  {
     name:     'platform',
     labelKey: 'imageScanner.images.listTable.headers.platform',
     value:    'imageMetadata.platform',
     sort:     'imageMetadata.platform',
-  },{
-    name:      'imageId',
-    labelKey:  'imageScanner.images.listTable.headers.imageId',
-    formatter: 'ImageIdCell',
-    value:     'imageMetadata.digest',
-    sort:      'imageMetadata.digest',
-  }
+  },
 ];
 
 export const REPO_BASED_TABLE = [
