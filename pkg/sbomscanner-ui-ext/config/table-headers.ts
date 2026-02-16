@@ -274,7 +274,7 @@ export const REPO_BASED_TABLE = [
 export const REPO_BASED_IMAGE_LIST_TABLE = [
   {
     name:  '',
-    value: '""',
+    value: '',
     width: 55,
   },
   {
@@ -309,7 +309,7 @@ export const REPO_BASED_IMAGE_LIST_TABLE = [
   },
   {
     name:  '',
-    value: '""',
+    value: '',
   },
 ];
 

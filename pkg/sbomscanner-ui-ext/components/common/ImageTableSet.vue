@@ -85,8 +85,8 @@
       :sub-expandable="isGrouped"
       :sub-rows="isGrouped"
       :sub-expand-column="isGrouped"
-      :rows="isGrouped ? rowsByRepo : filteredRows.rows"
-      :loading="isLoading"
+      :rows="isGrouped ? filteredRows.rowsByRepo : filteredRows.rows"
+      :loading="$fetchState.pending"
       :key-field="'id'"
       @selection="onSelectionChange"
     >
@@ -127,7 +127,6 @@
               :search="false"
               :row-actions="true"
               :table-actions="false"
-              :key-field="'id'"
             >
               <template #row-actions="{ row: subRow }">
                 <ActionMenu
@@ -170,12 +169,12 @@ export default {
       required: false,
       default:  () => []
     },
-    isInWorkloadContext: {
-      type:     Boolean,
+    rowsByRepo: {
+      type:     Array,
       required: false,
-      default:  false
+      default:  () => []
     },
-    isLoading: {
+    isInWorkloadContext: {
       type:     Boolean,
       required: false,
       default:  false
@@ -246,7 +245,6 @@ export default {
       REPO_BASED_IMAGE_LIST_TABLE,
       isGrouped:           false,
       selectedRows:        [],
-      rowsByRepo:          [],
       filterCveOptions,
       filterImageOptions,
       severityOptions,
@@ -310,11 +308,11 @@ export default {
 
         return imageMatch && severityMatch && repositoryMatch && registryMatch && platformMatch && containerMatch;
       });
-
-      this.rowsByRepo = this.preprocessData(filteredRows);
+      const rowsByRepo = this.preprocessData(filteredRows);
 
       return {
         rows: filteredRows,
+        rowsByRepo,
       };
     },
     customActions() {
@@ -472,7 +470,7 @@ export default {
         }, { root: true });
       }
     },
-    async onSelectionChange(selected) {
+    onSelectionChange(selected) {
       this.selectedRows = selected || [];
     },
     preprocessData(vulReports) {

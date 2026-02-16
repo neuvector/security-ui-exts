@@ -21,7 +21,7 @@
     </div>
     <ImageTableSet
       :rows="rows"
-      :isLoading="$fetchState.pending"
+      :rowsByRepo="rowsByRepo"
     />
   </div>
 </template>
@@ -53,6 +53,7 @@ export default {
 
   async fetch() {
     this.rows = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.VULNERABILITY_REPORT });
+    this.rowsByRepo = this.preprocessData(this.rows);
   },
 
   methods: {
