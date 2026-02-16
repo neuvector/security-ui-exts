@@ -205,7 +205,7 @@ export const WORKLOAD_IMAGE_LIST_TABLE = [
   },
   {
     name:      'cves',
-    labelKey:  'imageScanner.images.listTable.headers.affectingCVEs',
+    labelKey:  'imageScanner.images.listTable.headers.identifiedCVEs',
     value:     'report.summary',
     formatter: 'IdentifiedCVEsCell',
     sort:      [
@@ -417,55 +417,6 @@ export const VULNERABILITY_DETAILS_TABLE = [
     labelKey: 'imageScanner.imageDetails.table.headers.packagePath',
     value:    'packagePath',
     sort:     'packagePath',
-  },
-];
-
-export const WORKLOAD_VULNERABILITY_DETAILS_TABLE = [
-  {
-    name:      'cveId',
-    labelKey:  'imageScanner.imageDetails.table.headers.cveId',
-    value:     'cveId',
-    formatter: 'CveNameLink',
-    sort:      'cveId',
-  },
-  {
-    name:      'score',
-    labelKey:  'imageScanner.imageDetails.table.headers.score',
-    value:     'score',
-    formatter: 'ScoreCell',
-    sort:      ['scoreNum', 'severityNum'],
-  },
-  {
-    name:     'package',
-    labelKey: 'imageScanner.imageDetails.table.headers.package',
-    value:    'package',
-    sort:     'package',
-  },
-  {
-    name:      'fixAvailable',
-    labelKey:  'imageScanner.imageDetails.table.headers.fixAvailable',
-    value:     'fixAvailable',
-    formatter: 'FixAvailableCell',
-    sort:      'fixAvailable',
-  },
-  {
-    name:      'severity',
-    labelKey:  'imageScanner.imageDetails.table.headers.severity',
-    value:     'severity',
-    formatter: 'SeverityBadgeCell',
-    sort:      'severity',
-  },
-  {
-    name:     'packageVersion',
-    labelKey: 'imageScanner.imageDetails.table.headers.packageVersion',
-    value:    'packageVersion',
-    sort:     'packageVersion',
-  },
-  {
-    name:     'images',
-    labelKey: 'imageScanner.imageDetails.table.headers.images',
-    value:    'images',
-    sort:     'images',
   },
 ];
 

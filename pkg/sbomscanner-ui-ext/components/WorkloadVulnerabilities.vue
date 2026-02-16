@@ -2,7 +2,7 @@
 import { workloadVulnerabilities } from '../tmp/workloadVulnerabilities';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 import Tab from '@shell/components/Tabbed/Tab.vue';
-import Tabbed from '@shell/components/Tabbed/index.vue';
+import ResourceTabs from '@shell/components/form/ResourceTabs';
 import { Banner } from '@components/Banner';
 import ImageTableSet from './common/ImageTableSet.vue';
 import { images } from '@sbomscanner-ui-ext/tmp/images';
@@ -14,7 +14,7 @@ export default {
     VulnerabilityTableSet,
     ImageTableSet,
     Tab,
-    Tabbed,
+    ResourceTabs,
     Banner,
   },
   data() {
@@ -50,26 +50,24 @@ export default {
     </a>
   </Banner>
   <div>
-      <Tabbed
-        :showExtensionTabs="false"
-        class="workload-tabs"
-
-      >
-        <Tab :weight="2" :label="t('imageScanner.workloads.tabs.images')" name="images">
-          <ImageTableSet
-            :rows="images"
-            :rowsByRepo="imagesByRepository"
-            :isInWorkloadContext="true"
-          />
-        </Tab>
-        <Tab :weight="1" :label="t('imageScanner.workloads.tabs.affectingCVEs')" name="affectingCVEs">
-          <VulnerabilityTableSet
-            :vulnerabilityDetails="mockdataVul"
-            :isInWorkloadContext="true"
-          />
-        </Tab>
-      </Tabbed>
+    <ResourceTabs :needEvents="false" :needRelated="false">
+      <Tab :weight="2" :label="t('imageScanner.workloads.tabs.images')" name="images">
+        <ImageTableSet
+          :rows="images"
+          :rowsByRepo="imagesByRepository"
+          :isInWorkloadContext="true"
+        />
+      </Tab>
+      <Tab :weight="1" :label="t('imageScanner.workloads.tabs.affectingCVEs')" name="affectingCVEs">
+        <VulnerabilityTableSet
+          :vulnerabilityDetails="mockdataVul"
+        />
+      </Tab>
+    </ResourceTabs>
   </div>
+     <!-- <VulnerabilityTableSet
+                :vulnerabilityDetails="mockdataVul"
+            /> -->
 </template>
 
 
