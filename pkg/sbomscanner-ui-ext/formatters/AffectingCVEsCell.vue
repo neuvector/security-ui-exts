@@ -1,10 +1,9 @@
 <template>
     <div class="workload-affecting-cves-cell">
-        <router-link :to="affectingCVEsLink">{{ affectingCVEs }}</router-link>
+        <router-link :to="row.workloadName">{{ affectingCVEs }}</router-link>
     </div>
 </template>
 <script>
-import { getWorkloadLink } from '@sbomscanner-ui-ext/utils/app';
 export default {
   name:  'AffectingCVEsCell',
   props: {
@@ -16,9 +15,6 @@ export default {
   computed: {
     affectingCVEs() {
       return this.row.affectingCVEs || 0;
-    },
-    affectingCVEsLink() {
-      return getWorkloadLink(this.row, this.$route.params.cluster, 'vulnerabilities');
     }
   }
 };

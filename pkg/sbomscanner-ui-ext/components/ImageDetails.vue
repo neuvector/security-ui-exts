@@ -78,7 +78,7 @@
         :label="t('imageScanner.imageDetails.tabs.workloads')"
       >
         <WorkloadTableSet
-          :workloads="workloads"
+          :workloads="loadedWorkloads"
           :is-in-image-context="true"
         />
       </Tab>
@@ -101,6 +101,7 @@ import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 import Tab from '@shell/components/Tabbed/Tab';
 import ResourceTabs from '@shell/components/form/ResourceTabs';
+import { workloads } from '@sbomscanner-ui-ext/tmp/workloads';
 import WorkloadTableSet from './common/WorkloadTableSet.vue';
 
 export default {
@@ -124,7 +125,7 @@ export default {
       severity:                      '',
       loadedVulnerabilityReport:     null,
       loadedSbom:                    null,
-      workloads:                     null,
+      loadedWorkloads:               null,
       // Cache filtered results to prevent selection issues
       cachedFilteredVulnerabilities: [],
       // Download dropdown state
@@ -132,6 +133,7 @@ export default {
       PRODUCT_NAME,
       RESOURCE,
       PAGE,
+      workloads,
     };
   },
 
@@ -145,6 +147,9 @@ export default {
 
     // Load the image resource and its associated data
     await this.loadImageData();
+
+    // Load the workloads resource
+    this.loadWorkloads();
   },
 
   computed: {
@@ -385,45 +390,8 @@ export default {
           const matchingSbom = sboms.find((sbom) => sbom.metadata?.name === this.imageName
           );
 
-          // Mock annotations for workloads data - start
-          matchingVulnReport.metadata.annotations = {
-            'sbomscanner.kubewarden.io/capi-controller-manager': JSON.stringify({
-              name: 'capi-controller-manager',
-              namespace: 'cattle-capi-system',
-              containers: 3,
-              type: 'Deployment',
-              imagesUsed: 5,
-              summary: {
-                critical: 2,
-                high: 5,
-                medium: 10,
-                low: 20,
-                suppress: 4,
-                unknown: 1
-              }
-            }),
-            'sbomscanner.kubewarden.io/cert-manager': JSON.stringify({
-              name: 'cert-manager',
-              namespace: 'cert-manager',
-              containers: 2,
-              type: 'Deployment',
-              imagesUsed: 14,
-              summary: {
-                critical: 1,
-                high: 3,
-                medium: 5,
-                low: 10,
-                suppress: 2,
-                unknown: 0
-              }
-            })
-          };
-
-          // Mock annotations for workloads data - end
-
           // Set the loaded resources directly
           this.loadedVulnerabilityReport = matchingVulnReport;
-          this.workloads = Object.values(matchingVulnReport.metadata.annotations || {}).map(annotation => JSON.parse(annotation));
           this.loadedSbom = matchingSbom;
 
           // Force component to re-render after data properties are set
@@ -436,6 +404,10 @@ export default {
           message: `Failed to load image data: ${ error.message }`
         }, { root: true });
       }
+    },
+
+    loadWorkloads() {
+      this.loadedWorkloads = this.workloads;
     },
 
     getPackagePath(purl) {

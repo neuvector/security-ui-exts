@@ -1,10 +1,9 @@
 <template>
   <div class="images-used-cell">
-    <router-link :to="imagesUsedLink">{{ imagesUsed }}</router-link>
+    <router-link :to="row.workloadName">{{ imagesUsed }}</router-link>
   </div>
 </template>
 <script>
-import { getWorkloadLink } from '@sbomscanner-ui-ext/utils/app';
 export default {
   name: 'ImagesUsedCell',
   props: {
@@ -16,9 +15,6 @@ export default {
   computed: {
     imagesUsed() {
       return this.row.imagesUsed || 0;
-    },
-    imagesUsedLink() {
-      return getWorkloadLink(this.row, this.$route.params.cluster, 'vulnerabilities');
     }
   }
 };
