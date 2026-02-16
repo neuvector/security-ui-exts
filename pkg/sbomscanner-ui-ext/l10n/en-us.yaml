@@ -315,8 +315,6 @@ imageScanner:
           packagePath: Package path
           repository: Repository
           registry: Registry
-    popup:
-      viewAll: View all
   vexManagement:
     title: VEX management
     description: Configure the security scanner to use up-to-date VEX reports. This will prioritize remediation efforts, focusing on vulnerabilities that are confirmed to be exploitable and reducing the noise coming from false positives.
