@@ -293,10 +293,10 @@ export default {
           const severityLevels = ['critical', 'high', 'medium', 'low', 'unknown'];
 
           for (const level of severityLevels) {
-            if (level === filters.severitySearch.toLowerCase() && row.report.summary[level] > 0) {
+            if (level === filters.severitySearch && row.report.summary[level] > 0) {
               result = true;
               break;
-            } else if (level !== filters.severitySearch.toLowerCase() && row.report.summary[level] > 0) {
+            } else if (level !== filters.severitySearch && row.report.summary[level] > 0) {
               break;
             }
           }
