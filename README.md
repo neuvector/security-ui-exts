@@ -16,7 +16,21 @@
 ##### Rancher manager
 - [Installing/Upgrading Rancher](https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade)
 
-##### SBOMScanner
+##### SBOMScanner UI Extension
+- In Tech preview phase, the UI extension is not registered into Rancher UI extension chart, thus the user needs to add the reposiory of SBOMScanner UI Extension manually.
+  1. Open Apps > Repositories page, click the `Create` button
+  ![](/pkg/sbomscanner-ui-ext/assets/img/doc/repositories.png)
+  2. In the create repository page, enter a unique name. In the `Target` section, select `Git repository containing Helm chart or cluster template definitions`, and fill `https://github.com/neuvector/security-ui-exts.git` into the `Git Repo URL` field, fill `gh-pages` into the `Git Branch` field. Then click `Create` button and wait until the state of the new repository changes into `Active`.
+  ![](/pkg/sbomscanner-ui-ext/assets/img/doc/create_reposiory.png)
+  ![](/pkg/sbomscanner-ui-ext/assets/img/doc/repository_added.png)
+  3. Open Extensions page, find SBOMScanner in `Available` tab, and install the latest version.
+  ![](/pkg/sbomscanner-ui-ext/assets/img/doc/extensions.png)
+  4. Open SBOMScanner page, install the backend service step by step. Until all the steps are completed, the Dashboard page is shown when opening SBOMScanner page.
+  ![](/pkg/sbomscanner-ui-ext/assets/img/doc/install_1.png)
+  ![](/pkg/sbomscanner-ui-ext/assets/img/doc/install_2.png)
+
+
+##### SBOMScanner (In case of installing the backend service only)
 - [Quickstart](docs/installation/quickstart.md)
 - [Uninstall](docs/installation/uninstall.md)
 
