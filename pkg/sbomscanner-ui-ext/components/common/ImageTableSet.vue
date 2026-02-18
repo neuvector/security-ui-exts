@@ -306,7 +306,7 @@ export default {
         const repositoryMatch = filters.repositorySearch === 'Any' || row.imageMetadata.repository === filters.repositorySearch;
         const registryMatch = filters.registrySearch === 'Any' || `${ row.metadata.namespace }/${ row.imageMetadata.registry }` === filters.registrySearch;
         const platformMatch = !filters.platformSearch || (row.imageMetadata.platform && row.imageMetadata.platform.toLowerCase().includes(filters.platformSearch.toLowerCase()));
-        const containerMatch = !filters.containerSearch || (row.imageMetadata.container && row.imageMetadata.container.toLowerCase().includes(filters.containerSearch.toLowerCase()));
+        const containerMatch = !filters.containerSearch || (row.metadata.container && row.metadata.container.toLowerCase().includes(filters.containerSearch.toLowerCase()));
 
         return imageMatch && severityMatch && repositoryMatch && registryMatch && platformMatch && containerMatch;
       });
@@ -365,10 +365,30 @@ export default {
         }
       });
 
+      this.rows.forEach((row) => {
+        if (row.imageMetadata && row.imageMetadata.repository) {
+          repoSet.add(row.imageMetadata.repository);
+        }
+      });
+
       return ['Any', ...repoSet];
     },
     registryOptions() {
-      return ['Any', ...(this.registryCrds || []).map((reg) => `${ reg.metadata.namespace }/${ reg.metadata.name }`)];
+      const registrySet = new Set();
+
+      (this.registryCrds || []).forEach((reg) => {
+        if (reg.metadata && reg.metadata.namespace && reg.metadata.name) {
+          registrySet.add(`${ reg.metadata.namespace }/${ reg.metadata.name }`);
+        }
+      });
+
+      this.rows.forEach((row) => {
+        if (row.imageMetadata && row.imageMetadata.registry && row.metadata && row.metadata.namespace) {
+          registrySet.add(`${ row.metadata.namespace }/${ row.imageMetadata.registry }`);
+        }
+      });
+
+      return ['Any', ...registrySet];
     }
   },
 

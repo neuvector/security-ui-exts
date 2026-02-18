@@ -28,8 +28,6 @@ export default function(plugin: IPlugin): void {
         WORKLOAD_TYPES.DEPLOYMENT,
         WORKLOAD_TYPES.JOB,
         WORKLOAD_TYPES.STATEFUL_SET,
-        INGRESS,
-        SERVICE
       ],
     },
     {
@@ -52,8 +50,6 @@ export default function(plugin: IPlugin): void {
         WORKLOAD_TYPES.DEPLOYMENT,
         WORKLOAD_TYPES.JOB,
         WORKLOAD_TYPES.STATEFUL_SET,
-        INGRESS,
-        SERVICE
       ],
     },
     {
