@@ -1,15 +1,15 @@
 <script>
-import { workloadVulnerabilities } from '../tmp/workloadVulnerabilities';
-import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
+import { Banner } from '@components/Banner';
+import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
+import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
+import { getHighestScore, getPackagePath, getScoreNum, getSeverityNum } from '@sbomscanner-ui-ext/utils/report';
 import Tab from '@shell/components/Tabbed/Tab.vue';
 import Tabbed from '@shell/components/Tabbed/index.vue';
-import { Banner } from '@components/Banner';
-import ImageTableSet from './common/ImageTableSet.vue';
-import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
-import { getHighestScore, getSeverityNum, getScoreNum, getPackagePath } from '@sbomscanner-ui-ext/utils/report';
-import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
-import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import day from 'dayjs';
+import { workloadVulnerabilities } from '../tmp/workloadVulnerabilities';
+import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
+import ImageTableSet from './common/ImageTableSet.vue';
+import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -298,6 +298,7 @@ export default {
   <div>
       <Tabbed
         :showExtensionTabs="false"
+        :use-hash="false"
         class="workload-tabs"
         @changed="({selectedName}) => {activeTab = selectedName;}"
       >
