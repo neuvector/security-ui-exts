@@ -215,7 +215,7 @@ export const workloadsVulnerabilityreports = {
   "apiVersion": "storage.sbomscanner.kubewarden.io/v1alpha1",
   "containers": [
     {
-      "name": "capi-controller-manager",
+      "name": "init",
       "vulnerabilityReports": [
         {
           "imageMetadata": {

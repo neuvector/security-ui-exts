@@ -8,6 +8,8 @@ import ImageTableSet from './common/ImageTableSet.vue';
 import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
 import { getHighestScore, getSeverityNum, getScoreNum, getPackagePath } from '@sbomscanner-ui-ext/utils/report';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
+import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
+import day from 'dayjs';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -24,36 +26,54 @@ export default {
       mockdataVul:                   workloadVulnerabilities,
       vulnerabilities:               [],
       images:                        [],
-      workloadsVulnerabilityreports: workloadsVulnerabilityreports
+      imagesReport:                  [],
+      workloadDetailReport:          [],
+      vulnerabilityJsonReport:       {},
+      workloadsVulnerabilityreports: workloadsVulnerabilityreports,
+      containerSpec:                 null,
+      activeTab:                     'images',
+      workloadType:                  '',
+      workloadName:                  '',
+      containerMap:                  new Map(),
     };
   },
   // Make up mock data for container name in imageMetadata
   fetch() {
-    const workloadName = this.$route.path.split('/').pop();
-    const matchedContainers = this.workloadsVulnerabilityreports.containers.filter((container) => container.name === workloadName);
+    const matchedContainers = this.workloadsVulnerabilityreports.containers;
 
+    this.workloadName = this.workloadsVulnerabilityreports.metadata.name;
+    this.containerSpec = this.workloadsVulnerabilityreports.spec.containers;
+    this.workloadType = this.workloadsVulnerabilityreports.metadata.ownerReferences[0]?.kind || '';
+    this.imagesReportFileName = `workload-images-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`;
+    this.affactingCvesReportFileName = `workload-affecting-cves-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`;
+    this.workloadVulnerabilityReportFileName = `${ this.workloadName }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`;
     this.parseImagesData(matchedContainers);
     this.parseVulnerabilitiesData(matchedContainers);
+    this.vulnerabilityJsonReport = this.getVulnerabilityJsonReport(matchedContainers);
+    this.imagesReport = this.getImagesReport(this.images, this.workloadType);
+    this.workloadDetailReport = this.getWorkloadDetailReport(matchedContainers);
   },
   methods: {
     parseImagesData(containers) {
+
+      this.containerSpec.forEach((container) => {
+        this.containerMap.set(container.name, container.imageRef);
+      });
 
       containers.forEach((container) => {
         container.vulnerabilityReports.forEach((report) => {
           this.images.push({
             metadata: {
-              container: container.name
+              container: container.name,
+              namespace: this.containerMap.get(container.name)?.namespace || this.t('imageScanner.general.unknown'),
             },
             ...report
           });
         });
       });
-      console.log('Parsed images data: ', this.images);
     },
     parseVulnerabilitiesData(containers) {
       this.vulnerabilityMap = new Map();
-      console.log('Parsing vulnerabilities data from containers: ', containers);
-
       containers.forEach((container) => {
 
         container.vulnerabilityReports.forEach((report) => {
@@ -75,7 +95,7 @@ export default {
                 this.vulnerabilityMap.set(vul.cve, {
                   ...vul,
                   occurrences: 1,
-                  images:   imageRefs
+                  images:      imageRefs
                 });
               }
             });
@@ -109,6 +129,138 @@ export default {
           images:           vuln.images || [],
         });
       });
+    },
+    getImagesReport(images, workloadType) {
+      const headers = [
+        'IMAGE REFERENCE',
+        'REGISTRY',
+        'REPOSITORY',
+        'PLATFORM',
+        'DIGEST',
+        'WORKLOAD NAME',
+        'TYPE',
+        'NAMESPACE',
+        'IMAGES USED',
+        'AFFECTING CVEs',
+        'CVEs(Critical)',
+        'CVEs(High)',
+        'CVEs(Medium)',
+        'CVEs(Low)',
+        'CVEs(None)'
+      ];
+
+      const csvRows = [headers.join(',')];
+
+      images.forEach((image) => {
+        const row = [
+          `"${ constructImageName(image.imageMetadata) || '' }"`,
+          `"${ image.imageMetadata?.registryURI || '' }"`,
+          `"${ image.imageMetadata?.repository || '' }"`,
+          `"${ image.imageMetadata?.platform || '' }"`,
+          `"${ image.imageMetadata?.digest || '' }"`,
+          `"${ image.metadata?.container || '' }"`,
+          `"${ workloadType }"`,
+          `"${ image.metadata?.namespace || '' }"`,
+          `"${ (image.metadata?.images || []).join(';') }"`,
+          `"${ (image.report?.summary?.critical + image.report?.summary?.high + image.report?.summary?.medium + image.report?.summary?.low + image.report?.summary?.unknown) || 0 }"`,
+          `"${ (image.report?.summary?.critical) || 0 }"`,
+          `"${ (image.report?.summary?.high) || 0 }"`,
+          `"${ (image.report?.summary?.medium) || 0 }"`,
+          `"${ (image.report?.summary?.low) || 0 }"`,
+          `"${ (image.report?.summary?.unknown) || 0 }"`,
+        ];
+
+        csvRows.push(row.join(','));
+      });
+
+      return csvRows.join('\n');
+    },
+    getWorkloadDetailReport(containers) {
+      const flattenWorkloadDetails = this.flattenWorkloadDetails(containers);
+      const headers = [
+        'WORKLOAD NAME',
+        'NAMESPACE',
+        'KIND',
+        'CONTAINER',
+        'IMAGE REFERENCE',
+        'PLATFORM',
+        'DIGEST',
+        'CVE_ID',
+        'SCORE',
+        'SEVERITY',
+        'PACKAGE',
+        'FIX AVAILABLE',
+        'FIXED VERSION',
+        'PACKAGE VERSION',
+        'PACKAGE PATH',
+        'DESCRIPTION'
+      ];
+      const csvRows = [headers.join(',')];
+
+      flattenWorkloadDetails.forEach((item) => {
+        const row = [
+          `"${ item.workloadName || '' }"`,
+          `"${ item.namespace || '' }"`,
+          `"${ item.kind || '' }"`,
+          `"${ item.container || '' }"`,
+          `"${ item.imageReference || '' }"`,
+          `"${ item.platform || '' }"`,
+          `"${ item.digest || '' }"`,
+          `"${ item.cveId || '' }"`,
+          `"${ item.score || '' }"`,
+          `"${ item.severity || '' }"`,
+          `"${ item.package || '' }"`,
+          `"${ item.fixAvailable || '' }"`,
+          `"${ item.fixedVersion || '' }"`,
+          `"${ item.packageVersion || '' }"`,
+          `"${ item.packagePath || '' }"`,
+          `"${ (item.description || '').replace(/"/g, '""') }"` // Escape double quotes in description
+        ];
+
+        csvRows.push(row.join(','));
+      });
+
+      return csvRows.join('\n');
+    },
+    flattenWorkloadDetails(containers) {
+      const rec = [];
+
+      containers.forEach((container) => {
+
+        container.vulnerabilityReports.forEach((report) => {
+          const imageRef = `${report.imageMetadata.registryURI}/${report.imageMetadata.repository}:${report.imageMetadata.tag}`;
+
+          report.report.results.forEach((result) => {
+            result.vulnerabilities.forEach((vul) => {
+              rec.push({
+                workloadName:   this.workloadName,
+                namespace:      this.containerMap.get(container.name)?.namespace || this.t('imageScanner.general.unknown'),
+                kind:           this.workloadType,
+                container:      container.name,
+                imageReference: imageRef,
+                platform:       report.imageMetadata.platform || '',
+                digest:         report.imageMetadata.digest || '',
+                cveId:          vul.cve,
+                score:          getHighestScore(vul.cvss),
+                severity:       vul.severity?.toLowerCase() || this.t('imageScanner.general.unknown'),
+                package:        vul.packageName,
+                fixAvailable:   vul.fixedVersions && vul.fixedVersions.length > 0 ? 'Yes' : 'No',
+                fixedVersion:   vul.fixedVersions ? vul.fixedVersions.join(', ') : '',
+                packageVersion: vul.installedVersion,
+                packagePath:    getPackagePath(vul.purl),
+                description:    vul.description,
+              });
+            });
+          });
+        });
+      });
+
+      return rec;
+    },
+    getVulnerabilityJsonReport(containers) {
+      return containers.map((container) => {
+        return container.vulnerabilityReports;
+      });
     }
   }
 };
@@ -132,16 +284,22 @@ export default {
     <!-- Download Full Report Dropdown -->
     <DownloadFullReportBtn
       class="vul-report-menu-btn"
-      :image-name="''"
-      :vulnerability-details="[]"
-      :vulnerability-report="[]"
+      :report-meta="{
+        mainResourceIndex: 1,
+        csvReportFileName1: activeTab === 'images' ? imagesReportFileName : affactingCvesReportFileName,
+        jsonReportFileName: workloadVulnerabilityReportFileName,
+        csvReportBtnName1: activeTab === 'images' ? t('imageScanner.workloads.buttons.downloadImagesCsv') : t('imageScanner.workloads.buttons.downloadWorkloadDetailCsv'),
+        jsonReportBtnName: t('imageScanner.workloads.buttons.downloadVulnerabilityJson'),
+      }"
+      :csv-report-data1="activeTab === 'images' ? imagesReport : workloadDetailReport"
+      :json-report-data="vulnerabilityJsonReport"
     />
   </div>
   <div>
       <Tabbed
         :showExtensionTabs="false"
         class="workload-tabs"
-
+        @changed="({selectedName}) => {activeTab = selectedName;}"
       >
         <Tab :weight="2" :label="t('imageScanner.workloads.tabs.images')" name="images">
           <ImageTableSet

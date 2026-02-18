@@ -54,8 +54,9 @@ describe('DownloadFullReportBtn.vue', () => {
           csvReportBtnName: 'image detail report',
           csvReportBtnName2: 'workload detail report',
           jsonReportBtnName: 'vulnerability report',
-          resourceName1: 'my-test-image',
-          resourceName2: 'my-test-workload',
+          csvReportFileName1: 'workload-images-report_MMDDYYYY_HHmmss.csv',
+          csvReportFileName2: 'workload-affecting-cves-report_MMDDYYYY_HHmmss.csv',
+          jsonReportFileName: 'workload-vulnerability-report_MMDDYYYY_HHmmss.json',
           mainResourceIndex: 1,
         },
         csvReportData1,
@@ -167,7 +168,7 @@ describe('DownloadFullReportBtn.vue', () => {
 
       expect(downloadCSV).toHaveBeenCalledWith(
         expectedCsv,
-        'my-test-image-image-detail-report_MMDDYYYY_HHmmss.csv'
+        'workload-images-report_MMDDYYYY_HHmmss.csv'
       );
 
       expect(mockStore.dispatch).toHaveBeenCalledWith('growl/success', expect.any(Object), { root: true });
@@ -234,7 +235,7 @@ describe('DownloadFullReportBtn.vue', () => {
 
       expect(downloadJSON).toHaveBeenCalledWith(
         expectedJson,
-        'my-test-image-vulnerability-report_MMDDYYYY_HHmmss.json'
+        'workload-vulnerability-report_MMDDYYYY_HHmmss.json'
       );
 
       expect(mockStore.dispatch).toHaveBeenCalledWith('growl/success', expect.any(Object), { root: true });

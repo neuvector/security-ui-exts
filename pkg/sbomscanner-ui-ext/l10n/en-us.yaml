@@ -367,6 +367,9 @@ imageScanner:
         imagesUsed: Images used
     buttons:
       downloadReport: Download report
+      downloadImagesCsv: Images report (CSV)
+      downloadWorkloadDetailCsv: Workload detail report (CSV)
+      downloadVulnerabilityJson: Vulnerability report (JSON)
   enum:
     cve:
       critical: Critical

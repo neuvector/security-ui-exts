@@ -5,7 +5,7 @@
       class="btn role-primary dropdown-main"
       aria-label="Download full report"
       type="button"
-      @click="downloadFullCsvReport(reportMeta?.mainResourceIndex === 1 ? csvReportData1 : csvReportData2, reportMeta?.mainResourceIndex === 1 ? reportMeta?.resourceName1 : reportMeta?.resourceName2)"
+      @click="downloadFullCsvReport(reportMeta?.mainResourceIndex === 1 ? csvReportData1 : csvReportData2, reportMeta?.mainResourceIndex === 1 ? reportMeta?.csvReportFileName1 : reportMeta?.csvReportFileName2)"
       @focusout="handleClickOutside"
     >
       <i class="icon icon-download me-3"></i>
@@ -27,7 +27,7 @@
     >
       <button
         class="dropdown-item"
-        @click="downloadFullCsvReport(csvReportData1, reportMeta?.resourceName1)"
+        @click="downloadFullCsvReport(csvReportData1, reportMeta?.csvReportFileName1)"
       >
         <i class="icon icon-download"></i>
         {{ reportMeta?.csvReportBtnName1 }}
@@ -35,14 +35,14 @@
       <button
         v-if="reportMeta?.csvReportBtnName2"
         class="dropdown-item"
-        @click="downloadFullCsvReport(csvReportData2, reportMeta?.resourceName2)"
+        @click="downloadFullCsvReport(csvReportData2, reportMeta?.csvReportFileName2)"
       >
         <i class="icon icon-download"></i>
         {{ reportMeta?.csvReportBtnName2 }}
       </button>
       <button
         class="dropdown-item"
-        @click="downloadVulnerabilityJsonReport(jsonReportData, reportMeta?.resourceName1)"
+        @click="downloadVulnerabilityJsonReport(jsonReportData, reportMeta?.jsonReportFileName)"
       >
         <i class="icon icon-download"></i>
         {{ reportMeta?.jsonReportBtnName }}
@@ -78,8 +78,9 @@ export default {
      * @property {string} csvReportBtnName1
      * @property {string?} csvReportBtnName2
      * @property {string} jsonReportBtnName
-     * @property {string} resourceName1
-     * @property {string?} resourceName2
+     * @property {string} csvReportFileName1
+     * @property {string?} csvReportFileName2
+     * @property {string} jsonReportFileName
      * @property {number} mainResourceIndex
      */
     reportMeta: {
@@ -97,9 +98,9 @@ export default {
     document.removeEventListener('mousedown', this.handleClickOutside);
   },
   methods: {
-    downloadFullCsvReport(csvRepostData, resourceName) {
+    downloadFullCsvReport(csvReportData, csvReportFileName) {
       try {
-        if (!csvRepostData || csvRepostData.length === 0) {
+        if (!csvReportData || csvReportData.length === 0) {
           this.$store.dispatch('growl/error', {
             title:   'Error',
             message: 'No vulnerability report available for download'
@@ -108,10 +109,7 @@ export default {
           return;
         }
 
-        // Generate CSV from vulnerability report data
-        // const csvData = this.generateCSVFromVulnerabilityReport(this.vulnerabilityDetails);
-
-        downloadCSV(csvRepostData, `${ resourceName }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`);
+        downloadCSV(csvReportData, csvReportFileName);
 
         this.$store.dispatch('growl/success', {
           title:   'Success',
@@ -125,7 +123,7 @@ export default {
         }, { root: true });
       }
     },
-    downloadVulnerabilityJsonReport(jsonReportData, resourceName) {
+    downloadVulnerabilityJsonReport(jsonReportData, jsonReportFileName) {
       try {
         if (!jsonReportData || (Array.isArray(jsonReportData) && jsonReportData.length === 0)) {
           this.$store.dispatch('growl/error', {
@@ -139,7 +137,7 @@ export default {
         // Generate JSON vulnerability report
         const reportData = JSON.stringify(jsonReportData, null, 2);
 
-        downloadJSON(reportData, `${ resourceName }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`);
+        downloadJSON(reportData, jsonReportFileName);
 
         this.$store.dispatch('growl/success', {
           title:   'Success',
