@@ -2,7 +2,7 @@ import { importTypes } from '@rancher/auto-import';
 import imageScanRoutes from '@sbomscanner-ui-ext/routes/sbomscanner-routes';
 import { INGRESS, POD, SERVICE, WORKLOAD_TYPES } from '@shell/config/types';
 import { IPlugin, TableColumnLocation, TabLocation } from '@shell/core/types';
-import { workloadScanReport } from './tmp/workloadScanReport';
+import { workloadsVulnerabilityreports } from './tmp/workloads';
 
 // Init the package
 export default function(plugin: IPlugin): void {
@@ -47,7 +47,7 @@ export default function(plugin: IPlugin): void {
           // const matchingReport = allReports.find((report: any) => {
           //   return report.metadata?.name.includes(targetId);
           // });
-          const matchingReport = workloadScanReport;
+          const matchingReport = workloadsVulnerabilityreports;
           const link = pod?.$rootState?.targetRoute.path + '#vulnerabilities';
 
           return {

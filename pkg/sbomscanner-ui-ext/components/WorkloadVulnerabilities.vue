@@ -6,7 +6,6 @@ import { getHighestScore, getPackagePath, getScoreNum, getSeverityNum } from '@s
 import Tab from '@shell/components/Tabbed/Tab.vue';
 import Tabbed from '@shell/components/Tabbed/index.vue';
 import day from 'dayjs';
-import { workloadVulnerabilities } from '../tmp/workloadVulnerabilities';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import ImageTableSet from './common/ImageTableSet.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
@@ -23,7 +22,6 @@ export default {
   },
   data() {
     return {
-      mockdataVul:                   workloadVulnerabilities,
       vulnerabilities:               [],
       images:                        [],
       imagesReport:                  [],
