@@ -3,16 +3,16 @@ import VulnerabilityHoverCell from '../AmountBarBySeverityPoppedDetail.vue';
 
 const AmountBarBySeverityStub = {
   template: '<div class="amount-bar-stub"></div>',
-  props: ['cveAmount', 'isCollapsed']
+  props:    ['cveAmount', 'isCollapsed']
 };
 
 describe('VulnerabilityHoverCell.vue', () => {
   const defaultCve = {
     critical: 10,
-    high: 20,
-    medium: 10,
-    low: 10,
-    unknown: 0
+    high:     20,
+    medium:   10,
+    low:      10,
+    unknown:  0
   };
 
   const createWrapper = (props = {}) => {
@@ -21,16 +21,13 @@ describe('VulnerabilityHoverCell.vue', () => {
         cveAmount: defaultCve,
         ...props
       },
-      global: {
-        stubs: {
-          AmountBarBySeverity: AmountBarBySeverityStub
-        }
-      }
+      global: { stubs: { AmountBarBySeverity: AmountBarBySeverityStub } }
     });
   };
 
   it('renders correctly', () => {
     const wrapper = createWrapper();
+
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.find('.trigger-bar').exists()).toBe(true);
   });
@@ -38,15 +35,21 @@ describe('VulnerabilityHoverCell.vue', () => {
   describe('Computed Properties', () => {
     it('calculates totalVulnerabilities correctly', () => {
       const wrapper = createWrapper({
-        cveAmount: { critical: 1, high: 2, medium: 3, low: 4, unknown: 0 } // Sum = 10
+        cveAmount: {
+          critical: 1, high: 2, medium: 3, low: 4, unknown: 0
+        } // Sum = 10
       });
+
       expect((wrapper.vm as any).totalVulnerabilities).toBe(10);
     });
 
     it('handles string inputs in cveAmount gracefully', () => {
       const wrapper = createWrapper({
-        cveAmount: { critical: "5", high: "5", medium: 0, low: 0, unknown: 0 } // Sum = 10
+        cveAmount: {
+          critical: '5', high: '5', medium: 0, low: 0, unknown: 0
+        } // Sum = 10
       });
+
       expect((wrapper.vm as any).totalVulnerabilities).toBe(10);
     });
 
@@ -61,8 +64,11 @@ describe('VulnerabilityHoverCell.vue', () => {
 
     it('getPercentage() returns 0 if total is 0 (avoids NaN)', () => {
       const wrapper = createWrapper({
-        cveAmount: { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 }
+        cveAmount: {
+          critical: 0, high: 0, medium: 0, low: 0, unknown: 0
+        }
       });
+
       expect((wrapper.vm as any).getPercentage('critical')).toBe(0);
     });
   });
@@ -71,11 +77,13 @@ describe('VulnerabilityHoverCell.vue', () => {
     it('displays default header title with count when no title prop provided', () => {
       const wrapper = createWrapper();
       const title = wrapper.find('.title');
+
       expect(title.text()).toContain('50 %imageScanner.images.listTable.headers.vulnerabilities%');
     });
 
     it('displays custom headerTitle when provided', () => {
       const wrapper = createWrapper({ headerTitle: 'Custom Report' });
+
       expect(wrapper.find('.title').text()).toBe('Custom Report');
     });
 
@@ -89,11 +97,13 @@ describe('VulnerabilityHoverCell.vue', () => {
 
     it('does NOT render "View all" link if prop is missing', () => {
       const wrapper = createWrapper({ viewAllLink: '' });
+
       expect(wrapper.find('.view-all').exists()).toBe(false);
     });
 
     it('renders the footer provider name', () => {
       const wrapper = createWrapper({ footerProvider: 'My Scanner' });
+
       expect(wrapper.find('.provider-name').text()).toBe('My Scanner');
     });
 
@@ -109,30 +119,33 @@ describe('VulnerabilityHoverCell.vue', () => {
     it('applies correct width style to progress bars', () => {
       const wrapper = createWrapper();
       const criticalBar = wrapper.find('.progress-bar.critical');
+
       expect(criticalBar.attributes('style')).toContain('width: 20%;');
     });
   });
 
   describe('Interactions & Logic', () => {
-    it('emits "view-all" event when View All link is clicked', async () => {
+    it('emits "view-all" event when View All link is clicked', async() => {
       const wrapper = createWrapper({ viewAllLink: '#' });
+
       await wrapper.find('.view-all').trigger('click');
 
       expect(wrapper.emitted('view-all')).toBeTruthy();
       expect(wrapper.emitted('view-all')).toHaveLength(1);
     });
 
-    it('toggles "showOnTop" (CSS class) based on viewport calculation', async () => {
+    it('toggles "showOnTop" (CSS class) based on viewport calculation', async() => {
       const wrapper = createWrapper();
       const vm = wrapper.vm as any;
+
       Object.defineProperty(window, 'innerHeight', {
-        writable: true,
+        writable:     true,
         configurable: true,
-        value: 1000
+        value:        1000
       });
       Element.prototype.getBoundingClientRect = jest.fn(() => ({
         bottom: 100, // 900px remaining space ( > 300 threshold)
-        top: 0, left: 0, right: 0, width: 0, height: 0
+        top:    0, left:   0, right:  0, width:  0, height: 0
       } as DOMRect));
 
       await wrapper.find('.vulnerability-hover-cell').trigger('mouseenter');
@@ -140,7 +153,7 @@ describe('VulnerabilityHoverCell.vue', () => {
       expect(wrapper.find('.hover-overlay').classes()).not.toContain('show-top');
       Element.prototype.getBoundingClientRect = jest.fn(() => ({
         bottom: 900, // 100px remaining space ( < 300 threshold)
-        top: 0, left: 0, right: 0, width: 0, height: 0
+        top:    0, left:   0, right:  0, width:  0, height: 0
       } as DOMRect));
 
       await wrapper.find('.vulnerability-hover-cell').trigger('mouseenter');
@@ -148,6 +161,63 @@ describe('VulnerabilityHoverCell.vue', () => {
 
       await wrapper.vm.$nextTick();
       expect(wrapper.find('.hover-overlay').classes()).toContain('show-top');
+    });
+  });
+
+  describe('getSeverityLink() method', () => {
+    it('returns empty string when viewAllLink is not provided', () => {
+      const wrapper = createWrapper({ viewAllLink: '' });
+      const result = (wrapper.vm as any).getSeverityLink('Critical');
+
+      expect(result).toBe('');
+    });
+
+    it('returns route object with path, hash, and query for link with hash', () => {
+      const wrapper = createWrapper({ viewAllLink: '/path/to/page#vulnerabilities' });
+      const result = (wrapper.vm as any).getSeverityLink('Critical');
+
+      expect(result).toEqual({
+        path:  '/path/to/page',
+        hash:  '#vulnerabilities',
+        query: { severity: 'Critical' }
+      });
+    });
+
+    it('returns route object with path and query but no hash for link without hash', () => {
+      const wrapper = createWrapper({ viewAllLink: '/path/to/page' });
+      const result = (wrapper.vm as any).getSeverityLink('High');
+
+      expect(result).toEqual({
+        path:  '/path/to/page',
+        hash:  undefined,
+        query: { severity: 'High' }
+      });
+    });
+
+    it('preserves the hash fragment correctly', () => {
+      const wrapper = createWrapper({ viewAllLink: '/workload/deployment#vulnerabilities' });
+      const result = (wrapper.vm as any).getSeverityLink('Medium');
+
+      expect(result.hash).toBe('#vulnerabilities');
+    });
+
+    it('creates correct query param for each severity level', () => {
+      const wrapper = createWrapper({ viewAllLink: '/test#tab' });
+
+      expect((wrapper.vm as any).getSeverityLink('Critical').query.severity).toBe('Critical');
+      expect((wrapper.vm as any).getSeverityLink('High').query.severity).toBe('High');
+      expect((wrapper.vm as any).getSeverityLink('Medium').query.severity).toBe('Medium');
+      expect((wrapper.vm as any).getSeverityLink('Low').query.severity).toBe('Low');
+      expect((wrapper.vm as any).getSeverityLink('None').query.severity).toBe('None');
+    });
+
+    it('handles complex paths with multiple segments', () => {
+      const wrapper = createWrapper({ viewAllLink: '/c/local/explorer/apps.deployment/cert-manager/cert-manager#vulnerabilities' });
+      const result = (wrapper.vm as any).getSeverityLink('Critical');
+
+      expect(result.path).toBe('/c/local/explorer/apps.deployment/cert-manager/cert-manager');
+      expect(result.hash).toBe('#vulnerabilities');
+      expect(result.query).toEqual({ severity: 'Critical' });
     });
   });
 });

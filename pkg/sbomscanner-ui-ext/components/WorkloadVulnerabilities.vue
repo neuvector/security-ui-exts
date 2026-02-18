@@ -35,6 +35,9 @@ export default {
       workloadType:                  '',
       workloadName:                  '',
       containerMap:                  new Map(),
+      filters:                       {
+        severity: null, // Consume this filter in the table components to filter based on severity
+      },
     };
   },
   // Make up mock data for container name in imageMetadata
@@ -261,6 +264,24 @@ export default {
       return containers.map((container) => {
         return container.vulnerabilityReports;
       });
+    }
+  },
+  watch: {
+    '$route.query.severity': {
+      immediate: true,
+      handler(severity) {
+        if (severity) {
+          // Apply the filter
+          this.filters.severity = severity;
+          
+          // Clear the query param
+          this.$router.replace({
+            path: this.$route.path,
+            hash: this.$route.hash,
+            query: {}
+          });
+        }
+      }
     }
   }
 };

@@ -31,7 +31,12 @@
 
       <div class="severity-list">
         <div v-for="severity in severities" :key="severity.key" class="severity-row">
-          <span class="label">{{ severity.label }}</span>
+          <RouterLink
+              :to="getSeverityLink(severity.label)"
+              class="label"
+          >
+            {{ severity.label }}
+          </RouterLink>
 
           <div class="bar-container">
             <div
@@ -53,6 +58,7 @@
 </template>
 
 <script>
+import { RouterLink } from 'vue-router';
 import AmountBarBySeverity from './AmountBarBySeverity.vue';
 
 export default {
@@ -105,6 +111,18 @@ export default {
       const count = this.cveAmount[key] || 0;
       if (this.totalVulnerabilities === 0) return 0;
       return (count / this.totalVulnerabilities) * 100;
+    },
+    getSeverityLink(severityLabel) {
+      if (!this.viewAllLink) return '';
+      
+      // Split path and hash from viewAllLink
+      const [path, hash] = this.viewAllLink.split('#');
+      
+      return {
+        path,
+        hash: hash ? `#${hash}` : undefined,
+        query: { severity: severityLabel }
+      };
     }
   }
 };

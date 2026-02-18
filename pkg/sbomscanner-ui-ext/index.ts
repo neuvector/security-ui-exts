@@ -40,6 +40,13 @@ export default function(plugin: IPlugin): void {
       formatter: 'IdentifiedCVEsPercentagePopupCell',
       getValue:  (pod: any) => {
         if (pod?.type === 'pod') {
+          // TODO: Replace workloadScanReport mockdata with API data
+          // const owner = pod.metadata?.ownerReferences?.[0];
+          // const targetId = owner ? owner.name : pod.metadata?.name;
+          // const allReports = store.getters['cluster/all']('storage.sbomscanner.kubewarden.io.v1alpha1.workloadscanreport');
+          // const matchingReport = allReports.find((report: any) => {
+          //   return report.metadata?.name.includes(targetId);
+          // });
           const matchingReport = workloadScanReport;
           const link = pod?.$rootState?.targetRoute.path + '#vulnerabilities';
 
@@ -50,13 +57,6 @@ export default function(plugin: IPlugin): void {
         }
 
         return undefined;
-        // TODO: Replace mockdata with API data
-        // const owner = pod.metadata?.ownerReferences?.[0];
-        // const targetId = owner ? owner.name : pod.metadata?.name;
-        // const allReports = store.getters['cluster/all']('storage.sbomscanner.kubewarden.io.v1alpha1.workloadscanreport');
-        // const matchingReport = allReports.find((report: any) => {
-        //   return report.metadata?.name.includes(targetId);
-        // });
       }
     }
   );
