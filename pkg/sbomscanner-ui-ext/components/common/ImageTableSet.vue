@@ -25,6 +25,15 @@
             :multiple="false"
           />
         </div>
+        <div class="filter-item">
+          <label>{{ t('imageScanner.images.listTable.filters.label.inUse') }}</label>
+          <LabeledSelect
+              v-model:value="filters.inUseSearch"
+              :options="inUseOptions"
+              :close-on-select="true"
+              :multiple="false"
+          />
+        </div>
         <div class="filter-item" v-if="isInWorkloadContext">
           <label>{{ t('imageScanner.images.listTable.filters.label.container') }}</label>
           <div class="filter-input-wrapper">
@@ -161,6 +170,48 @@ import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import Papa from 'papaparse';
 import _ from 'lodash';
 import day from 'dayjs';
+import ImageInUsePopupCell from '@sbomscanner-ui-ext/formatters/ImageInUsePopupCell.vue';
+
+const mockImageCR = {
+  id: "sbomscanner/48cc88546d00",
+  type: "storage.sbomscanner.kubewarden.io.image",
+  metadata: {
+    name: "48cc88546d00002bb677bd0c4667e7fa0d2ba56c0bfbf940e7bdbcfdc600fcd0",
+    namespace: "sbomscanner",
+    creationTimestamp: "2026-02-09T08:28:14Z",
+    labels: {
+      "app.kubernetes.io/managed-by": "sbomscanner",
+      "app.kubernetes.io/part-of": "sbomscanner"
+    },
+    annotations: {
+      // --- These SHOULD NOT be counted ---
+      "kubectl.kubernetes.io/last-applied-configuration": "...",
+      "cattle.io/timestamp": "2026-02-19T09:00:00Z",
+
+      // --- These SHOULD be counted ---
+      "sbomscanner.kubewarden.io/workloadscan-deeb5395-43da": '{"name":"deployment-nginx","namespace":"production","containers":2}',
+      "sbomscanner.kubewarden.io/workloadscan-a1b2c3d4-56ef": '{"name":"cert-manager","namespace":"cert-manager","containers":1}',
+      "sbomscanner.kubewarden.io/workloadscan-9876xyz-1234": '{"name":"coredns","namespace":"kube-system","containers":1}'
+    }
+  },
+  imageMetadata: {
+    digest: "sha256:c47d5a85f11aec0e4a91e0257e12a778a909e0c1a89b3da6a8c3c369ccba327b",
+    platform: "linux/amd64",
+    registry: "workloadscan-ghcr-io",
+    registryURI: "ghcr.io",
+    repository: "nginxinc/nginx-unprivileged",
+    tag: "1.24"
+  },
+  report: {
+    summary: {
+      critical: 2,
+      high: 5,
+      medium: 10,
+      low: 20,
+      unknown: 1
+    }
+  }
+};
 
 export default {
   name:  'ImageOverview',
@@ -185,7 +236,8 @@ export default {
     LabeledSelect,
     SortableTable,
     Checkbox,
-    ActionMenu
+    ActionMenu,
+    ImageInUsePopupCell
   },
   data() {
     const filterCveOptions = [
@@ -238,6 +290,11 @@ export default {
         label: this.t('imageScanner.enum.cve.unknown')
       },
     ];
+    const inUseOptions = [
+      { value: 'Any', label: this.t('imageScanner.general.any') },
+      { value: 'true', label: this.t('imageScanner.general.yes') },
+      { value: 'false', label: this.t('imageScanner.general.no') }
+    ];
 
     return {
       REPO_BASED_TABLE,
@@ -250,6 +307,7 @@ export default {
       filterCveOptions,
       filterImageOptions,
       severityOptions,
+      inUseOptions,
       selectedCveFilter:   filterCveOptions[0],
       selectedImageFilter: filterImageOptions[0],
       filters:             {
@@ -259,6 +317,7 @@ export default {
         repositorySearch: 'Any',
         registrySearch:   'Any',
         platformSearch:   '',
+        inUseSearch:      'Any',
       },
       debouncedFilters: {
         imageSearch:      '',
@@ -267,6 +326,7 @@ export default {
         repositorySearch: 'Any',
         registrySearch:   'Any',
         platformSearch:   '',
+        inUseSearch:      'Any',
       },
       registryCrds: [],
     };
@@ -282,7 +342,27 @@ export default {
   computed: {
     filteredRows() {
       const filters = this.debouncedFilters;
-      const filteredRows = this.rows.filter((row) => {
+      const rowsWithMockedAnnotations = this.rows.map((row, index) => {
+        const mockAnnotations = {
+          "cattle.io/timestamp": "2026-02-19T09:00:00Z",
+          "sbomscanner.kubewarden.io/workloadscan-a1b2c3d4-56ef": '{"name":"cert-manager","namespace":"cert-manager","containers":1}',
+          "sbomscanner.kubewarden.io/workloadscan-9876xyz-1234": '{"name":"coredns","namespace":"kube-system","containers":1}'
+        };
+        const annotationsToUse = index % 8 !== 1 ? mockAnnotations : {};
+        const count = Object.keys(annotationsToUse).filter(key =>
+            key.startsWith('sbomscanner.kubewarden.io/workloadscan')
+        ).length;
+
+        return {
+          ...row,
+          metadata: {
+            ...row.metadata,
+            annotations: annotationsToUse
+          },
+          workloadCount: count
+        };
+      })
+      const filteredRows = rowsWithMockedAnnotations.filter((row) => {
         const imageName = constructImageName(row.imageMetadata);
         const imageMatch = !filters.imageSearch || imageName.toLowerCase().includes(filters.imageSearch.toLowerCase());
         const severityMatch = (() => {
@@ -303,12 +383,18 @@ export default {
 
           return result;
         })();
+        const inUseMatch = (()=>{
+          if (filters.inUseSearch === 'Any') return true;
+          if (filters.inUseSearch === 'true') return row.workloadCount > 0;
+          if (filters.inUseSearch === 'false') return row.workloadCount === 0;
+          return true;
+        })();
         const repositoryMatch = filters.repositorySearch === 'Any' || row.imageMetadata.repository === filters.repositorySearch;
         const registryMatch = filters.registrySearch === 'Any' || `${ row.metadata.namespace }/${ row.imageMetadata.registry }` === filters.registrySearch;
         const platformMatch = !filters.platformSearch || (row.imageMetadata.platform && row.imageMetadata.platform.toLowerCase().includes(filters.platformSearch.toLowerCase()));
         const containerMatch = !filters.containerSearch || (row.metadata.container && row.metadata.container.toLowerCase().includes(filters.containerSearch.toLowerCase()));
 
-        return imageMatch && severityMatch && repositoryMatch && registryMatch && platformMatch && containerMatch;
+        return imageMatch && severityMatch && inUseMatch && repositoryMatch && registryMatch && platformMatch && containerMatch;
       });
 
       this.rowsByRepo = this.preprocessData(filteredRows);

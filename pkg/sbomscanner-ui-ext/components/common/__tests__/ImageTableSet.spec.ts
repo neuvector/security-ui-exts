@@ -18,6 +18,7 @@ jest.mock('@sbomscanner-ui-ext/config/table-headers', () => ({
   IMAGE_LIST_TABLE:            [{ name: 'img' }],
   REPO_BASED_TABLE:            [{ name: 'repo' }],
   REPO_BASED_IMAGE_LIST_TABLE: [{ name: 'sub' }],
+  WORKLOAD_IMAGE_LIST_TABLE:   [{ name: 'workload' }]
 }));
 
 const SortableTableStub = {
@@ -27,9 +28,9 @@ const SortableTableStub = {
       <slot name="header-left" />
       <slot name="header-right" />
       <slot
-        name="sub-row"
-        :row="rows?.[0]"
-        :fullColspan="3"
+          name="sub-row"
+          :row="rows?.[0]"
+          :fullColspan="3"
       />
       <slot name="row-actions" :row="rows?.[0]" />
     </table>
@@ -39,7 +40,7 @@ const SortableTableStub = {
 const CheckboxStub = {
   props:    ['value'],
   emits:    ['update:value'],
-  template: `<input type="checkbox" @change="$emtest('update:value', !value)" />`,
+  template: `<input type="checkbox" @change="$emit('update:value', !value)" />`,
 };
 
 const LabeledSelectStub = {
@@ -61,7 +62,7 @@ const factory = (props = {}, storeOverrides = {}) => {
       mocks: {
         $store:      { dispatch },
         $fetchState: { pending: false },
-        t:           (k) => k,
+        t:           (k: string) => k,
       },
       stubs: {
         SortableTable: SortableTableStub,
@@ -73,7 +74,7 @@ const factory = (props = {}, storeOverrides = {}) => {
   });
 };
 
-describe('ImageOverview.vue', () => {
+describe('ImageTableSet.vue', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
@@ -81,7 +82,6 @@ describe('ImageOverview.vue', () => {
 
   test('disables download button when no selection', () => {
     const wrapper = factory();
-
     expect(wrapper.find('button').attributes('disabled')).toBeDefined();
   });
 
@@ -132,7 +132,6 @@ describe('ImageOverview.vue', () => {
     expect(wrapper.vm.debouncedFilters.imageSearch).toBe('nginx');
   });
 
-
   test('filters rows by all filter fields', async() => {
     const rows = [{
       id:            '1',
@@ -141,7 +140,7 @@ describe('ImageOverview.vue', () => {
         repository: 'repo' ,
         platform:   'linux',
       },
-      metadata: { namespace: 'ns' },
+      metadata: { namespace: 'ns', container: 'cont' },
       report:   {
         summary: {
           critical: 1, high: 0, medium: 0, low: 0, unknown: 0
@@ -157,47 +156,73 @@ describe('ImageOverview.vue', () => {
       repositorySearch: 'repo',
       registrySearch:   'ns/reg',
       platformSearch:   'linux',
+      containerSearch:  'cont',
+      inUseSearch:      'Any'
     };
 
     expect(wrapper.vm.filteredRows.rows.length).toBe(1);
   });
 
-  test('filters rows by all filter fields - other', async() => {
-    const rows = [{
-      id:            '1',
-      imageMetadata: {
-        registry:   'reg',
-        repository: 'repo' ,
-        platform:   'linux',
+  test('filters rows by inUseSearch - "true" only shows images with workload annotations', async() => {
+    // Generate 3 rows, only one (index 0) will get the mocked annotations based on the component's logic (index % 8 !== 1)
+    const rows = [
+      {
+        id: '1', // Will get annotations -> count 2 -> inUse: true
+        imageMetadata: { registry: 'reg', repository: 'repo1', platform: 'linux' },
+        metadata: { namespace: 'ns' },
+        report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
       },
-      metadata: { namespace: 'ns' },
-      report:   {
-        summary: {
-          critical: 0, high: 0, medium: 1, low: 1, unknown: 0
-        }
-      },
-    }];
+      {
+        id: '2', // Index 1: Will NOT get annotations -> count 0 -> inUse: false
+        imageMetadata: { registry: 'reg', repository: 'repo2', platform: 'linux' },
+        metadata: { namespace: 'ns' },
+        report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
+      }
+    ];
 
     const wrapper = factory({ rows });
 
-    wrapper.vm.debouncedFilters = {
-      imageSearch:      'repo',
-      severitySearch:   'medium',
-      repositorySearch: 'repo',
-      registrySearch:   'ns/reg',
-      platformSearch:   'linux',
-    };
+    // Set filter to "true" (Yes)
+    wrapper.vm.debouncedFilters.inUseSearch = 'true';
 
+    // Only row 1 should remain
     expect(wrapper.vm.filteredRows.rows.length).toBe(1);
+    expect(wrapper.vm.filteredRows.rows[0].id).toBe('1');
+    expect(wrapper.vm.filteredRows.rows[0].workloadCount).toBe(2);
+  });
+
+  test('filters rows by inUseSearch - "false" only shows images without workload annotations', async() => {
+    const rows = [
+      {
+        id: '1', // Index 0: gets annotations
+        imageMetadata: { registry: 'reg', repository: 'repo1', platform: 'linux' },
+        metadata: { namespace: 'ns' },
+        report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
+      },
+      {
+        id: '2', // Index 1: gets empty annotations
+        imageMetadata: { registry: 'reg', repository: 'repo2', platform: 'linux' },
+        metadata: { namespace: 'ns' },
+        report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
+      }
+    ];
+
+    const wrapper = factory({ rows });
+
+    // Set filter to "false" (No)
+    wrapper.vm.debouncedFilters.inUseSearch = 'false';
+
+    // Only row 2 should remain
+    expect(wrapper.vm.filteredRows.rows.length).toBe(1);
+    expect(wrapper.vm.filteredRows.rows[0].id).toBe('2');
+    expect(wrapper.vm.filteredRows.rows[0].workloadCount).toBe(0);
   });
 
   test('custom actions invoke correct methods', () => {
     const wrapper = factory();
-
     const actions = wrapper.vm.customActions;
 
     actions[0].invoke(null, [{}]);
-
     expect(wrapper.vm.downloadSbom).toBeDefined();
   });
 
@@ -258,9 +283,7 @@ describe('ImageOverview.vue', () => {
         imageMetadata: { repository: 'repo' , registry: 'reg' },
         metadata:      { namespace: 'ns', name: 'img1' },
         report:        {
-          summary: {
-            critical: 1, high: 0, medium: 0, low: 0, unknown: 0
-          }
+          summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 }
         },
       },
       {
@@ -268,9 +291,7 @@ describe('ImageOverview.vue', () => {
         imageMetadata: { repository: 'repo' , registry: 'reg' },
         metadata:      { namespace: 'ns', name: 'img2' },
         report:        {
-          summary: {
-            critical: 2, high: 0, medium: 0, low: 0, unknown: 0
-          }
+          summary: { critical: 2, high: 0, medium: 0, low: 0, unknown: 0 }
         },
       },
     ]);
@@ -278,7 +299,6 @@ describe('ImageOverview.vue', () => {
     expect(result[0].cveCntByRepo.critical).toBe(3);
     expect(result[0].images.length).toBe(2);
   });
-
 
   test('repositoryOptions returns "Any" when registryCrds is empty', () => {
     const wrapper = factory();
@@ -296,7 +316,6 @@ describe('ImageOverview.vue', () => {
     ];
 
     const expected = ['Any', 'repo1', 'repo2', 'repo3'];
-
     expect(wrapper.vm.repositoryOptions.sort()).toEqual(expected.sort());
   });
 
@@ -345,7 +364,6 @@ describe('ImageOverview.vue', () => {
 
     (wrapper.vm as any).$store.dispatch = jest.fn().mockImplementation((action) => {
       if (action === 'cluster/find') return Promise.resolve(sbom);
-
       return Promise.resolve();
     });
 
@@ -353,15 +371,10 @@ describe('ImageOverview.vue', () => {
 
     await (wrapper.vm as any).downloadSbom(rows);
 
-    // saveAs should be called
     expect(require('file-saver').saveAs).toHaveBeenCalled();
-    // growl/success is called
     expect((wrapper.vm as any).$store.dispatch).toHaveBeenCalledWith(
       'growl/success',
-      expect.objectContaining({
-        title:   'Success',
-        message: 'SBOM downloaded successfully',
-      }),
+      expect.objectContaining({ title: 'Success', message: 'SBOM downloaded successfully' }),
       { root: true }
     );
   });
@@ -371,7 +384,6 @@ describe('ImageOverview.vue', () => {
 
     (wrapper.vm as any).$store.dispatch = jest.fn().mockImplementation((action) => {
       if (action === 'cluster/find') throw new Error('boom');
-
       return Promise.resolve();
     });
 
@@ -381,40 +393,28 @@ describe('ImageOverview.vue', () => {
 
     expect((wrapper.vm as any).$store.dispatch).toHaveBeenCalledWith(
       'growl/error',
-      expect.objectContaining({
-        title:   'Error',
-        message: 'Failed to download SBOM',
-      }),
+      expect.objectContaining({ title: 'Error', message: 'Failed to download SBOM' }),
       { root: true }
     );
   });
 
   test('successfully dispatches growl/success after downloadJson', async() => {
     const wrapper = factory();
-
     const vulReport = { report: { results: [{ vulnerabilities: [] }] } };
 
-    // Mock $store.dispatch to return a valid vulnerability report
     (wrapper.vm as any).$store.dispatch = jest.fn().mockImplementation((action) => {
       if (action === 'cluster/find') return Promise.resolve(vulReport);
-
       return Promise.resolve();
     });
 
     const rows = [{ id: 'v1' }];
 
-    // Call the method
     await (wrapper.vm as any).downloadJson(rows);
 
-    // saveAs should be called
     expect(require('file-saver').saveAs).toHaveBeenCalled();
-    // growl/success should be called
     expect((wrapper.vm as any).$store.dispatch).toHaveBeenCalledWith(
       'growl/success',
-      expect.objectContaining({
-        title:   'Success',
-        message: 'Vulnerability report downloaded successfully',
-      }),
+      expect.objectContaining({ title: 'Success', message: 'Vulnerability report downloaded successfully' }),
       { root: true }
     );
   });
@@ -424,7 +424,6 @@ describe('ImageOverview.vue', () => {
 
     (wrapper.vm as any).$store.dispatch = jest.fn().mockImplementation((action) => {
       if (action === 'cluster/find') throw new Error('boom');
-
       return Promise.resolve();
     });
 
@@ -434,51 +433,37 @@ describe('ImageOverview.vue', () => {
 
     expect((wrapper.vm as any).$store.dispatch).toHaveBeenCalledWith(
       'growl/error',
-      expect.objectContaining({
-        title:   'Error',
-        message: 'Failed to download vulnerability report',
-      }),
+      expect.objectContaining({ title: 'Error', message: 'Failed to download vulnerability report' }),
       { root: true }
     );
   });
 
   test('successfully dispatches growl/success after downloadCsv', async() => {
     const wrapper = factory();
-
     const vulReport = { report: { results: [{ vulnerabilities: [{ id: 'v1' }] }] } };
 
-    // Mock $store.dispatch to return a valid vulnerability report
     (wrapper.vm as any).$store.dispatch = jest.fn().mockImplementation((action) => {
       if (action === 'cluster/find') return Promise.resolve(vulReport);
-
       return Promise.resolve();
     });
 
     const rows = [{ id: 'v1' }];
 
-    // Call the method
     await (wrapper.vm as any).downloadCsv(rows);
 
-    // saveAs should be called
     expect(require('file-saver').saveAs).toHaveBeenCalled();
-
-    // growl/success should be called
     expect((wrapper.vm as any).$store.dispatch).toHaveBeenCalledWith(
       'growl/success',
-      expect.objectContaining({
-        title:   'Success',
-        message: 'Image detail report downloaded successfully',
-      }),
+      expect.objectContaining({ title: 'Success', message: 'Image detail report downloaded successfully' }),
       { root: true }
     );
   });
 
-  test('dispatches growl/error if cluster/find throws', async() => {
+  test('dispatches growl/error if cluster/find throws on downloadCsv', async() => {
     const wrapper = factory();
 
     (wrapper.vm as any).$store.dispatch = jest.fn().mockImplementation((action) => {
       if (action === 'cluster/find') throw new Error('boom');
-
       return Promise.resolve();
     });
 
@@ -488,19 +473,17 @@ describe('ImageOverview.vue', () => {
 
     expect((wrapper.vm as any).$store.dispatch).toHaveBeenCalledWith(
       'growl/error',
-      expect.objectContaining({
-        title:   'Error',
-        message: 'Failed to download image detail report',
-      }),
+      expect.objectContaining({ title: 'Error', message: 'Failed to download image detail report' }),
       { root: true }
     );
   });
 });
 
-describe('ImageOverview.vue - fetch', () => {
+describe('ImageTableSet.vue - fetch', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   test('fetch populates registryCRDs', async() => {
     const registryCrds = [ { metadata: { namespace: 'ns', name: 'reg' }, spec: { repositories: ['repo'] } } ];
 
@@ -509,29 +492,22 @@ describe('ImageOverview.vue - fetch', () => {
         if (action === 'cluster/findAll') {
           return Promise.resolve(registryCrds);
         }
-
         return Promise.resolve();
       }),
       getters: {},
     };
 
-    const t = (k: string) => k;
-
     const wrapper = factory({
       global: {
         mocks: {
-          $store: store, $t: t, t, $fetchState: { pending: false }
+          $store: store,
+          t: (k: string) => k,
+          $fetchState: { pending: false }
         }
       }
     });
 
-    // `fetch` is a component hook and not exposed directly on `vm` in the test harness.
-    // Call it via the component options with the vm as context.
-    await (wrapper.vm as any).$options.fetch.call(wrapper.vm); // <-- manually trigger
-    await nextTick(); // flush any reactive updates
-
-    // expect((wrapper.vm as any).registryCrds).toStrictEqual(registryCrds);
+    await (wrapper.vm as any).$options.fetch.call(wrapper.vm);
+    await nextTick();
   });
 });
-
-

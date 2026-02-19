@@ -169,7 +169,16 @@ export const IMAGE_LIST_TABLE = [
       'report.summary.unknown',
     ],
     width: 300,
-  },{
+  },
+  {
+    name:      'inUse',
+    labelKey:  'imageScanner.images.listTable.headers.inUse',
+    value:     'workloadCount',
+    sort:      'workloadCount',
+    formatter: 'ImageInUsePopupCell',
+    width:     120
+  },
+  {
     name:     'repository',
     labelKey: 'imageScanner.images.listTable.headers.repository',
     value:    'imageMetadata.repository',

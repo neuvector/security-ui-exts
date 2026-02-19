@@ -192,6 +192,7 @@ imageScanner:
       headers:
         imageName: Image Reference
         identifiedCVEs: CVEs
+        inUse: In use
         repository: Repository
         registry: Registry
         imageId: Digest
@@ -206,10 +207,14 @@ imageScanner:
         label:
           image: Image
           severity: Severity
+          inUse: In use
           repository: Repository
           registry: Registry
           platform: Platform
           container: Container
+      popup:
+        inUseTooltipSingle: "Image used by {count} workload."
+        inUseTooltipPlural: "Image used by {count} workloads."
   imageDetails:
     status: Status
     vulnerabilities: Vulnerabilities
@@ -408,6 +413,9 @@ imageScanner:
     every: Every
     unknown: Unknown
     noActions: No actions
+    learnMore: Learn more
+    yes: Yes
+    no: No
 
 typeLabel:
   sbomscanner.kubewarden.io.registry: Registries configuration
