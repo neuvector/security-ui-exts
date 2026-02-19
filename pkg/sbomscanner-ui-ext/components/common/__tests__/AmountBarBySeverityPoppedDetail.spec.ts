@@ -3,21 +3,21 @@ import VulnerabilityHoverCell from '../AmountBarBySeverityPoppedDetail.vue';
 
 const AmountBarBySeverityStub = {
   template: '<div class="amount-bar-stub"></div>',
-  props: ['cveAmount', 'isCollapsed']
+  props:    ['cveAmount', 'isCollapsed']
 };
 
 const RouterLinkStub = {
   template: '<a class="router-link-stub"><slot /></a>',
-  props: ['to']
+  props:    ['to']
 };
 
 describe('VulnerabilityHoverCell.vue', () => {
   const defaultCve = {
     critical: 10,
-    high: 20,
-    medium: 10,
-    low: 10,
-    unknown: 0
+    high:     20,
+    medium:   10,
+    low:      10,
+    unknown:  0
   };
 
   const createWrapper = (props = {}) => {
@@ -29,11 +29,9 @@ describe('VulnerabilityHoverCell.vue', () => {
       global: {
         stubs: {
           AmountBarBySeverity: AmountBarBySeverityStub,
-          RouterLink: RouterLinkStub
+          RouterLink:          RouterLinkStub
         },
-        mocks: {
-          t: (key: string) => key // simple i18n mock
-        }
+        mocks: { t: (key: string) => key } // simple i18n mock
       }
     });
   };
@@ -48,7 +46,9 @@ describe('VulnerabilityHoverCell.vue', () => {
   describe('Computed Properties', () => {
     it('calculates totalVulnerabilities correctly', () => {
       const wrapper = createWrapper({
-        cveAmount: { critical: 1, high: 2, medium: 3, low: 4, unknown: 0 }
+        cveAmount: {
+          critical: 1, high: 2, medium: 3, low: 4, unknown: 0
+        }
       });
 
       expect((wrapper.vm as any).totalVulnerabilities).toBe(10);
@@ -56,7 +56,9 @@ describe('VulnerabilityHoverCell.vue', () => {
 
     it('handles string inputs in cveAmount gracefully', () => {
       const wrapper = createWrapper({
-        cveAmount: { critical: '5', high: '5', medium: 0, low: 0, unknown: 0 }
+        cveAmount: {
+          critical: '5', high: '5', medium: 0, low: 0, unknown: 0
+        }
       });
 
       expect((wrapper.vm as any).totalVulnerabilities).toBe(10);
@@ -73,7 +75,9 @@ describe('VulnerabilityHoverCell.vue', () => {
 
     it('getPercentage() returns 0 if total is 0', () => {
       const wrapper = createWrapper({
-        cveAmount: { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 }
+        cveAmount: {
+          critical: 0, high: 0, medium: 0, low: 0, unknown: 0
+        }
       });
 
       expect((wrapper.vm as any).getPercentage('critical')).toBe(0);
@@ -100,11 +104,12 @@ describe('VulnerabilityHoverCell.vue', () => {
       const wrapper = createWrapper({ viewAllLink: '/details#vulnerabilitites' });
 
       const link = wrapper.findComponent(RouterLinkStub);
+
       expect(link.exists()).toBe(true);
 
       expect(link.props('to')).toEqual({
-        path: '/details',
-        hash: '#vulnerabilitites',
+        path:  '/details',
+        hash:  '#vulnerabilitites',
         query: { defaultTab: 'affectingCVEs' }
       });
     });
@@ -130,6 +135,33 @@ describe('VulnerabilityHoverCell.vue', () => {
       expect(rows[4].find('.label').text()).toBe('None');
     });
 
+    it('applies disabled-link class when severity count is 0', () => {
+      const wrapper = createWrapper();
+      const rows = wrapper.findAll('.severity-row');
+
+      expect(rows[4].find('.label').classes()).toContain('disabled-link');
+      expect(rows[0].find('.label').classes()).not.toContain('disabled-link');
+    });
+
+    it('applies disabled-link class to all severities when all values are 0', () => {
+      const wrapper = createWrapper({
+        cveAmount: {
+          critical: 0,
+          high:     0,
+          medium:   0,
+          low:      0,
+          unknown:  0
+        }
+      });
+
+      const labels = wrapper.findAll('.severity-row .label');
+
+      expect(labels).toHaveLength(5);
+      labels.forEach((label) => {
+        expect(label.classes()).toContain('disabled-link');
+      });
+    });
+
     it('applies correct width style to progress bars', () => {
       const wrapper = createWrapper();
       const criticalBar = wrapper.find('.progress-bar.critical');
@@ -139,7 +171,7 @@ describe('VulnerabilityHoverCell.vue', () => {
   });
 
   describe('Interactions & Logic', () => {
-    it('emits "view-all" event when View All link is clicked', async () => {
+    it('emits "view-all" event when View All link is clicked', async() => {
       const wrapper = createWrapper({ viewAllLink: '#' });
 
       await wrapper.find('.view-all').trigger('click');
@@ -148,22 +180,22 @@ describe('VulnerabilityHoverCell.vue', () => {
       expect(wrapper.emitted('view-all')).toHaveLength(1);
     });
 
-    it('toggles "showOnTop" based on viewport calculation', async () => {
+    it('toggles "showOnTop" based on viewport calculation', async() => {
       const wrapper = createWrapper();
       const vm = wrapper.vm as any;
 
       Object.defineProperty(window, 'innerHeight', {
-        writable: true,
+        writable:     true,
         configurable: true,
-        value: 1000
+        value:        1000
       });
 
       Element.prototype.getBoundingClientRect = jest.fn(() => ({
         bottom: 100,
-        top: 0,
-        left: 0,
-        right: 0,
-        width: 0,
+        top:    0,
+        left:   0,
+        right:  0,
+        width:  0,
         height: 0
       } as DOMRect));
 
@@ -174,10 +206,10 @@ describe('VulnerabilityHoverCell.vue', () => {
 
       Element.prototype.getBoundingClientRect = jest.fn(() => ({
         bottom: 900,
-        top: 0,
-        left: 0,
-        right: 0,
-        width: 0,
+        top:    0,
+        left:   0,
+        right:  0,
+        width:  0,
         height: 0
       } as DOMRect));
 
@@ -202,11 +234,11 @@ describe('VulnerabilityHoverCell.vue', () => {
       const result = (wrapper.vm as any).getSeverityLink('Critical');
 
       expect(result).toEqual({
-        path: '/path/to/page',
-        hash: '#vulnerabilities',
+        path:  '/path/to/page',
+        hash:  '#vulnerabilities',
         query: {
           defaultTab: 'affectingCVEs',
-          severity: 'Critical'
+          severity:   'Critical'
         }
       });
     });
@@ -216,11 +248,11 @@ describe('VulnerabilityHoverCell.vue', () => {
       const result = (wrapper.vm as any).getSeverityLink('High');
 
       expect(result).toEqual({
-        path: '/path/to/page',
-        hash: undefined,
+        path:  '/path/to/page',
+        hash:  undefined,
         query: {
           defaultTab: 'affectingCVEs',
-          severity: 'High'
+          severity:   'High'
         }
       });
     });
@@ -243,9 +275,7 @@ describe('VulnerabilityHoverCell.vue', () => {
     });
 
     it('handles complex paths with multiple segments', () => {
-      const wrapper = createWrapper({
-        viewAllLink: '/c/local/explorer/apps.deployment/cert-manager/cert-manager#vulnerabilities'
-      });
+      const wrapper = createWrapper({ viewAllLink: '/c/local/explorer/apps.deployment/cert-manager/cert-manager#vulnerabilities' });
 
       const result = (wrapper.vm as any).getSeverityLink('Critical');
 
@@ -253,7 +283,7 @@ describe('VulnerabilityHoverCell.vue', () => {
       expect(result.hash).toBe('#vulnerabilities');
       expect(result.query).toEqual({
         defaultTab: 'affectingCVEs',
-        severity: 'Critical'
+        severity:   'Critical'
       });
     });
   });

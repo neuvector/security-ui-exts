@@ -56,7 +56,10 @@
         </div>
 
         <div class="footer">
-          Provided by <span class="provider-name">{{ footerProvider }}</span>
+          Provided by 
+          <a href="/" target="_blank" rel="noopener noreferrer" class="provider-name">
+            {{ footerProvider }}
+          </a>
         </div>
       </div>
     </div>
@@ -264,6 +267,12 @@ $gap-size: 10px;
     line-height: 21px;
     text-decoration: underline;
     color: var(--default-text);
+
+    &.disabled-link {
+      pointer-events: none;
+      text-decoration: none;
+      color: var(--label-secondary);
+    }
   }
 
   .bar-container {
@@ -296,6 +305,7 @@ $gap-size: 10px;
   color: var(--label-secondary);
 
   .provider-name {
+    color: var(--label-secondary);
     text-decoration: underline;
   }
 }
