@@ -78,7 +78,7 @@ describe('VulnerabilityHoverCell.vue', () => {
       const wrapper = createWrapper();
       const title = wrapper.find('.title');
 
-      expect(title.text()).toContain('50 %imageScanner.images.listTable.headers.vulnerabilities%');
+      expect(title.text()).toContain('50 %imageScanner.images.listTable.filters.placeholder.affectedCVEs%');
     });
 
     it('displays custom headerTitle when provided', () => {

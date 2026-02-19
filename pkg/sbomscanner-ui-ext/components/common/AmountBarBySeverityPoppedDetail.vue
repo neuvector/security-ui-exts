@@ -17,7 +17,7 @@
     >
       <div class="header">
         <div class="title">
-          {{ headerTitle || `${totalVulnerabilities} ${t('imageScanner.images.listTable.headers.vulnerabilities')}` }}
+          {{ headerTitle || `${totalVulnerabilities} ${t('imageScanner.images.listTable.filters.placeholder.affectedCVEs')}` }}
         </div>
         <a
             v-if="viewAllLink"
@@ -173,13 +173,12 @@ $gap-size: 10px;
   right: 10px;
   width: 320px;
   background: var(--popover-bg);
-  border: var(--popover-border);
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  border: 1px solid var(--popover-border);
+  box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.04);
   padding: 16px;
   z-index: 100;
   font-family: Lato, sans-serif;
-  color: var(--text-primary);
 
   &::before {
     content: '';
@@ -206,12 +205,12 @@ $gap-size: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 
   .title {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 16px;
-    color: var(--text-primary);
+    line-height: 24px;
   }
 
   .view-all {
@@ -222,17 +221,25 @@ $gap-size: 10px;
   }
 }
 
+.severity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .severity-row {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
   font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
 
   .label {
-    width: 60px;
+    width: 80px;
+    font-size: 14px;
+    line-height: 21px;
     text-decoration: underline;
-    text-decoration-color: var(--border);
-    text-underline-offset: 3px;
+    color: var(--default-text);
   }
 
   .bar-container {
@@ -251,22 +258,21 @@ $gap-size: 10px;
   }
 
   .count {
-    width: 30px;
+    width: 35px;
     text-align: right;
-    font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--label-secondary);
   }
 }
 
 .footer {
   margin-top: 12px;
   text-align: right;
-  font-size: 12px;
-  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 140%;
+  color: var(--label-secondary);
 
   .provider-name {
     text-decoration: underline;
-    color: var(--text-secondary);
   }
 }
 
