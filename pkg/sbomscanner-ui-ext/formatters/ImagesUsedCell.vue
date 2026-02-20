@@ -18,7 +18,7 @@ export default {
       return this.row.imagesUsed || 0;
     },
     imagesUsedLink() {
-      return getWorkloadLink(this.row, this.$route.params.cluster, 'vulnerabilities');
+      return getWorkloadLink(this.row, this.$route.params.cluster, 'vulnerabilities', 'defaultTab=imagesUsed');
     }
   }
 };

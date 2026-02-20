@@ -19,14 +19,14 @@
         <div class="title">
           {{ headerTitle || `${totalVulnerabilities} ${t('imageScanner.images.listTable.filters.placeholder.affectedCVEs')}` }}
         </div>
-        <a
+        <RouterLink
             v-if="viewAllLink"
-            :href="viewAllLink"
+            :to="getViewAllLink()"
             class="view-all"
             @click.stop="$emit('view-all')"
         >
           {{ t('imageScanner.vulnerabilities.popup.viewAll') }}
-        </a>
+        </RouterLink>
       </div>
 
       <div class="severity-list">
@@ -112,6 +112,15 @@ export default {
       if (this.totalVulnerabilities === 0) return 0;
       return (count / this.totalVulnerabilities) * 100;
     },
+    getViewAllLink() {
+      if (!this.viewAllLink) return '';
+      const [path, hash] = this.viewAllLink.split('#');
+      return {
+        path,
+        hash: hash ? `#${hash}` : undefined,
+        query: { defaultTab: 'affectingCVEs' }
+      };
+    },
     getSeverityLink(severityLabel) {
       if (!this.viewAllLink) return '';
       
@@ -121,7 +130,7 @@ export default {
       return {
         path,
         hash: hash ? `#${hash}` : undefined,
-        query: { severity: severityLabel }
+        query: { defaultTab: 'affectingCVEs', severity: severityLabel }
       };
     }
   }

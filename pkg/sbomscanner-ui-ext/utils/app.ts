@@ -34,7 +34,7 @@ export function trimIntervalSuffix(interval: string): string {
   return result || interval;
 }
 
-export function getWorkloadLink(row: any, cluster: string, hash?: string): string {
+export function getWorkloadLink(row: any, cluster: string, hash?: string, query?: string): string {
   const namespace = row.namespace || 'default';
   const baseUrl = `/c/${cluster}/explorer`;
 
@@ -49,5 +49,7 @@ export function getWorkloadLink(row: any, cluster: string, hash?: string): strin
     Service:                                                      SERVICE
   };
 
-  return `${baseUrl}/${routeMap[row.type] || ''}/${namespace}/${row.name}${hash ? `#${hash}` : ''}`;
+  const queryString = query ? `?${query}` : '';
+
+  return `${baseUrl}/${routeMap[row.type] || ''}/${namespace}/${row.name}${queryString}${hash ? `#${hash}` : ''}`;
 }

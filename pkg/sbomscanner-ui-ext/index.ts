@@ -1,6 +1,6 @@
 import { importTypes } from '@rancher/auto-import';
 import imageScanRoutes from '@sbomscanner-ui-ext/routes/sbomscanner-routes';
-import { INGRESS, POD, SERVICE, WORKLOAD_TYPES } from '@shell/config/types';
+import { POD, WORKLOAD_TYPES } from '@shell/config/types';
 import { IPlugin, TableColumnLocation, TabLocation } from '@shell/core/types';
 import { workloadsVulnerabilityreports } from './tmp/workloads';
 

@@ -9,6 +9,7 @@ import day from 'dayjs';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import ImageTableSet from './common/ImageTableSet.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
+import { ref } from 'vue';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -22,17 +23,22 @@ export default {
   },
   data() {
     return {
-      vulnerabilities:               [],
-      images:                        [],
-      imagesReport:                  [],
-      workloadDetailReport:          [],
-      vulnerabilityJsonReport:       {},
-      workloadsVulnerabilityreports: workloadsVulnerabilityreports,
-      containerSpec:                 null,
-      activeTab:                     'images',
-      workloadType:                  '',
-      workloadName:                  '',
-      containerMap:                  new Map(),
+      vulnerabilities:                     [],
+      images:                              [],
+      imagesReport:                        [],
+      workloadDetailReport:                [],
+      vulnerabilityJsonReport:             {},
+      workloadsVulnerabilityreports:       workloadsVulnerabilityreports,
+      containerSpec:                       null,
+      activeTab:                           'images',
+      defaultTab:                          this.$route.query?.defaultTab || 'images',
+      workloadType:                        '',
+      workloadName:                        '',
+      containerMap:                        new Map(),
+      workloadVulnerabilityReportFileName: '',
+      imagesReportFileName:                '',
+      affactingCvesReportFileName:         '',
+      showSubTabs:                         ref(false),
       filters:                       {
         severity: null, // Consume this filter in the table components to filter based on severity
       },
@@ -105,7 +111,7 @@ export default {
       });
       this.vulnerabilities = Array.from(this.vulnerabilityMap.values());
 
-      this.vulnerabilities =  this.vulnerabilities.map((vuln, index) => {
+      this.vulnerabilities =  this.vulnerabilities.filter((vuln) => !vuln.suppressed).map((vuln, index) => {
         const score = getHighestScore(vuln.cvss);
 
         return ({
@@ -271,13 +277,26 @@ export default {
         if (severity) {
           // Apply the filter
           this.filters.severity = severity;
-          
+
           // Clear the query param
           this.$router.replace({
             path: this.$route.path,
             hash: this.$route.hash,
-            query: {}
+            query: {
+              ...this.$route.query,
+            }
           });
+        }
+      }
+    },
+    '$route.hash': {
+      immediate: true,
+      handler(hash) {
+        if (hash === '#vulnerabilities') {
+          this.defaultTab = this.$route.query?.defaultTab || 'images';
+          setTimeout(() => {
+            this.showSubTabs = ref(true);
+          }, 0);
         }
       }
     }
@@ -314,9 +333,10 @@ export default {
       :json-report-data="vulnerabilityJsonReport"
     />
   </div>
-  <div>
+  <div v-if="showSubTabs">
       <Tabbed
         :showExtensionTabs="false"
+        :default-tab="defaultTab"
         :use-hash="false"
         class="workload-tabs"
         @changed="({selectedName}) => {activeTab = selectedName;}"
@@ -331,6 +351,7 @@ export default {
           <VulnerabilityTableSet
             :vulnerabilityDetails="vulnerabilities"
             :isInWorkloadContext="true"
+            :severity="this.$route.query.severity?.toLowerCase() || 'any'"
           />
         </Tab>
       </Tabbed>

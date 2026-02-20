@@ -15,10 +15,10 @@ export default {
   },
   computed: {
     affectingCVEs() {
-      return this.row.affectingCVEs || 0;
+      return this.row.summary.critical + this.row.summary.high + this.row.summary.medium + this.row.summary.low + this.row.summary.unknown || 0;
     },
     affectingCVEsLink() {
-      return getWorkloadLink(this.row, this.$route.params.cluster, 'vulnerabilities');
+      return getWorkloadLink(this.row, this.$route.params.cluster, 'vulnerabilities', 'defaultTab=affectingCVEs');
     }
   }
 };
