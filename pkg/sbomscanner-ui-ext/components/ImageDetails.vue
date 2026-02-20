@@ -33,6 +33,7 @@
             :vulnerability-report="vulnerabilityReport"
             :reportMeta="reportMeta"
             :csv-report-data1="generateCSVFromVulnerabilityReport(vulnerabilityDetails)"
+            :csv-report-data2="generateCSVFromWorkloadsReport(workloads)"
             :json-report-data="vulnerabilityReport?.report"
           />
         </div>
@@ -44,6 +45,7 @@
     <ResourceTabs
       :needRelated="false"
       :needEvents="false"
+      @changed="onReportTabChanged"
     >
       <Tab
         name="vulnerabilities"
@@ -73,6 +75,9 @@
         <VulnerabilityTableSet
           :vulnerabilityDetails="vulnerabilityDetails"
           :severity="severity"
+          :image-name="imageName"
+          :current-image="currentImage"
+          :workload-count="workloads ? workloads.length : 0"
         />
       </Tab>
       <Tab
@@ -82,6 +87,8 @@
       >
         <WorkloadTableSet
           :workloads="workloads"
+          :image-name="imageName"
+          :current-image="currentImage"
           :is-in-image-context="true"
         />
       </Tab>
@@ -91,19 +98,25 @@
 
 <script>
 import { BadgeState } from '@components/BadgeState';
-import { PRODUCT_NAME, RESOURCE, PAGE } from '@sbomscanner-ui-ext/types';
-import day from 'dayjs';
-import Loading from '@shell/components/Loading';
 import DistributionChart from '@sbomscanner-ui-ext/components/DistributionChart';
-import RancherMeta from './common/RancherMeta.vue';
-import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
-import DownloadSBOMBtn from './common/DownloadSBOMBtn';
-import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
-import { getHighestScore, getSeverityNum, getScoreNum, getPackagePath } from '../utils/report';
+import {
+  createCsvRows,
+  IMAGE_VULNERABILITY_REPORT_HEADERS,
+  pushCsvRow,
+  WORKLOADS_REPORT_HEADERS,
+} from '@sbomscanner-ui-ext/config/csv-report';
+import { PAGE, PRODUCT_NAME, RESOURCE } from '@sbomscanner-ui-ext/types';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
-import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
+import Loading from '@shell/components/Loading';
 import Tab from '@shell/components/Tabbed/Tab';
 import ResourceTabs from '@shell/components/form/ResourceTabs';
+import day from 'dayjs';
+import { getHighestScore, getPackagePath, getScoreNum, getSeverityNum } from '../utils/report';
+import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
+import DownloadSBOMBtn from './common/DownloadSBOMBtn';
+import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
+import RancherMeta from './common/RancherMeta.vue';
+import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 import WorkloadTableSet from './common/WorkloadTableSet.vue';
 
 export default {
@@ -132,12 +145,17 @@ export default {
       cachedFilteredVulnerabilities: [],
       // Download dropdown state
       showDownloadDropdown:          false,
+      activeReportTab:               'vulnerabilities',
       PRODUCT_NAME,
       RESOURCE,
       PAGE,
       reportMeta:                    {
         csvReportBtnName1: this.t('imageScanner.images.downloadImageDetailReport'),
+        csvReportBtnName2: this.t('imageScanner.images.downloadWorkloadsReport'),
+        csvReportFileName1: `${ this.$route.params.id }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`,
+        csvReportFileName2: `${ this.$route.params.id }-workloads-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`,
         jsonReportBtnName: this.t('imageScanner.images.downloadVulnerabilityReport'),
+        jsonReportFileName: `${ this.$route.params.id }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`,
         resourceName1:     this.$route.params.id,
         mainResourceIndex: 1,
       }
@@ -352,6 +370,11 @@ export default {
 
   methods: {
 
+    onReportTabChanged({ selectedName }) {
+      this.activeReportTab = selectedName || 'vulnerabilities';
+      this.reportMeta.mainResourceIndex = this.activeReportTab === 'workloads' ? 2 : 1;
+    },
+
     filterBySeverity(severity) {
       this.severity = severity;
     },
@@ -447,34 +470,66 @@ export default {
       }
     },
     generateCSVFromVulnerabilityReport(vulnerabilityDetails) {
-      const headers = [
-        'CVE_ID',
-        'SCORE',
-        'PACKAGE',
-        'FIX AVAILABLE',
-        'SEVERITY',
-        'EXPLOITABILITY',
-        'PACKAGE VERSION',
-        'PACKAGE PATH',
-        'DESCRIPTION',
-      ];
-
-      const csvRows = [headers.join(',')];
+      const csvRows = createCsvRows(IMAGE_VULNERABILITY_REPORT_HEADERS);
 
       vulnerabilityDetails.forEach((vuln) => {
         const row = [
+          `"${ this.displayImageName }"`,
+          `"${ this.currentImage.imageMetadata?.registry || '' }"`,
+          `"${ this.currentImage.imageMetadata?.repository || '' }"`,
+          `"${ this.currentImage.imageMetadata?.platform || '' }"`,
+          `"${ this.currentImage.imageMetadata?.digest || '' }"`,
+          `"${ this.workloads && this.workloads.length > 0 ? 'TRUE' : 'FALSE' }"`,
+          `"${ this.workloads ? this.workloads.length : 0 }"`,
           `"${ vuln.cveId || '' }"`,
           `"${ vuln.score || '' }"`,
-          `"${ vuln.package || '' }"`,
-          `"${ vuln.fixVersion || '' }"`,
           `"${ vuln.severity || '' }"`,
+          `"${ vuln.package || '' }"`,
+          `"${ vuln.fixAvailable || '' }"`,
+          `"${ vuln.fixVersion || '' }"`,
           `"${ vuln.exploitability || '' }"`,
+          `"${ vuln.suppressed ? vuln.vexStatus?.statement : '' }"`,
           `"${ vuln.installedVersion || '' }"`,
           `"${ vuln.packagePath || '' }"`,
           `"${ (vuln.description || '').replace(/"/g, "'").replace(/[\r\n]+/g, ' ') }"`,
         ];
 
-        csvRows.push(row.join(','));
+        pushCsvRow(csvRows, IMAGE_VULNERABILITY_REPORT_HEADERS, row);
+      });
+
+      return csvRows.join('\n');
+    },
+    generateCSVFromWorkloadsReport(workloads) {
+      const csvRows = createCsvRows(WORKLOADS_REPORT_HEADERS);
+      const workloadRows = Array.isArray(workloads) ? workloads : [];
+
+      workloadRows.forEach((workload) => {
+        const summary = workload?.summary || {};
+        const critical = summary.critical || 0;
+        const high = summary.high || 0;
+        const medium = summary.medium || 0;
+        const low = summary.low || 0;
+        const unknown = summary.unknown || 0;
+
+        const row = [
+          `"${ this.displayImageName }"`,
+          `"${ this.currentImage?.imageMetadata?.registry || '' }"`,
+          `"${ this.currentImage?.imageMetadata?.repository || '' }"`,
+          `"${ this.currentImage?.imageMetadata?.platform || '' }"`,
+          `"${ this.currentImage?.imageMetadata?.digest || '' }"`,
+          `"${ workload?.name || '' }"`,
+          `"${ workload?.type || '' }"`,
+          `"${ workload?.namespace || '' }"`,
+          `"${ workload?.imagesUsed || 0 }"`,
+          `"${ critical + high + medium + low + unknown }"`,
+          `"${ critical }"`,
+          `"${ high }"`,
+          `"${ medium }"`,
+          `"${ low }"`,
+          `"${ unknown }"`,
+        ];
+
+        pushCsvRow(csvRows, WORKLOADS_REPORT_HEADERS, row);
       });
 
       return csvRows.join('\n');

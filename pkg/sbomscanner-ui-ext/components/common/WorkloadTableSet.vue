@@ -51,6 +51,8 @@
   <!-- Vulnerability Table -->
   <WorkloadTable
     :workloads="cachedFilteredWorkloads"
+    :image-name="imageName"
+    :current-image="currentImage"
     :is-in-image-context="isInImageContext"
   />
 </div>
@@ -70,6 +72,16 @@ export default {
     workloads: {
       type:    Array,
       default: () => []
+    },
+    imageName: {
+      type:    String,
+      default: ''
+    },
+    currentImage: {
+      type:    Object,
+      default: () => {
+        return {};
+      }
     },
     isInImageContext: {
       type:     Boolean,

@@ -36,9 +36,16 @@
 </template>
 
 <script>
-import SortableTable from '@shell/components/SortableTable';
+import {
+  createCsvRows,
+  pushCsvRow,
+  WORKLOADS_REPORT_HEADERS,
+} from '@sbomscanner-ui-ext/config/csv-report';
 import { WORKLOADS_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
+import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import { downloadCSV } from '@sbomscanner-ui-ext/utils/report';
+import SortableTable from '@shell/components/SortableTable';
+import day from 'dayjs';
 export default {
   name:       'WorkloadTable',
   components: {
@@ -49,6 +56,16 @@ export default {
       type:    Array,
       default: () => {
         return [];
+      },
+    },
+    imageName: {
+      type:    String,
+      default: '',
+    },
+    currentImage: {
+      type:    Object,
+      default: () => {
+        return {};
       },
     },
     isInWorkloadContext: {
@@ -101,37 +118,38 @@ export default {
     generateCSVFromFilteredWorkloads() {
       // Use selected workloads if any are selected, otherwise use all filtered workloads
       const workloads = this.selectedRows && this.selectedRows.length > 0 ? this.selectedRows : this.workloads;
+      const imageMetadata = this.currentImage?.imageMetadata || {};
+      const imageReference = constructImageName(imageMetadata) || this.imageName || '';
 
-      const headers = [
-        'WORKLOAD_NAME',
-        'TYPE',
-        'NAMESPACE',
-        'IMAGE USED',
-        'AFFECTING CVES',
-        'SEVERITY-CRITICAL',
-        'SEVERITY-HIGH',
-        'SEVERITY-MEDIUM',
-        'SEVERITY-LOW',
-        'SEVERITY-UNKNOWN',
-      ];
-
-      const csvRows = [headers.join(',')];
+      const csvRows = createCsvRows(WORKLOADS_REPORT_HEADERS);
 
       workloads.forEach((workload) => {
+        const severity = workload.severity || workload.summary || {};
+        const critical = severity.critical || 0;
+        const high = severity.high || 0;
+        const medium = severity.medium || 0;
+        const low = severity.low || 0;
+        const unknown = severity.unknown || 0;
+
         const row = [
-          `"${ workload.workloadName || '' }"`,
+          `"${ imageReference }"`,
+          `"${ imageMetadata?.registry || '' }"`,
+          `"${ imageMetadata?.repository || '' }"`,
+          `"${ imageMetadata?.platform || '' }"`,
+          `"${ imageMetadata?.digest || '' }"`,
+          `"${ workload.workloadName || workload.name || '' }"`,
           `"${ workload.type || '' }"`,
           `"${ workload.namespace || '' }"`,
-          `"${ workload.imageUsed || '' }"`,
-          `"${ workload.affectingCves || 0 }"`,
-          `"${ workload.severity.critical || 0 }"`,
-          `"${ workload.severity.high || 0 }"`,
-          `"${ workload.severity.medium || 0 }"`,
-          `"${ workload.severity.low || 0 }"`,
-          `"${ workload.severity.unknown || 0 }"`,
+          `"${ workload.imageUsed || workload.imagesUsed || 0 }"`,
+          `"${ workload.affectingCves || (critical + high + medium + low + unknown) }"`,
+          `"${ critical }"`,
+          `"${ high }"`,
+          `"${ medium }"`,
+          `"${ low }"`,
+          `"${ unknown }"`,
         ];
 
-        csvRows.push(row.join(','));
+        pushCsvRow(csvRows, WORKLOADS_REPORT_HEADERS, row);
       });
 
       return csvRows.join('\n');

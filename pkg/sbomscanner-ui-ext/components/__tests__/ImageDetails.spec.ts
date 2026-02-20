@@ -131,6 +131,20 @@ describe('ImageDetails.vue', () => {
     expect(wrapper.find('.header-section').exists()).toBe(true);
   });
 
+  it('initializes reportMeta with csv and json filenames', () => {
+    expect(wrapper.vm.reportMeta.csvReportFileName1).toMatch(/^test-image-route-image-detail-report_\d{8}_\d{6}\.csv$/);
+    expect(wrapper.vm.reportMeta.csvReportFileName2).toMatch(/^test-image-route-workloads-report_\d{8}_\d{6}\.csv$/);
+    expect(wrapper.vm.reportMeta.jsonReportFileName).toMatch(/^test-image-route-vulnerability-report_\d{8}_\d{6}\.json$/);
+  });
+
+  it('switches mainResourceIndex based on selected report tab', () => {
+    wrapper.vm.onReportTabChanged({ selectedName: 'workloads' });
+    expect(wrapper.vm.reportMeta.mainResourceIndex).toBe(2);
+
+    wrapper.vm.onReportTabChanged({ selectedName: 'vulnerabilities' });
+    expect(wrapper.vm.reportMeta.mainResourceIndex).toBe(1);
+  });
+
   // it('initializes default data correctly', () => {
   //   const data = wrapper.vm.$data;
 
@@ -354,27 +368,35 @@ describe('ImageDetails.vue', () => {
     const result = wrapper.vm.generateCSVFromVulnerabilityReport([]);
 
     expect(result.startsWith(
-      'CVE_ID,SCORE,PACKAGE,FIX AVAILABLE,SEVERITY,EXPLOITABILITY,PACKAGE VERSION,PACKAGE PATH,DESCRIPTION'
+      'IMAGE REFERENCE,REGISTRY,REPOSITORY,PLATFORM,DIGEST,IN USE,WORKLOAD COUNT,CVE_ID,SCORE,SEVERITY,PACKAGE,FIX AVAILABLE,FIXED VERSION,EXPLOITABILITY,VEX STATEMENT,PACKAGE VERSION,PACKAGE PATH,DESCRIPTION'
     )).toBe(true);
   });
 
   it('should generate correct CSV row', () => {
+    wrapper.vm.workloads = [{ name: 'w1' }, { name: 'w2' }];
+
     const data = [
       {
-        cveId: 'CVE-2023-1234',
-        score: '9.8',
-        package: 'test-package',
-        fixVersion: '1.2.4',
-        severity: 'CRITICAL',
-        exploitability: 'High',
+        cveId:            'CVE-2023-1234',
+        score:            '9.8',
+        package:          'test-package',
+        fixVersion:       '1.2.4',
+        severity:         'CRITICAL',
+        exploitability:   'High',
         installedVersion: '1.2.3',
-        packagePath: '/usr/lib/test-package',
-        description: 'Test vulnerability'
+        packagePath:      '/usr/lib/test-package',
+        description:      'Test vulnerability'
       }
     ];
 
     const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
 
+    expect(result).toContain('"docker.io/nginx:latest"');
+    expect(result).toContain('"demo-02"');
+    expect(result).toContain('"nginx"');
+    expect(result).toContain('"TRUE"');
+    expect(result).toContain('""');
+    expect(result).toContain('"2"');
     expect(result).toContain('"CVE-2023-1234"');
     expect(result).toContain('"9.8"');
     expect(result).toContain('"test-package"');
@@ -388,9 +410,7 @@ describe('ImageDetails.vue', () => {
 
   it('should replace double quotes in description with single quotes', () => {
     const data = [
-      {
-        description: 'A "critical" issue'
-      }
+      { description: 'A "critical" issue' }
     ];
 
     const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
@@ -400,9 +420,7 @@ describe('ImageDetails.vue', () => {
 
   it('should replace newlines in description with spaces', () => {
     const data = [
-      {
-        description: 'Line1\nLine2\r\nLine3'
-      }
+      { description: 'Line1\nLine2\r\nLine3' }
     ];
 
     const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
@@ -415,8 +433,13 @@ describe('ImageDetails.vue', () => {
 
     const result = wrapper.vm.generateCSVFromVulnerabilityReport(data);
 
-    // All values should be empty quotes
-    expect(result).toContain('"","","","","","","","",""');
+    // Row still includes populated image/context fields; vulnerability fields fallback to empty strings
+    expect(result).toContain('"docker.io/nginx:latest"');
+    expect(result).toContain('"demo-02"');
+    expect(result).toContain('"nginx"');
+    expect(result).toContain('"FALSE"');
+    expect(result).toContain('"0"');
+    expect(result).toContain('"","","","","","","","","","",""');
   });
 
   it('should generate multiple rows correctly', () => {
@@ -431,5 +454,46 @@ describe('ImageDetails.vue', () => {
     expect(rows.length).toBe(3); // header + 2 rows
     expect(rows[1]).toContain('"CVE-1"');
     expect(rows[2]).toContain('"CVE-2"');
+  });
+
+  it('should generate workloads CSV with required headers', () => {
+    const result = wrapper.vm.generateCSVFromWorkloadsReport([]);
+
+    expect(result.startsWith(
+      'IMAGE REFERENCE,REGISTRY,REPOSITORY,PLATFORM,DIGEST,WORKLOAD NAME,TYPE,NAMESPACE,IMAGES USED,AFFECTING CVEs,CVEs(Critical),CVEs(High),CVEs(Medium),CVEs(Low),CVEs(None)'
+    )).toBe(true);
+  });
+
+  it('should generate workloads CSV row with summary counts', () => {
+    const workloads = [
+      {
+        name:       'cert-manager',
+        namespace:  'cert-manager',
+        type:       'Deployment',
+        imagesUsed: 14,
+        summary:    {
+          critical: 1,
+          high:     3,
+          medium:   5,
+          low:      10,
+          unknown:  0
+        }
+      }
+    ];
+
+    const result = wrapper.vm.generateCSVFromWorkloadsReport(workloads);
+
+    expect(result).toContain('"docker.io/nginx:latest"');
+    expect(result).toContain('"demo-02"');
+    expect(result).toContain('"nginx"');
+    expect(result).toContain('"cert-manager"');
+    expect(result).toContain('"Deployment"');
+    expect(result).toContain('"14"');
+    expect(result).toContain('"19"');
+    expect(result).toContain('"1"');
+    expect(result).toContain('"3"');
+    expect(result).toContain('"5"');
+    expect(result).toContain('"10"');
+    expect(result).toContain('"0"');
   });
 });

@@ -1,5 +1,11 @@
 <script>
 import { Banner } from '@components/Banner';
+import {
+  createCsvRows,
+  pushCsvRow,
+  WORKLOAD_DETAIL_REPORT_HEADERS,
+  WORKLOADS_REPORT_HEADERS,
+} from '@sbomscanner-ui-ext/config/csv-report';
 import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import { getHighestScore, getPackagePath, getScoreNum, getSeverityNum } from '@sbomscanner-ui-ext/utils/report';
@@ -145,25 +151,7 @@ export default {
       });
     },
     getImagesReport(images, workloadType) {
-      const headers = [
-        'IMAGE REFERENCE',
-        'REGISTRY',
-        'REPOSITORY',
-        'PLATFORM',
-        'DIGEST',
-        'WORKLOAD NAME',
-        'TYPE',
-        'NAMESPACE',
-        'IMAGES USED',
-        'AFFECTING CVEs',
-        'CVEs(Critical)',
-        'CVEs(High)',
-        'CVEs(Medium)',
-        'CVEs(Low)',
-        'CVEs(None)'
-      ];
-
-      const csvRows = [headers.join(',')];
+      const csvRows = createCsvRows(WORKLOADS_REPORT_HEADERS);
 
       images.forEach((image) => {
         const row = [
@@ -184,32 +172,14 @@ export default {
           `"${ (image.report?.summary?.unknown) || 0 }"`,
         ];
 
-        csvRows.push(row.join(','));
+        pushCsvRow(csvRows, WORKLOADS_REPORT_HEADERS, row);
       });
 
       return csvRows.join('\n');
     },
     getWorkloadDetailReport(containers) {
       const flattenWorkloadDetails = this.flattenWorkloadDetails(containers);
-      const headers = [
-        'WORKLOAD NAME',
-        'NAMESPACE',
-        'KIND',
-        'CONTAINER',
-        'IMAGE REFERENCE',
-        'PLATFORM',
-        'DIGEST',
-        'CVE_ID',
-        'SCORE',
-        'SEVERITY',
-        'PACKAGE',
-        'FIX AVAILABLE',
-        'FIXED VERSION',
-        'PACKAGE VERSION',
-        'PACKAGE PATH',
-        'DESCRIPTION'
-      ];
-      const csvRows = [headers.join(',')];
+      const csvRows = createCsvRows(WORKLOAD_DETAIL_REPORT_HEADERS);
 
       flattenWorkloadDetails.forEach((item) => {
         const row = [
@@ -231,7 +201,7 @@ export default {
           `"${ (item.description || '').replace(/"/g, '""') }"` // Escape double quotes in description
         ];
 
-        csvRows.push(row.join(','));
+        pushCsvRow(csvRows, WORKLOAD_DETAIL_REPORT_HEADERS, row);
       });
 
       return csvRows.join('\n');

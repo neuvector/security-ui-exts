@@ -167,6 +167,7 @@ imageScanner:
     downloadReport: Download full report
     downloadSBOM: Download SBOM
     downloadImageDetailReport: Image detail report (CSV)
+    downloadWorkloadsReport: Workloads report (CSV)
     downloadVulnerabilityReport: Vulnerability report (JSON)
     imageBySeverityChart:
       title: Most affected images at risk
