@@ -170,48 +170,7 @@ import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import Papa from 'papaparse';
 import _ from 'lodash';
 import day from 'dayjs';
-import ImageInUsePopupCell from '@sbomscanner-ui-ext/formatters/ImageInUsePopupCell.vue';
-
-const mockImageCR = {
-  id: "sbomscanner/48cc88546d00",
-  type: "storage.sbomscanner.kubewarden.io.image",
-  metadata: {
-    name: "48cc88546d00002bb677bd0c4667e7fa0d2ba56c0bfbf940e7bdbcfdc600fcd0",
-    namespace: "sbomscanner",
-    creationTimestamp: "2026-02-09T08:28:14Z",
-    labels: {
-      "app.kubernetes.io/managed-by": "sbomscanner",
-      "app.kubernetes.io/part-of": "sbomscanner"
-    },
-    annotations: {
-      // --- These SHOULD NOT be counted ---
-      "kubectl.kubernetes.io/last-applied-configuration": "...",
-      "cattle.io/timestamp": "2026-02-19T09:00:00Z",
-
-      // --- These SHOULD be counted ---
-      "sbomscanner.kubewarden.io/workloadscan-deeb5395-43da": '{"name":"deployment-nginx","namespace":"production","containers":2}',
-      "sbomscanner.kubewarden.io/workloadscan-a1b2c3d4-56ef": '{"name":"cert-manager","namespace":"cert-manager","containers":1}',
-      "sbomscanner.kubewarden.io/workloadscan-9876xyz-1234": '{"name":"coredns","namespace":"kube-system","containers":1}'
-    }
-  },
-  imageMetadata: {
-    digest: "sha256:c47d5a85f11aec0e4a91e0257e12a778a909e0c1a89b3da6a8c3c369ccba327b",
-    platform: "linux/amd64",
-    registry: "workloadscan-ghcr-io",
-    registryURI: "ghcr.io",
-    repository: "nginxinc/nginx-unprivileged",
-    tag: "1.24"
-  },
-  report: {
-    summary: {
-      critical: 2,
-      high: 5,
-      medium: 10,
-      low: 20,
-      unknown: 1
-    }
-  }
-};
+import { WORKLOAD_ANNOTATION_PREFIX } from "@sbomscanner-ui-ext/constants";
 
 export default {
   name:  'ImageOverview',
@@ -236,8 +195,7 @@ export default {
     LabeledSelect,
     SortableTable,
     Checkbox,
-    ActionMenu,
-    ImageInUsePopupCell
+    ActionMenu
   },
   data() {
     const filterCveOptions = [
@@ -350,7 +308,7 @@ export default {
         };
         const annotationsToUse = index % 8 !== 1 ? mockAnnotations : {};
         const count = Object.keys(annotationsToUse).filter(key =>
-            key.startsWith('sbomscanner.kubewarden.io/workloadscan')
+            key.startsWith(WORKLOAD_ANNOTATION_PREFIX)
         ).length;
 
         return {

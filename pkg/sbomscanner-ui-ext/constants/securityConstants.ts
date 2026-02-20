@@ -27,3 +27,5 @@ export const REGISTRY_TYPE_OPTIONS = [
   { label: 'OCI Distribution', value: REGISTRY_TYPE.OCI_DISTRIBUTION },
   { label: 'No Catalog', value: REGISTRY_TYPE.NO_CATALOG }
 ];
+
+export const WORKLOAD_ANNOTATION_PREFIX = 'sbomscanner.kubewarden.io/workloadscan';

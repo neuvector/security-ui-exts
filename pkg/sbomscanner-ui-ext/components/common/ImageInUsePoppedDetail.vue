@@ -6,12 +6,8 @@
       @mouseleave="showOnTop = false"
   >
     <div class="indicator-wrapper">
-      <div
-          class="icon-container"
-          :class="{ 'is-active': isInUse }"
-      >
-        <i class="icon" :class="isInUse ? 'icon-checkmark' : 'icon-x'" />
-      </div>
+
+      <FixAvailableIcon :fixAvailable="isInUse" />
 
       <span
           v-if="isInUse"
@@ -44,8 +40,11 @@
 </template>
 
 <script>
+import FixAvailableIcon from "@sbomscanner-ui-ext/components/common/FixAvailableIcon.vue";
+
 export default {
   name: 'ImageInUsePoppedDetail',
+  components: {FixAvailableIcon},
   props: {
     count: {
       type:    Number,
@@ -97,27 +96,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  color: var(--disabled-text);
-
-  &.is-active {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-
-  i {
-    font-size: 10px;
-    font-weight: bold;
-  }
 }
 
 .count {

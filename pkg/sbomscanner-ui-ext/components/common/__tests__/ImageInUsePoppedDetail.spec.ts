@@ -14,7 +14,8 @@ describe('ImageInUsePoppedDetail.vue', () => {
           t: (key, params) => params ? `${key} count:${params.count}` : key
         },
         stubs: {
-          RouterLink: RouterLinkStub
+          RouterLink: RouterLinkStub,
+          FixAspectRatio: true
         }
       }
     });
@@ -27,13 +28,11 @@ describe('ImageInUsePoppedDetail.vue', () => {
       wrapper = createWrapper({ count: 0 });
     });
 
-    it('renders the inactive icon (icon-x)', () => {
-      const iconContainer = wrapper.find('.icon-container');
-      const icon = wrapper.find('.icon-container i');
+    it('renders the FixAvailableIcon with fixAvailable as false', () => {
+      const fixIcon = wrapper.findComponent({ name: 'FixAvailableIcon' });
 
-      expect(iconContainer.classes()).not.toContain('is-active');
-      expect(icon.classes()).toContain('icon-x');
-      expect(icon.classes()).not.toContain('icon-checkmark');
+      expect(fixIcon.exists()).toBe(true);
+      expect(fixIcon.props('fixAvailable')).toBe(false);
     });
 
     it('does not render the count number', () => {
@@ -52,12 +51,11 @@ describe('ImageInUsePoppedDetail.vue', () => {
       wrapper = createWrapper({ count: 1, link: { path: '/test/workload' } });
     });
 
-    it('renders the active icon (icon-checkmark)', () => {
-      const iconContainer = wrapper.find('.icon-container');
-      const icon = wrapper.find('.icon-container i');
+    it('renders the FixAvailableIcon with fixAvailable as true', () => {
+      const fixIcon = wrapper.findComponent({ name: 'FixAvailableIcon' });
 
-      expect(iconContainer.classes()).toContain('is-active');
-      expect(icon.classes()).toContain('icon-checkmark');
+      expect(fixIcon.exists()).toBe(true);
+      expect(fixIcon.props('fixAvailable')).toBe(true);
     });
 
     it('renders the count number', () => {
