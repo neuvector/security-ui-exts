@@ -38,7 +38,7 @@ export default {
       workloadVulnerabilityReportFileName: '',
       imagesReportFileName:                '',
       affactingCvesReportFileName:         '',
-      showSubTabs:                         ref(false),
+      showSubTabs:                         false,
       filters:                       {
         severity: null, // Consume this filter in the table components to filter based on severity
       },
@@ -295,7 +295,7 @@ export default {
         if (hash === '#vulnerabilities') {
           this.defaultTab = this.$route.query?.defaultTab || 'images';
           setTimeout(() => {
-            this.showSubTabs = ref(true);
+            this.showSubTabs = true;
           }, 0);
         }
       }
