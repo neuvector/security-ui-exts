@@ -190,8 +190,8 @@ imageScanner:
       checkbox:
         groupByRepo: Group by repository
       headers:
-        imageName: Image Reference
-        identifiedCVEs: CVEs
+        imageName: Image reference
+        identifiedCVEs: Affecting CVEs
         inUse: In use
         repository: Repository
         registry: Registry
@@ -213,8 +213,9 @@ imageScanner:
           platform: Platform
           container: Container
       popup:
-        inUseTooltipSingle: "Image used by {count} workload."
-        inUseTooltipPlural: "Image used by {count} workloads."
+        imangeUsedBy: Image used by
+        inUseTooltipSingle: "{count} workload."
+        inUseTooltipPlural: "{count} workloads."
   imageDetails:
     status: Status
     vulnerabilities: Vulnerabilities
@@ -278,6 +279,7 @@ imageScanner:
         packageVersion: Package version
         packagePath: Package path
         images: Images
+        image: Image
     tabs:
       vulnerabilities: Vulnerabilities
       workloads: Workloads
@@ -365,11 +367,11 @@ imageScanner:
       affectingCVEs: Affecting CVEs
     table:
       headers:
-        workloadName: Workload name
+        workloadName: Workload
         namespace: Namespace
         type: Type
         affectingCVEs: Affecting CVEs
-        severity: Severity
+        severity: Severity distribution
         imagesUsed: Images used
     buttons:
       downloadReport: Download report
@@ -428,3 +430,5 @@ resources:
   image: storage.sbomscanner.kubewarden.io.image
   vulnerabilityreport: storage.sbomscanner.kubewarden.io.vulnerabilityreport
   sbom: storage.sbomscanner.kubewarden.io.sbom
+
+

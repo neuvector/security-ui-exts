@@ -24,15 +24,20 @@
     >
       <div class="popup-box">
         <div class="popup-content">
-          <span class="popup-text">
-            {{ t(count <= 1 ? 'imageScanner.images.listTable.popup.inUseTooltipSingle' : 'imageScanner.images.listTable.popup.inUseTooltipPlural', { count }) }}
-          </span>
-          <RouterLink
+          <div class="popup-text">
+            <span>
+               {{ t('imageScanner.images.listTable.popup.imangeUsedBy') }}&nbsp;
+            </span>
+            <span class="popup-workload-count">
+              {{ t(count <= 1 ? 'imageScanner.images.listTable.popup.inUseTooltipSingle' : 'imageScanner.images.listTable.popup.inUseTooltipPlural', { count }) }}
+            </span>
+            <RouterLink
               class="learn-more-link"
               :to="link"
           >
             {{ t('imageScanner.general.learnMore') }}
           </RouterLink>
+          </div>
         </div>
       </div>
     </div>
@@ -102,7 +107,7 @@ export default {
   min-width: 20px;
   color: var(--body-text);
   &.text-bold {
-    font-weight: bold;
+    font-weight: 400;
     text-decoration: underline;
   }
 }
@@ -140,50 +145,37 @@ export default {
 }
 
 .popup-box {
+  display: inline-block;
+  width: max-content;
+  max-width: none;
   background: var(--body-bg);
   border: 1px solid var(--border);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-  padding: 12px;
+  padding: 16px;
   position: relative;
   white-space: normal;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 10px;
-    border-width: 0 6px 6px 6px;
-    border-style: solid;
-    border-color: transparent transparent var(--border) transparent;
-    z-index: 100;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: 11px;
-    border-width: 0 5px 5px 5px;
-    border-style: solid;
-    border-color: transparent transparent var(--body-bg) transparent;
-    z-index: 101;
-  }
 }
 
 .popup-content {
-  font-size: 13px;
-  color: var(--body-text);
   display: flex;
-  flex-direction: column;
   gap: 4px;
   text-align: left;
+  .popup-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--body-text);
+    .popup-workload-count {
+      font-weight: 600;
+    }
+  }
 }
 
 .learn-more-link {
-  font-size: 13px;
+  font-size: 14px;
+  color: var(--body-text);
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: normal;
 
   &:hover {

@@ -7,10 +7,10 @@
       :headers="WORKLOADS_TABLE"
       :has-advanced-filtering="false"
       :namespaced="false"
-      :row-actions="true"
+      :row-actions="false"
       :search="false"
       :paging="true"
-      key-field="workloadName"
+      :key-field="isInWorkloadContext ? 'workloadName' : 'name'"
       @selection="onSelectionChange"
     >
       <template #header-left>

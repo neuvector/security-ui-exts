@@ -186,6 +186,7 @@ export default {
 }
 
 .dropdown-toggle {
+  border-left: 1px solid rgba(255, 255, 255, 0.50);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   padding: 8px 8px;

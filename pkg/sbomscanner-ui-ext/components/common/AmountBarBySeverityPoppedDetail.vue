@@ -15,77 +15,84 @@
         class="hover-overlay"
         :class="{ 'show-top': showOnTop }"
     >
-      <div class="header">
-        <div class="title">
-          {{ headerTitle || `${totalVulnerabilities} ${t('imageScanner.images.listTable.filters.placeholder.affectedCVEs')}` }}
-        </div>
-        <RouterLink
-            v-if="viewAllLink"
-            :to="getViewAllLink()"
-            class="view-all"
-            @click.stop="$emit('view-all')"
-        >
-          {{ t('imageScanner.vulnerabilities.popup.viewAll') }}
-        </RouterLink>
-      </div>
-
-      <div class="severity-list">
-        <div v-for="severity in severities" :key="severity.key" class="severity-row">
-          <RouterLink
-              :to="getSeverityLink(severity.label)"
-              class="label"
-          >
-            {{ severity.label }}
-          </RouterLink>
-
-          <div class="bar-container">
-            <div
-                class="progress-bar"
-                :class="severity.key"
-                :style="{ width: getPercentage(severity.key) + '%' }"
-            ></div>
+      <div class="popup-container">
+        <div class="header">
+          <div class="title">
+            {{ headerTitle || `${totalVulnerabilities} ${t('imageScanner.images.listTable.filters.placeholder.affectedCVEs')}` }}
           </div>
-
-          <span class="count">{{ cveAmount[severity.key] || 0 }}</span>
+          <RouterLink
+              v-if="viewAllLink"
+              :to="getViewAllLink()"
+              class="view-all"
+              @click.stop="$emit('view-all')"
+          >
+            {{ t('imageScanner.vulnerabilities.popup.viewAll') }}
+          </RouterLink>
         </div>
-      </div>
 
-      <div class="footer">
-        Provided by <span class="provider-name">{{ footerProvider }}</span>
+        <div class="severity-list">
+          <div v-for="severity in severities" :key="severity.key" class="severity-row">
+            <div v-if="cveAmount[severity.key] === 0" class="label" style="text-decoration: none; color: var(--disabled-text);">
+              {{ severity.label }}
+            </div>
+            <RouterLink
+                v-else
+                :to="getSeverityLink(severity.label)"
+                class="label"
+            >
+              {{ severity.label }}
+            </RouterLink>
+
+            <div class="bar-container">
+              <div
+                  class="progress-bar"
+                  :class="severity.key"
+                  :style="{ width: getPercentage(severity.key) + '%' }"
+              ></div>
+            </div>
+
+            <span class="count">{{ cveAmount[severity.key] || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          Provided by <span class="provider-name">{{ footerProvider }}</span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { RouterLink } from 'vue-router';
 import AmountBarBySeverity from './AmountBarBySeverity.vue';
 
 export default {
-  name: 'AmountBarBySeverityPoppedDetail',
+  name:       'AmountBarBySeverityPoppedDetail',
   components: { AmountBarBySeverity },
   props: {
     cveAmount: {
-      type: Object,
+      type:     Object,
       required: true,
-      default: () => ({ critical: 0, high: 0, medium: 0, low: 0, unknown: 0 })
+      default:  () => ({
+        critical: 0, high: 0, medium: 0, low: 0, unknown: 0
+      })
     },
     headerTitle: {
-      type: String,
+      type:    String,
       default: ''
     },
     viewAllLink: {
-      type: String,
+      type:    String,
       default: ''
     },
     footerProvider: {
-      type: String,
+      type:    String,
       default: 'SBOMScanner'
     },
   },
   data() {
     return {
-      showOnTop: false,
+      showOnTop:  false,
       severities: [
         { key: 'critical', label: 'Critical' },
         { key: 'high', label: 'High' },
@@ -105,31 +112,35 @@ export default {
       if (!this.$refs.trigger) return;
       const trigger = this.$refs.trigger.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
+
       this.showOnTop = (viewportHeight - trigger.bottom < 300);
     },
     getPercentage(key) {
       const count = this.cveAmount[key] || 0;
+
       if (this.totalVulnerabilities === 0) return 0;
+
       return (count / this.totalVulnerabilities) * 100;
     },
     getViewAllLink() {
       if (!this.viewAllLink) return '';
       const [path, hash] = this.viewAllLink.split('#');
+
       return {
         path,
-        hash: hash ? `#${hash}` : undefined,
+        hash:  hash ? `#${hash}` : undefined,
         query: { defaultTab: 'affectingCVEs' }
       };
     },
     getSeverityLink(severityLabel) {
       if (!this.viewAllLink) return '';
-      
+
       // Split path and hash from viewAllLink
       const [path, hash] = this.viewAllLink.split('#');
-      
+
       return {
         path,
-        hash: hash ? `#${hash}` : undefined,
+        hash:  hash ? `#${hash}` : undefined,
         query: { defaultTab: 'affectingCVEs', severity: severityLabel }
       };
     }
@@ -180,14 +191,7 @@ $gap-size: 10px;
   position: absolute;
   top: calc(100% + #{$gap-size});
   right: 10px;
-  width: 320px;
-  background: var(--popover-bg);
-  border-radius: 6px;
-  border: 1px solid var(--popover-border);
-  box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.04);
-  padding: 16px;
-  z-index: 100;
-  font-family: Lato, sans-serif;
+  z-index: 20;
 
   &::before {
     content: '';
@@ -208,6 +212,17 @@ $gap-size: 10px;
       bottom: -$gap-size;
     }
   }
+}
+
+.popup-container {
+  width: 320px;
+  background: var(--popover-bg);
+  border-radius: 6px;
+  border: 1px solid var(--popover-border);
+  box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.04);
+  padding: 16px;
+  z-index: 100;
+  font-family: Lato, sans-serif;
 }
 
 .header {

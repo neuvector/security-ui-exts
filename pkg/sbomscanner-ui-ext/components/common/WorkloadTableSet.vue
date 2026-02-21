@@ -206,7 +206,7 @@ console.log('Filtered workloads:', filtered); // Debug log to check filtered res
 
 .filter-row {
   display: flex;
-  gap: 24px;
+  gap: 16px;
 }
 
 .filter-item {

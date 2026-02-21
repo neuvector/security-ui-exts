@@ -9,7 +9,6 @@ import day from 'dayjs';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import ImageTableSet from './common/ImageTableSet.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
-import { ref } from 'vue';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -268,6 +267,14 @@ export default {
       return containers.map((container) => {
         return container.vulnerabilityReports;
       });
+    },
+    onTabChanged(tab) {
+      this.activeTab = tab.selectedName;
+      this.$router.replace({
+        path:  this.$route.path,
+        query: { ...this.$route.query, defaultTab: tab.name },
+        hash:  '#vulnerabilities'
+      });
     }
   },
   watch: {
@@ -293,10 +300,13 @@ export default {
       immediate: true,
       handler(hash) {
         if (hash === '#vulnerabilities') {
+          console.log('Hash matched, showing vulnerabilities tab', this.$route.query?.defaultTab);
           this.defaultTab = this.$route.query?.defaultTab || 'images';
           setTimeout(() => {
             this.showSubTabs = true;
           }, 0);
+        } else {
+          this.showSubTabs = false;
         }
       }
     }
@@ -339,7 +349,7 @@ export default {
         :default-tab="defaultTab"
         :use-hash="false"
         class="workload-tabs"
-        @changed="({selectedName}) => {activeTab = selectedName;}"
+        @changed="onTabChanged"
       >
         <Tab :weight="2" :label="t('imageScanner.workloads.tabs.images')" name="images">
           <ImageTableSet

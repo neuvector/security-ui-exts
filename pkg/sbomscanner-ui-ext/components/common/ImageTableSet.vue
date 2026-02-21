@@ -25,7 +25,7 @@
             :multiple="false"
           />
         </div>
-        <div class="filter-item">
+        <div class="filter-item" v-if="!isInWorkloadContext">
           <label>{{ t('imageScanner.images.listTable.filters.label.inUse') }}</label>
           <LabeledSelect
               v-model:value="filters.inUseSearch"
@@ -96,7 +96,7 @@
       :sub-expand-column="isGrouped"
       :rows="isGrouped ? rowsByRepo : filteredRows.rows"
       :loading="isLoading"
-      :key-field="'id'"
+      :key-field="isInWorkloadContext ? 'imageMetadata.digest' : 'id'"
       @selection="onSelectionChange"
     >
       <template #header-left>
@@ -300,27 +300,32 @@ export default {
   computed: {
     filteredRows() {
       const filters = this.debouncedFilters;
-      const rowsWithMockedAnnotations = this.rows.map((row, index) => {
+
+      const mockedRows = [];
+
+      this.rows.forEach((row, index) => {
         const mockAnnotations = {
           "cattle.io/timestamp": "2026-02-19T09:00:00Z",
           "sbomscanner.kubewarden.io/workloadscan-a1b2c3d4-56ef": '{"name":"cert-manager","namespace":"cert-manager","containers":1}',
           "sbomscanner.kubewarden.io/workloadscan-9876xyz-1234": '{"name":"coredns","namespace":"kube-system","containers":1}'
         };
+
         const annotationsToUse = index % 8 !== 1 ? mockAnnotations : {};
+
         const count = Object.keys(annotationsToUse).filter(key =>
-            key.startsWith(WORKLOAD_ANNOTATION_PREFIX)
+          key.startsWith(WORKLOAD_ANNOTATION_PREFIX)
         ).length;
 
-        return {
-          ...row,
-          metadata: {
-            ...row.metadata,
-            annotations: annotationsToUse
-          },
-          workloadCount: count
-        };
-      })
-      const filteredRows = rowsWithMockedAnnotations.filter((row) => {
+        if (!row.metadata) {
+          row.metadata = {};
+        }
+
+        row.metadata.annotations = annotationsToUse;
+
+        row.workloadCount = count;
+        mockedRows.push(row);
+      });
+      const filteredRows = mockedRows.filter((row) => {
         const imageName = constructImageName(row.imageMetadata);
         const imageMatch = !filters.imageSearch || imageName.toLowerCase().includes(filters.imageSearch.toLowerCase());
         const severityMatch = (() => {
@@ -625,7 +630,7 @@ export default {
 
   .filter-row {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     margin-bottom: 24px;
   }
 
