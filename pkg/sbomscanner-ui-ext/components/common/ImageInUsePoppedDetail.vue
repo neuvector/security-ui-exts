@@ -26,7 +26,7 @@
         <div class="popup-content">
           <div class="popup-text">
             <span>
-               {{ t('imageScanner.images.listTable.popup.imangeUsedBy') }}&nbsp;
+               {{ t('imageScanner.images.listTable.popup.imageUsedBy') }}&nbsp;
             </span>
             <span class="popup-workload-count">
               {{ t(count <= 1 ? 'imageScanner.images.listTable.popup.inUseTooltipSingle' : 'imageScanner.images.listTable.popup.inUseTooltipPlural', { count }) }}

@@ -213,7 +213,7 @@ imageScanner:
           platform: Platform
           container: Container
       popup:
-        imangeUsedBy: Image used by
+        imageUsedBy: Image used by
         inUseTooltipSingle: "{count} workload."
         inUseTooltipPlural: "{count} workloads."
   imageDetails:
