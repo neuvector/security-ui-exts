@@ -100,9 +100,11 @@ export default {
             'CVEs(Low)':       isDataGrouped ? row.scanResult.low : row.report.summary.low,
             'CVEs(None)':      isDataGrouped ? row.scanResult.unknown : row.report.summary.unknown,
             'IMAGE ID':        row.imageMetadata.digest,
-            REGISTRY:          row.imageMetadata.registry,
-            REPOSITORY:        row.imageMetadata.repository,
-            PLATFORM:          row.imageMetadata.platform,
+            'IN USE':          row.workloadCount && row.workloadCount > 0 ? 'Yes' : 'No',
+            'WORKLOAD COUNT':  row.workloadCount || 0,
+            'REGISTRY':        row.imageMetadata.registry,
+            'REPOSITORY':      row.imageMetadata.repository,
+            'PLATFORM':        row.imageMetadata.platform,
           };
         });
         const csvBlob = new Blob([Papa.unparse(imageList)], { type: 'text/csv;charset=utf-8' });
