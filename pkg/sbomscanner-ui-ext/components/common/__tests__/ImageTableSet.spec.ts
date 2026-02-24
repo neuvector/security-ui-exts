@@ -171,12 +171,14 @@ describe('ImageTableSet.vue', () => {
         imageMetadata: { registry: 'reg', repository: 'repo1', platform: 'linux' },
         metadata: { namespace: 'ns' },
         report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
+        workloadCount: 2, // Simulate the annotation result for index 0
       },
       {
         id: '2', // Index 1: Will NOT get annotations -> count 0 -> inUse: false
         imageMetadata: { registry: 'reg', repository: 'repo2', platform: 'linux' },
         metadata: { namespace: 'ns' },
         report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
+        workloadCount: 0, // Simulate the annotation result for index 1
       }
     ];
 
@@ -198,12 +200,14 @@ describe('ImageTableSet.vue', () => {
         imageMetadata: { registry: 'reg', repository: 'repo1', platform: 'linux' },
         metadata: { namespace: 'ns' },
         report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
+        workloadCount: 2, // Simulate the annotation result for index 0
       },
       {
         id: '2', // Index 1: gets empty annotations
         imageMetadata: { registry: 'reg', repository: 'repo2', platform: 'linux' },
         metadata: { namespace: 'ns' },
         report: { summary: { critical: 1, high: 0, medium: 0, low: 0, unknown: 0 } },
+        workloadCount: 0, // Simulate the annotation result for index 1
       }
     ];
 

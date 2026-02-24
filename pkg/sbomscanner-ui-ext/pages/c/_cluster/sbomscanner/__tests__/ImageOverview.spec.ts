@@ -161,7 +161,7 @@ describe('ImageOverview.vue', () => {
     // Call it via the component options with the vm as context.
     await (wrapper.vm as any).$options.fetch.call(wrapper.vm);
 
-    expect((wrapper.vm as any).rows).toStrictEqual(rows);
+    expect((wrapper.vm as any).rows).toStrictEqual(rows.map((r) => ({ ...r, workloadCount: 0 })));
   });
 
   test('downloadSbom success and error flows', async() => {
