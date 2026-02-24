@@ -186,7 +186,7 @@ describe('RegistryDetails.vue', () => {
     await wrapper.vm.loadData();
 
     expect(wrapper.vm.registryMetadata.repositories.value).toBe(0);
-    expect(wrapper.vm.registryMetadata.schedule.value).toBe('');
+    expect(wrapper.vm.registryMetadata.schedule.value).toBe('imageScanner.registries.configuration.cru.scan.schedule.manualScan');
   });
 
 });

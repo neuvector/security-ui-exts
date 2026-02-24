@@ -112,7 +112,7 @@ export default {
         },
         schedule: {
           label: this.t('imageScanner.registries.configuration.meta.schedule'),
-          value: this.registry.spec.scanInterval ? this.t('imageScanner.general.schedule', { i: this.scanInterval }) : '',
+          value: this.registry.spec.scanInterval ? this.t('imageScanner.general.schedule', { i: this.scanInterval }) : this.t('imageScanner.registries.configuration.cru.scan.schedule.manualScan'),
         },
         repositories: {
           label: this.t('imageScanner.registries.configuration.meta.repositories'),

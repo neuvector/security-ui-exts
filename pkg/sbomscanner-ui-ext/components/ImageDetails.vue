@@ -64,7 +64,7 @@
             :title="t('imageScanner.imageDetails.severityDistribution.title')"
             :chart-data="severityDistribution"
             color-prefix="cve"
-            :description="t('imageScanner.imageDetails.severityDistribution.subTitle')"
+            :type-label="'vulnerability'"
             :filter-fn="filterBySeverity"
             :tooltip="t('imageScanner.imageDetails.severityDistribution.tooltip')"
           />

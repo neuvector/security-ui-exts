@@ -18,7 +18,8 @@ export default {
         :value="`${value.progress}%`"
         :detail="{ title: `${value.metadata?.name || value.registryName} - ${value.progress}%`, message: value.progressDetail, type: 'info' }"
       />
-      <span v-if="value.error">|
+      <span v-if="value.error">
+        <span style="color: #BFC1D1">|</span>
         <TextWithPoppedDetail
           :value="t('imageScanner.general.error')"
           :detail="{title: `${value.metadata?.name || value.registryName} - ${t('imageScanner.registries.configuration.scanTable.header.error')}`, message: value.error, type: 'error' }"

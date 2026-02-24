@@ -36,6 +36,7 @@ export default {
         padding: 16px;
         flex-direction: column;
         align-items: flex-start;
+        min-width: 680px;
         gap: 12px;
         flex: 1 0 0;
         border-right: solid var(--border-width) var(--input-border);
@@ -51,7 +52,7 @@ export default {
             margin-right: 8px;
         }
         .status-list {
-            padding: 4px 8px;
+            padding: 4px 0;
             align-items: center;
             align-self: stretch;
         }

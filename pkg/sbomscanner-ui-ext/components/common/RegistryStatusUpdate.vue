@@ -92,7 +92,7 @@ export default {
     }
     .registry-status-record {
         display: flex;
-        padding: 4px 0px;
+        padding: 4px 12px;
         align-items: center;
         align-self: stretch;
         .registry-name {
@@ -146,6 +146,9 @@ export default {
             font-style: normal;
             font-weight: 400;
             line-height: 21px;
+        }
+        &:hover {
+            background-color: var(--sortable-table-selected-bg);
         }
     }
 </style>

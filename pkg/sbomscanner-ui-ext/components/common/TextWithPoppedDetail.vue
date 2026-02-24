@@ -4,7 +4,7 @@
     class="text-with-pop"
     @mouseenter="checkPosition"
   >
-    <span style="margin-left: 8px;">{{ value }}</span>
+    <span>{{ value }}</span>
     <div
       class="message-hover-overlay"
       :class="{ 'show-top': showOnTop }"

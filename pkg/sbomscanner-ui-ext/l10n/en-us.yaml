@@ -147,7 +147,7 @@ imageScanner:
         namespace: Namespace
         uri: URI
         repositories: Repositories
-        schedule: Schedule
+        schedule: Scan Interval
         platforms: Platforms
       scanTable:
         header:
@@ -391,7 +391,7 @@ imageScanner:
       pending: Pending
       scheduled: Scheduled
       inprogress: In progress
-      complete: Finished
+      complete: Completed
       failed: Failed
       none: n/a
       enabled: Enabled
@@ -425,6 +425,21 @@ typeLabel:
   storage.sbomscanner.kubewarden.io.image: Image
   storage.sbomscanner.kubewarden.io.vulnerabilityreport: Vulnerability Report
   storage.sbomscanner.kubewarden.io.sbom: SBOM
+  vulnerability: |-
+    {count, plural,
+    =1 {vulnerability}
+    other {vulnerabilities}
+    }
+  vulnerabilityInTotal: |-
+    {count, plural,
+    =1 {vulnerability in total}
+    other {vulnerabilities in total}
+    }
+  scan: |-
+    {count, plural,
+    =1 {registry scan}
+    other {registry scans}
+    }
 
 resources:
   image: storage.sbomscanner.kubewarden.io.image

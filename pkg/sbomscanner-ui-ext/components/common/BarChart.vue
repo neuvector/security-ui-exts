@@ -2,7 +2,7 @@
   <div class="severity-bar-chart">
     <div class="severity-heading">
       <span class="vul-total">{{ total }}</span>
-      <span class="vul-desc">{{ description }}</span>
+      <span class="vul-desc">{{ t(`typeLabel.${typeLabel}`, { count: total }, true) }}</span>
     </div>
     <div class="severity-chart">
       <div
@@ -41,7 +41,7 @@ export default {
       type:     Object,
       required: true
     },
-    description: {
+    typeLabel: {
       type:     String,
       required: true
     },

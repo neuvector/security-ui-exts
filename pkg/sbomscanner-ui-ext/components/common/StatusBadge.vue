@@ -114,8 +114,6 @@ export default {
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 1;
       line-clamp: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
       font-family: Lato;
       font-size: 12px;
       font-style: normal;

@@ -41,13 +41,15 @@ export default {
       {{ getStatusText }}
     </div>
     <div v-if="value.prevProgress">
-      <span>{{ t("imageScanner.general.at") }}</span><ProgressCell
+      <span>{{ t("imageScanner.general.at") }}</span>
+      <ProgressCell
         style="display: inline-block;"
         :value="{ metadata: { name: row.metadata.name }, progress: value.prevProgress, progressDetail: value.prevProgressDetail, error: null}"
       />
     </div>
     <div v-if="value.prevScanStatus?.toLowerCase() === 'failed' && value.prevError">
-      <span>|
+      <span>
+        <span style="color: #BFC1D1">|</span>
         <TextWithPoppedDetail
           :value="t('imageScanner.general.error')"
           :detail="{ title: `${row.metadata.name} - ${t('imageScanner.registries.configuration.scanTable.header.error')}`, message: value.prevError, type: 'error' }"
@@ -63,7 +65,7 @@ export default {
     .previous-scan-cell {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 4px;
         color: var(--text-secondary);
         font-size: 14px;
         .status {

@@ -9,7 +9,7 @@
       :chart-data="statusSummary"
       :title="t('imageScanner.registries.StatusDistribution.title')"
       color-prefix="status"
-      :description="t('imageScanner.registries.StatusDistribution.subTitle')"
+      :type-label="'scan'"
       :tooltip="t('imageScanner.registries.StatusDistribution.tooltip')"
     />
   </div>
@@ -365,7 +365,7 @@ export default {
 
   .summary-section {
     display: flex;
-    min-width: 912px;
+    min-width: 1360px;
     align-items: flex-start;
     align-self: stretch;
     border-radius: 6px;

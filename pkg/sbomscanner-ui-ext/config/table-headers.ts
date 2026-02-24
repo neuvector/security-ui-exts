@@ -134,7 +134,7 @@ export const VEX_MANAGEMENT_TABLE = [
     value:    (row: any) => {
       const gen = Number(row?.metadata?.generation);
 
-      return gen === 1 ? 'Rancher' : 'Manual entry';
+      return gen === 1 ? 'Rancher' : 'Rancher user';
     },
     sort: 'metadata.generation',
   },

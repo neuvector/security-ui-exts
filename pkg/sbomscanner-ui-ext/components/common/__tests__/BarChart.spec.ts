@@ -47,7 +47,7 @@ describe('BarChart.vue', () => {
     it('should render the total and description', () => {
       const wrapper = factory({
         chartData:   mockChartData,
-        description: 'Total Vulnerabilities',
+        typeLabel: 'vulnerability',
         colorPrefix: 'cve',
       });
 
@@ -55,7 +55,7 @@ describe('BarChart.vue', () => {
       const descEl = wrapper.find('.vul-desc');
 
       expect(totalEl.text()).toBe('100');
-      expect(descEl.text()).toBe('Total Vulnerabilities');
+      expect(descEl.text()).toBe('typeLabel.vulnerability');
     });
 
     it('should render one chart item for each entry in chartData', () => {

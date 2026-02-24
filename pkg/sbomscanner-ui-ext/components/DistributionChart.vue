@@ -9,7 +9,7 @@
         :filter-fn="filterFn"
         :chart-data="chartData"
         :color-prefix="colorPrefix"
-        :description="description"
+        :type-label="typeLabel"
       />
     </div>
   </div>
@@ -40,7 +40,7 @@ export default {
       type:     String,
       required: true,
     },
-    description: {
+    typeLabel: {
       type:     String,
       required: true,
     },

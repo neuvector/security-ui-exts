@@ -26,7 +26,7 @@
         :chart-data="severityDistribution"
         :title="t('imageScanner.vulnerabilities.severityDistribution.title')"
         color-prefix="severity"
-        :description="t('imageScanner.vulnerabilities.severityDistribution.subTitle')"
+        :type-label="'vulnerabilityInTotal'"
       />
     </div>
     <div class="table">

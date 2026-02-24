@@ -349,7 +349,7 @@ export default {
 
   .filter-row {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     margin-bottom: 20px;
   }
 
