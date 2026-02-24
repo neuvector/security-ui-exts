@@ -22,10 +22,10 @@ export default {
   i {
     font-size: 1.5rem;
     &.icon-fix-available {
-      color: $blue;
+      color: $info-blue;
     }
     &.icon-fix-unavailable {
-      color: var(--disabled-text);
+      color: $unavalilable-gray;
     }
   }
 </style>

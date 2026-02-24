@@ -556,7 +556,7 @@ export default {
 
     &.none{
       background: $na-color;
-      color: #717179 !important;
+      color: $low-na-text !important;
     }
 }
 

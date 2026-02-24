@@ -9,6 +9,7 @@ import day from 'dayjs';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import ImageTableSet from './common/ImageTableSet.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
+import { useTabCountUpdater } from '@shell/components/form/ResourceTabs/composable';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -43,6 +44,11 @@ export default {
       },
     };
   },
+  setup() {
+    const { updateTabCount } = useTabCountUpdater();
+
+    return { updateTabCount };
+  },
   // Make up mock data for container name in imageMetadata
   fetch() {
     const matchedContainers = this.workloadsVulnerabilityreports.containers;
@@ -58,6 +64,8 @@ export default {
     this.vulnerabilityJsonReport = this.getVulnerabilityJsonReport(matchedContainers);
     this.imagesReport = this.getImagesReport(this.images, this.workloadType);
     this.workloadDetailReport = this.getWorkloadDetailReport(matchedContainers);
+    this.updateTabCount(undefined);
+    this.updateTabCount(this.vulnerabilities?.length || 0);
   },
   methods: {
     parseImagesData(containers) {

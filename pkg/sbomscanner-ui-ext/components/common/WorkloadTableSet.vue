@@ -9,7 +9,7 @@
             <input
                 v-model="filters.workloadSearch"
                 type="text"
-                placeholder="Search by ID"
+                :placeholder="t('imageScanner.imageDetails.searchByName')"
                 class="filter-input"
             />
             <i

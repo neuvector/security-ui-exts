@@ -514,22 +514,22 @@ export default {
 
   &.low {
     background: $low-color;
-    color:      white !important;
+    color:      $low-na-text !important;
   }
 
   &.na{
     background: $na-color;
-    color:      #717179 !important;
+    color:      $low-na-text!important;
   }
 
   &.none{
     background: $na-color;
-    color:      #717179 !important;
+    color:      $low-na-text !important;
   }
 
   &.unknown{
     background: $na-color;
-    color:      #717179 !important;
+    color:      $low-na-text !important;
   }
 }
 

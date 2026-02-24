@@ -64,8 +64,6 @@ export default {
       WORKLOADS_TABLE,
     };
   },
-  computed: {
-  },
   methods: {
     async onSelectionChange(selected) {
       this.selectedRows = selected || [];

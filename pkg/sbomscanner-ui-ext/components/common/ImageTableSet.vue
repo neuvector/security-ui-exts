@@ -36,18 +36,12 @@
         </div>
         <div class="filter-item" v-if="isInWorkloadContext">
           <label>{{ t('imageScanner.images.listTable.filters.label.container') }}</label>
-          <div class="filter-input-wrapper">
-            <input
-              v-model="filters.containerSearch"
-              type="text"
-              :placeholder="t('imageScanner.images.listTable.filters.placeholder.image')"
-              class="filter-input"
-            />
-            <i
-              class="icon icon-search"
-              style="color: #6C6C76; margin-left: 8px;"
-            ></i>
-          </div>
+           <LabeledSelect
+              v-model:value="filters.containerSearch"
+              :options="containerOptions"
+              :close-on-select="true"
+              :multiple="false"
+          />
         </div>
         <div class="filter-item">
           <label>{{ t('imageScanner.images.listTable.filters.label.repository') }}</label>
@@ -69,18 +63,12 @@
         </div>
         <div class="filter-item">
           <label>{{ t('imageScanner.images.listTable.filters.label.platform') }}</label>
-          <div class="filter-input-wrapper">
-            <input
-              v-model="filters.platformSearch"
-              type="text"
-              :placeholder="t('imageScanner.images.listTable.filters.placeholder.image')"
-              class="filter-input"
-            />
-            <i
-              class="icon icon-search"
-              style="color: #6C6C76; margin-left: 8px;"
-            ></i>
-          </div>
+          <LabeledSelect
+              v-model:value="filters.platformSearch"
+              :options="platformOptions"
+              :close-on-select="true"
+              :multiple="false"
+          />
         </div>
       </div>
     </div>
@@ -271,19 +259,19 @@ export default {
       filters:             {
         imageSearch:      '',
         severitySearch:   severityOptions[0].value,
-        containerSearch:  '',
+        containerSearch:  'Any',
         repositorySearch: 'Any',
         registrySearch:   'Any',
-        platformSearch:   '',
+        platformSearch:   'Any',
         inUseSearch:      'Any',
       },
       debouncedFilters: {
         imageSearch:      '',
         severitySearch:   severityOptions[0].value,
-        containerSearch:  '',
+        containerSearch:  'Any',
         repositorySearch: 'Any',
         registrySearch:   'Any',
-        platformSearch:   '',
+        platformSearch:   'Any',
         inUseSearch:      'Any',
       },
       registryCrds: [],
@@ -350,12 +338,13 @@ export default {
           if (filters.inUseSearch === 'Any') return true;
           if (filters.inUseSearch === 'true') return row.workloadCount > 0;
           if (filters.inUseSearch === 'false') return row.workloadCount === 0;
+
           return true;
         })();
         const repositoryMatch = filters.repositorySearch === 'Any' || row.imageMetadata.repository === filters.repositorySearch;
         const registryMatch = filters.registrySearch === 'Any' || `${ row.metadata.namespace }/${ row.imageMetadata.registry }` === filters.registrySearch;
-        const platformMatch = !filters.platformSearch || (row.imageMetadata.platform && row.imageMetadata.platform.toLowerCase().includes(filters.platformSearch.toLowerCase()));
-        const containerMatch = !filters.containerSearch || (row.metadata.container && row.metadata.container.toLowerCase().includes(filters.containerSearch.toLowerCase()));
+        const platformMatch = filters.platformSearch === 'Any' || (row.imageMetadata.platform && row.imageMetadata.platform.toLowerCase().includes(filters.platformSearch.toLowerCase()));
+        const containerMatch = filters.containerSearch === 'Any' || (row.metadata.container && row.metadata.container.toLowerCase().includes(filters.containerSearch.toLowerCase()));
 
         return imageMatch && severityMatch && inUseMatch && repositoryMatch && registryMatch && platformMatch && containerMatch;
       });
@@ -404,6 +393,28 @@ export default {
         downloadCsv,
         downloadJson
       ];
+    },
+    containerOptions() {
+      const containerSet = new Set();
+
+      this.rows.forEach((row) => {
+        if (row.metadata && row.metadata.container) {
+          containerSet.add(row.metadata.container);
+        }
+      });
+
+      return ['Any', ...containerSet];
+    },
+    platformOptions() {
+      const platformSet = new Set();
+
+      this.rows.forEach((row) => {
+        if (row.imageMetadata && row.imageMetadata.platform) {
+          platformSet.add(row.imageMetadata.platform);
+        }
+      });
+
+      return ['Any', ...platformSet];
     },
     repositoryOptions() {
       const repoSet = new Set();

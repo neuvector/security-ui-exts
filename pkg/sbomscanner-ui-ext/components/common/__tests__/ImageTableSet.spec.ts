@@ -238,6 +238,70 @@ describe('ImageTableSet.vue', () => {
     expect(wrapper.vm.registryOptions).toEqual(['Any', 'ns/reg1']);
   });
 
+  it('builds unique containerOptions with "Any" first', () => {
+    const wrapper = factory({
+      rows: [{
+        id:            '1',
+        imageMetadata: { registry: 'r', repository: 'repo'  },
+        metadata:      { namespace: 'ns', container: 'nginx' },
+        report:        {
+          summary: {
+            critical: 1, high: 0, medium: 0, low: 0, unknown: 0
+          }
+        },
+      },
+      {
+        id:            '2',
+        imageMetadata: { registry: 'r', repository: 'repo'  },
+        metadata:      { namespace: 'ns', container: 'redis' },
+        report:        {
+          summary: {
+            critical: 1, high: 0, medium: 0, low: 0, unknown: 0
+          }
+        },
+      }],
+    });
+
+    expect(wrapper.vm.containerOptions).toEqual([
+      'Any',
+      'nginx',
+      'redis'
+    ]);
+  });
+
+  it('builds unique platformOptions with "Any" first', () => {
+    const wrapper = factory({
+      rows: [{
+        id:            '1',
+        imageMetadata: { registry: 'r', repository: 'repo', platform: 'linux/amd64' },
+        metadata:      { namespace: 'ns', container: 'nginx' },
+        report:        {
+          summary: {
+            critical: 1, high: 0, medium: 0, low: 0, unknown: 0
+          }
+        },
+      },
+      {
+        id:            '2',
+        imageMetadata: { registry: 'r', repository: 'repo', platform: 'linux/arm64' },
+        metadata:      { namespace: 'ns', container: 'redis' },
+        report:        {
+          summary: {
+            critical: 1, high: 0, medium: 0, low: 0, unknown: 0
+          }
+        },
+      }],
+    });
+
+    expect(wrapper.vm.platformOptions).toEqual([
+      'Any',
+      'linux/amd64',
+      'linux/arm64'
+    ]);
+  });
+
+
+
   test('downloads CSV (non-grouped)', async() => {
     const wrapper = factory();
 

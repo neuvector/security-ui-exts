@@ -67,26 +67,30 @@ export default {
 
     &.critical {
       background: $critical-color;
+      color: rgba(255, 255, 255, 0.90);
     }
 
     &.high {
       background: $high-color;
+      color: rgba(255, 255, 255, 0.90);
     }
 
     &.medium {
       background: $medium-color;
+      color: rgba(255, 255, 255, 0.90);
     }
 
     &.low {
       background: $low-color;
+      color: $low-na-text;
     }
 
     &.na{
       background: $na-color;
+      color: $low-na-text;
     }
 
     .text {
-      color: rgba(255, 255, 255, 0.90);
       font-family: Lato;
       font-size: 13px;
       font-style: normal;

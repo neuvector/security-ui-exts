@@ -9,12 +9,13 @@
 
       <FixAvailableIcon :fixAvailable="isInUse" />
 
-      <span
+      <RouterLink
           v-if="isInUse"
+          :to="link"
           class="count text-bold"
       >
         {{ count }}
-      </span>
+      </RouterLink>
     </div>
 
     <div
@@ -31,12 +32,13 @@
             <span class="popup-workload-count">
               {{ t(count <= 1 ? 'imageScanner.images.listTable.popup.inUseTooltipSingle' : 'imageScanner.images.listTable.popup.inUseTooltipPlural', { count }) }}
             </span>
-            <RouterLink
+            <a
               class="learn-more-link"
-              :to="link"
+              :href="learnMoreLink"
+              target="_blank"
           >
             {{ t('imageScanner.general.learnMore') }}
-          </RouterLink>
+          </a>
           </div>
         </div>
       </div>
@@ -61,7 +63,10 @@ export default {
     }
   },
   data() {
-    return { showOnTop: false };
+    return {
+      showOnTop:     false,
+      learnMoreLink: '',
+    };
   },
   computed: {
     isInUse() {
