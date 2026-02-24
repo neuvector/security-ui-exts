@@ -32,13 +32,10 @@
 
         <div class="severity-list">
           <div v-for="severity in severities" :key="severity.key" class="severity-row">
-            <div v-if="cveAmount[severity.key] === 0" class="label" style="text-decoration: none; color: var(--disabled-text);">
-              {{ severity.label }}
-            </div>
             <RouterLink
-                v-else
                 :to="getSeverityLink(severity.label)"
                 class="label"
+                :class="{ 'disabled-link': !cveAmount[severity.key] }"
             >
               {{ severity.label }}
             </RouterLink>
