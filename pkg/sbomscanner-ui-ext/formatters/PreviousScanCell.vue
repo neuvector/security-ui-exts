@@ -49,7 +49,7 @@ export default {
     </div>
     <div v-if="value.prevScanStatus?.toLowerCase() === 'failed' && value.prevError">
       <span>
-        <span style="color: #BFC1D1">|</span>
+        <span class="separator">|</span>
         <TextWithPoppedDetail
           :value="t('imageScanner.general.error')"
           :detail="{ title: `${row.metadata.name} - ${t('imageScanner.registries.configuration.scanTable.header.error')}`, message: value.prevError, type: 'error' }"
@@ -112,5 +112,9 @@ export default {
         --status-complete: #{$completed-color};
         --status-failed: #{$failed-color};
         --status-none: #FFFFFF;
+    }
+
+    .separator {
+      color: #BFC1D1;
     }
 </style>
