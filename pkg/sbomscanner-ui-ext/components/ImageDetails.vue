@@ -479,7 +479,7 @@ export default {
           `"${ this.currentImage.imageMetadata?.repository || '' }"`,
           `"${ this.currentImage.imageMetadata?.platform || '' }"`,
           `"${ this.currentImage.imageMetadata?.digest || '' }"`,
-          `"${ this.workloads && this.workloads.length > 0 ? 'TRUE' : 'FALSE' }"`,
+          `"${ this.workloads && this.workloads.length > 0 ? 'Yes' : 'No' }"`,
           `"${ this.workloads ? this.workloads.length : 0 }"`,
           `"${ vuln.cveId || '' }"`,
           `"${ vuln.score || '' }"`,

@@ -394,7 +394,7 @@ describe('ImageDetails.vue', () => {
     expect(result).toContain('"docker.io/nginx:latest"');
     expect(result).toContain('"demo-02"');
     expect(result).toContain('"nginx"');
-    expect(result).toContain('"TRUE"');
+    expect(result).toContain('"Yes"');
     expect(result).toContain('""');
     expect(result).toContain('"2"');
     expect(result).toContain('"CVE-2023-1234"');
@@ -437,7 +437,7 @@ describe('ImageDetails.vue', () => {
     expect(result).toContain('"docker.io/nginx:latest"');
     expect(result).toContain('"demo-02"');
     expect(result).toContain('"nginx"');
-    expect(result).toContain('"FALSE"');
+    expect(result).toContain('"No"');
     expect(result).toContain('"0"');
     expect(result).toContain('"","","","","","","","","","",""');
   });
