@@ -428,21 +428,6 @@ describe('RegistriesOverview.vue', () => {
     expect(res.registryStatusList.length).toBe(5);
   });
 
-  it('filterByStatus updates selectedStatus', () => {
-    const wrapper = factory();
-
-    wrapper.vm.filterByStatus('complete');
-    expect(wrapper.vm.selectedStatus).toBe('complete');
-  });
-
-  it('filterByStatus sets selectedStatus reactively', async() => {
-    const wrapper = factory();
-
-    wrapper.vm.filterByStatus('failed');
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.selectedStatus).toBe('failed');
-  });
-
   it('getLastTransitionTime returns the latest timestamp', () => {
     const wrapper = factory();
     const conditions = [

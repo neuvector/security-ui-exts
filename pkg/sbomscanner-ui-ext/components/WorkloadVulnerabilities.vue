@@ -105,14 +105,16 @@ export default {
             imageRefs.push(imageRef);
 
             result.vulnerabilities.forEach((vul) => {
-              if (this.vulnerabilityMap.has(vul.cve)) {
-                const existingVul = this.vulnerabilityMap.get(vul.cve);
+              const key = `${ vul.cve }-${ vul.packageName } - ${ vul.installedVersion }`;
+
+              if (this.vulnerabilityMap.has(key)) {
+                const existingVul = this.vulnerabilityMap.get(key);
 
                 existingVul.occurrences += 1;
                 existingVul.images = Array.from(new Set([...(existingVul.images || []), imageRef]));
-                this.vulnerabilityMap.set(vul.cve, existingVul);
+                this.vulnerabilityMap.set(key, existingVul);
               } else {
-                this.vulnerabilityMap.set(vul.cve, {
+                this.vulnerabilityMap.set(key, {
                   ...vul,
                   occurrences: 1,
                   images:      imageRefs

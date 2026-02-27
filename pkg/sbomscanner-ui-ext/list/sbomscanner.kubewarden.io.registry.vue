@@ -5,7 +5,7 @@
         {{ latestUpdateDateText }}&nbsp;&nbsp;&nbsp;&nbsp;{{ latestUpdateTimeText }}
       </span>
     </div> -->
-    <RegistriesOverview />
+    <RegistriesOverview :filter-fn="filterByStatus"/>
     <div class="search-filters">
       <div class="filter-row">
         <div class="filter-item">
@@ -167,6 +167,7 @@ export default {
 
     return {
       headers:          REGISTRY_SCAN_TABLE,
+      status:           '',
       latestUpdateTime: new Date(),
       selectedRows:     [],
       filters:          {
@@ -201,6 +202,13 @@ export default {
       if (newVal !== oldVal) {
         this.filters.statusSearch = newVal;
       }
+    },
+    // Watch for status update when selecting it on Status distribution bar chart
+    status: {
+      handler() {
+        this.filterByStatus();
+      },
+      deep: true
     }
   },
   methods: {
@@ -216,6 +224,9 @@ export default {
         table.setBulkActionOfInterest(act);
         table.applyTableAction(act);
       }
+    },
+    filterByStatus(status) {
+      this.filters.statusSearch = status;
     },
     async fetchSecondaryResources({ canPaginate }) {
       if (canPaginate) {
@@ -244,6 +255,8 @@ export default {
     },
     filterRowsLocal(rows) {
       const filters = this.debouncedFilters;
+
+      console.log('Status filter value:', filters.statusSearch);
 
       return rows.filter((row) => {
         const registryMatch = !filters.registrySearch ||

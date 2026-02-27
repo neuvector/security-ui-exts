@@ -98,20 +98,12 @@ export default class SbomscannerRancherIoVexhub extends SteveModel {
         enabled:  true,
         bulkable: true,
         invoke:   async(_, resources = []) => {
-          // Handle bulk action - process all selected resources
-          if (resources && resources.length > 1) {
-            // Bulk operation
-            await Promise.all(resources.map(async(resource) => {
-              if (resource.spec) {
-                resource.spec = { ...(resource.spec || {}), enabled: false };
-                await resource.save();
-              }
-            }));
-          } else {
-            // Single resource operation
-            this.spec = { ...(this.spec || {}), enabled: false };
-            await this.save();
-          }
+          await Promise.all(resources.map(async(resource) => {
+            if (resource.spec) {
+              resource.spec = { ...(resource.spec || {}), enabled: false };
+              await resource.save();
+            }
+          }));
         }
       };
     } else {

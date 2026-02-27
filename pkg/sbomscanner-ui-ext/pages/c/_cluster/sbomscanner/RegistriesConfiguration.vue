@@ -5,7 +5,7 @@
   >
     <RecentUpdatedRegistries :registry-status-list="registryStatusList" />
     <DistributionChart
-      :filter-fn="filterByStatus"
+      :filter-fn="filterFn"
       :chart-data="statusSummary"
       :title="t('imageScanner.registries.StatusDistribution.title')"
       color-prefix="status"
@@ -32,6 +32,13 @@ export default {
   components: {
     RecentUpdatedRegistries,
     DistributionChart,
+  },
+  props: {
+    filterFn: {
+      type:     Function,
+      required: false,
+      default:  null
+    },
   },
   data() {
     const STATUS_OPTIONS = [
@@ -84,9 +91,6 @@ export default {
     },
     refresh() {
       this.loadData();
-    },
-    filterByStatus(status) {
-      this.selectedStatus = status;
     },
     openAddEditRegistry() {
       this.$router.push({

@@ -150,13 +150,6 @@ describe('SbomscannerRancherIoVexhub', () => {
         expect(action.bulkable).toBe(true);
       });
 
-      it('invoke should set enabled to false and save (single)', async() => {
-        await wrapper.toggle.invoke();
-
-        expect(wrapper.spec.enabled).toBe(false);
-        expect(wrapper.save).toHaveBeenCalledTimes(1);
-      });
-
       it('invoke should set enabled to false and save (bulk)', async() => {
         const res1 = { spec: { enabled: true }, save: jest.fn() };
         const res2 = { spec: { enabled: true }, save: jest.fn() };
