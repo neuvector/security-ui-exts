@@ -53,3 +53,29 @@ export function getWorkloadLink(row: any, cluster: string, hash?: string, query?
 
   return `${baseUrl}/${routeMap[row.type] || ''}/${namespace}/${row.name}${queryString}${hash ? `#${hash}` : ''}`;
 }
+
+/**
+ * Generic array deduplicator.
+ * @param arr - The array to filter
+ * @param isValid - Function returning true if the item is not empty/invalid
+ * @param getKey - Function returning a unique string representation of the item
+ */
+export function filterUnique<T>(
+  arr: T[],
+  isValid: (item: T) => boolean,
+  getKey: (item: T) => string
+): T[] {
+  if (!arr || !Array.isArray(arr)) return [];
+
+  const seen = new Set<string>();
+
+  return arr.filter((item) => {
+    if (!isValid(item)) return false;
+
+    const key = getKey(item);
+    if (seen.has(key)) return false;
+
+    seen.add(key);
+    return true;
+  });
+}
