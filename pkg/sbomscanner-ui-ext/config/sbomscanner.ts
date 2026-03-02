@@ -54,8 +54,9 @@ export function init($plugin: any, store: any) {
   weightType(PAGE.DASHBOARD, 98, true);
   weightType(PAGE.IMAGES, 97, true);
   // weightType(PAGE.VULNERABILITIES, 96, true);
-  weightType(PAGE.VEX_MANAGEMENT, 95, true);
-  weightType(RESOURCE.REGISTRY, 96, true);
+  weightType(RESOURCE.WORKLOAD_SCAN_CONFIGURATION, 96, true);
+  weightType(RESOURCE.REGISTRY, 95, true);
+  weightType(PAGE.VEX_MANAGEMENT, 94, true);
 
   basicType([
     PAGE.DASHBOARD,
@@ -63,5 +64,5 @@ export function init($plugin: any, store: any) {
     // PAGE.VULNERABILITIES,
   ]);
 
-  basicType([RESOURCE.REGISTRY, RESOURCE.VEX_HUB], 'Advanced');
+  basicType([RESOURCE.REGISTRY, RESOURCE.WORKLOAD_SCAN_CONFIGURATION, RESOURCE.VEX_HUB], 'Advanced');
 }

@@ -140,7 +140,7 @@ imageScanner:
           label: Filter by
           os: OS
           arch: Architecture
-          variant: Variable
+          variant: Variant
           add: Add Platform
       scan: Start Scan
       meta:
@@ -364,6 +364,28 @@ imageScanner:
     detail:
       description: VEX management hub description, if any
   workloads:
+    configuration:
+      cru:
+        name:
+          label: Name
+        general:
+          descriptionStart: The Workloads Scan automatically discovers images in running pods and generates consolidated reports for workload vulnerabilities. Want to learn more? Read our
+          documentationLink: documentation
+          enabled: Enabled
+          enabledTooltip: Toggle workload scanning on or off.
+          scanOnChange: Scan on registry change
+          scanOnChangeTooltip: When enabled, the Workloads Scan will scan for new images and vulnerabilities when a new image is discovered in a running pod.
+          namespaces: Leave empty to scan all namespaces
+          artifactsNamespace: Artifacts Namespace
+          artifactsNamespacePlaceholder: e.g. cattle-sbomscanner-system
+          artifactsNamespaceTooltip: Artifacts Namespace is the namespace where the SBOM Scanner will create the SBOM and the Vulnerability Report.
+        resourceLocation:
+          label: Resource Location
+          description: Changing the Artifacts Namespace is an expensive operation and might cause rescans. If the Artifacts Namespace is not specified, artifacts will be created in the same namespace as the discovered workloads.
+        scanning:
+          label: Scanning
+          namespaces: Namespace selectors
+          namespacesTooltip: Select the namespaces where the Workloads Scan will scan for workloads.
     tabs:
       images: Images
       affectingCVEs: Affecting CVEs
@@ -424,6 +446,7 @@ imageScanner:
 typeLabel:
   sbomscanner.kubewarden.io.registry: Registries configuration
   sbomscanner.kubewarden.io.vexhub: Vex Management
+  sbomscanner.kubewarden.io.workloadscanconfiguration: Workloads scan
   storage.sbomscanner.kubewarden.io.image: Image
   storage.sbomscanner.kubewarden.io.vulnerabilityreport: Vulnerability Report
   storage.sbomscanner.kubewarden.io.sbom: SBOM
@@ -447,5 +470,4 @@ resources:
   image: storage.sbomscanner.kubewarden.io.image
   vulnerabilityreport: storage.sbomscanner.kubewarden.io.vulnerabilityreport
   sbom: storage.sbomscanner.kubewarden.io.sbom
-
-
+  storage.sbomscanner.kubewarden.io.workloadscanconfiguration: Workloads scan
