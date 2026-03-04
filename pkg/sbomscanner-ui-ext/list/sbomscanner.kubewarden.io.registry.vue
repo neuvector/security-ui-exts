@@ -256,8 +256,6 @@ export default {
     filterRowsLocal(rows) {
       const filters = this.debouncedFilters;
 
-      console.log('Status filter value:', filters.statusSearch);
-
       return rows.filter((row) => {
         const registryMatch = !filters.registrySearch ||
             row.metadata?.name?.toLowerCase().includes(filters.registrySearch.toLowerCase());
