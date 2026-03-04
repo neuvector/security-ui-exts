@@ -39876,14 +39876,14 @@ export const workloadsVulnerabilityreports = {
       "app.kubernetes.io/managed-by": "sbomscanner"
     },
     "name": "deployment-nginx-with-dummy-init",
-    "namespace": "test",
+    "namespace": "cnpg-system",//"test",
     "ownerReferences": [
       {
         "apiVersion": "apps/v1",
         "blockOwnerDeletion": true,
         "controller": true,
         "kind": "Deployment",
-        "name": "nginx-with-dummy-init",
+        "name": "cnpg-cloudnative-pg",//"nginx-with-dummy-init",
         "uid": "cac35639-218b-4275-b8dc-96302a240989"
       }
     ],

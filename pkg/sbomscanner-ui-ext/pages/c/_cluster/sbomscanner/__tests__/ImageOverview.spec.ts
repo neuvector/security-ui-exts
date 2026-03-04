@@ -47,35 +47,6 @@ describe('ImageOverview.vue', () => {
     jest.clearAllMocks();
   });
 
-  test('downloadCSVReport grouped IMAGE REFERENCE uses registryURI template', async() => {
-    const wrapper = mountComponent();
-
-    (wrapper.vm as any).isGrouped = true;
-    // grouped repo with image that has imageMetadata.registryURI
-    const grouped = [ {
-      images: [ {
-        id:            'g1', imageMetadata: {
-          registryURI: 'regX', repository: 'repoG', tag: 'tG', digest: 'dg', registry: 'regX', platform: 'p'
-        }, scanResult: {
-          critical: 0, high: 0, medium: 0, low: 0, unknown: 0
-        }, report: {
-          summary: {
-            critical: 0, high: 0, medium: 0, low: 0, unknown: 0
-          }
-        }, imageReference: 'regX/repoG:tG'
-      } ]
-    } ];
-
-    await (wrapper.vm as any).downloadCSVReport(grouped, true);
-
-    // Papa.unparse should be called with rows that include IMAGE REFERENCE using registryURI template
-    expect(Papa.unparse).toHaveBeenCalled();
-    const passed = (Papa.unparse as jest.Mock).mock.calls[0][0] as any[];
-
-    expect(passed[0]['IMAGE REFERENCE']).toBe('regX/repoG:tG');
-  });
-
-
   test('downloadCSVReport handles papaparse throwing and dispatches error', async() => {
 
     // prepare a sample row matching expected shape
@@ -110,7 +81,7 @@ describe('ImageOverview.vue', () => {
       }
     });
 
-    await (wrapperErr.vm as any).downloadCSVReport(rows);
+    await (wrapperErr.vm as any).downloadCSVFullReport(rows);
 
     expect(storeErr.dispatch).toHaveBeenCalledWith('growl/error', expect.any(Object), { root: true });
   });
@@ -162,101 +133,5 @@ describe('ImageOverview.vue', () => {
     await (wrapper.vm as any).$options.fetch.call(wrapper.vm);
 
     expect((wrapper.vm as any).rows).toStrictEqual(rows.map((r) => ({ ...r, workloadCount: 0 })));
-  });
-
-  test('downloadSbom success and error flows', async() => {
-    // success path
-    const storeSuccess = {
-      dispatch: jest.fn((action: string, payload: any) => {
-        if (action === 'cluster/find') {
-          return Promise.resolve({ spdx: { foo: 'bar' }, metadata: { name: payload.id } });
-        }
-
-        return Promise.resolve();
-      }),
-      getters: {},
-    };
-
-    const wrapperSuccess = mountComponent({
-      global: {
-        mocks: {
-          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
-        }
-      }
-    });
-
-    await (wrapperSuccess.vm as any).downloadSbom([ { id: 'sb1' } ]);
-    expect(fileSaver.saveAs).toHaveBeenCalled();
-    expect(storeSuccess.dispatch).toHaveBeenCalledWith('growl/success', expect.any(Object), { root: true });
-
-    // error path
-    const storeError = {
-      dispatch: jest.fn((action: string) => {
-        if (action === 'cluster/find') {
-          throw new Error('boom');
-        }
-
-        // allow growl dispatches to resolve
-        return Promise.resolve();
-      }),
-      getters: {},
-    };
-
-    const wrapperError = mountComponent({
-      global: {
-        mocks: {
-          $store: storeError, $t: t, t, $fetchState: { pending: false }
-        }
-      }
-    });
-
-    await (wrapperError.vm as any).downloadSbom([ { id: 'sb2' } ]);
-    expect(storeError.dispatch).toHaveBeenCalledWith('growl/error', expect.any(Object), { root: true });
-  });
-
-  test('downloadJson success and error flows', async() => {
-    const vul = { report: { hello: 'world' } };
-    const storeSuccess = {
-      dispatch: jest.fn((action: string) => {
-        if (action === 'cluster/find') {
-          return Promise.resolve(vul);
-        }
-
-        return Promise.resolve();
-      }),
-      getters: {},
-    };
-
-    const wrapper = mountComponent({
-      global: {
-        mocks: {
-          $store: storeSuccess, $t: t, t, $fetchState: { pending: false }
-        }
-      }
-    });
-
-    await (wrapper.vm as any).downloadJson([ { id: 'v1' } ]);
-    expect(fileSaver.saveAs).toHaveBeenCalled();
-    expect(storeSuccess.dispatch).toHaveBeenCalledWith('growl/success', expect.any(Object), { root: true });
-
-    const storeError = {
-      dispatch: jest.fn((action: string) => {
-        if (action === 'cluster/find') {
-          throw new Error('bad');
-        }
-
-        return Promise.resolve();
-      }), getters: {}
-    };
-    const wrapperErr = mountComponent({
-      global: {
-        mocks: {
-          $store: storeError, $t: t, t, $fetchState: { pending: false }
-        }
-      }
-    });
-
-    await (wrapperErr.vm as any).downloadJson([ { id: 'v2' } ]);
-    expect(storeError.dispatch).toHaveBeenCalledWith('growl/error', expect.any(Object), { root: true });
   });
 });

@@ -12,6 +12,7 @@
       {{ t('imageScanner.images.downloadReport') }}
     </button>
     <button
+      v-if="reportMeta?.csvReportBtnName2 || reportMeta?.jsonReportBtnName"
       class="btn role-primary dropdown-toggle"
       aria-label="Download options"
       type="button"

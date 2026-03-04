@@ -35,6 +35,7 @@ export default {
       workloadDetailReport:                [],
       vulnerabilityJsonReport:             {},
       workloadsVulnerabilityreports:       workloadsVulnerabilityreports,
+      totalCveCount:                       0,
       containerSpec:                       null,
       activeTab:                           'images',
       defaultTab:                          this.$route.query?.defaultTab || 'images',
@@ -71,7 +72,8 @@ export default {
     this.imagesReport = this.getImagesReport(this.images, this.workloadType);
     this.workloadDetailReport = this.getWorkloadDetailReport(matchedContainers);
     this.updateTabCount(undefined);
-    this.updateTabCount(this.vulnerabilities?.length || 0);
+    this.totalCveCount = (this.workloadsVulnerabilityreports.summary?.critical || 0) + (this.workloadsVulnerabilityreports.summary?.high || 0) + (this.workloadsVulnerabilityreports.summary?.medium || 0) + (this.workloadsVulnerabilityreports.summary?.low || 0) + (this.workloadsVulnerabilityreports.summary?.unknown || 0);
+    this.updateTabCount(this.totalCveCount);
   },
   methods: {
     parseImagesData(containers) {
@@ -105,7 +107,7 @@ export default {
             imageRefs.push(imageRef);
 
             result.vulnerabilities.forEach((vul) => {
-              const key = `${ vul.cve }-${ vul.packageName } - ${ vul.installedVersion }`;
+              const key = `${ vul.cve }-${ vul.packageName }-${ vul.installedVersion }`;
 
               if (this.vulnerabilityMap.has(key)) {
                 const existingVul = this.vulnerabilityMap.get(key);
@@ -116,8 +118,15 @@ export default {
               } else {
                 this.vulnerabilityMap.set(key, {
                   ...vul,
-                  occurrences: 1,
-                  images:      imageRefs
+                  occurrences:    1,
+                  images:         imageRefs,
+                  workloadName:   this.workloadName || '',
+                  namespace:      this.containerMap.get(container.name)?.namespace || this.t('imageScanner.general.unknown'),
+                  kind:           this.workloadType || '',
+                  container:      container.name || '',
+                  imageReference: imageRef || '',
+                  platform:       report.imageMetadata?.platform || '',
+                  digest:         report.imageMetadata?.digest || '',
                 });
               }
             });
@@ -137,7 +146,7 @@ export default {
           package:          vuln.packageName,
           packageVersion:   vuln.installedVersion,
           packagePath:      getPackagePath(vuln.purl),
-          fixAvailable:     vuln.fixedVersions && vuln.fixedVersions.length > 0,
+          fixAvailable:     vuln.fixedVersions && vuln.fixedVersions.length > 0 ? 'Yes' : 'No',
           fixVersion:       vuln.fixedVersions ? vuln.fixedVersions.join(', ') : '',
           severity:         vuln.severity?.toLowerCase() || this.t('imageScanner.general.unknown'),
           severityNum:      getSeverityNum(vuln.severity),
@@ -149,6 +158,14 @@ export default {
           diffID:           vuln.diffID,
           installedVersion: vuln.installedVersion,
           images:           vuln.images || [],
+          imageReference:   vuln.imageReference || '',
+          occurrences:      vuln.occurrences || 1,
+          workloadName:     vuln.workloadName || '',
+          namespace:        vuln.namespace || '',
+          kind:             vuln.kind || '',
+          container:        vuln.container || '',
+          platform:         vuln.platform || '',
+          digest:           vuln.digest || '',
         });
       });
     },
@@ -314,13 +331,10 @@ export default {
       class="vul-report-menu-btn"
       :report-meta="{
         mainResourceIndex: 1,
-        csvReportFileName1: activeTab === 'images' ? imagesReportFileName : affactingCvesReportFileName,
-        jsonReportFileName: workloadVulnerabilityReportFileName,
-        csvReportBtnName1: activeTab === 'images' ? t('imageScanner.workloads.buttons.downloadImagesCsv') : t('imageScanner.workloads.buttons.downloadWorkloadDetailCsv'),
-        jsonReportBtnName: t('imageScanner.workloads.buttons.downloadVulnerabilityJson'),
+        csvReportFileName1: affactingCvesReportFileName,
+        csvReportBtnName1: t('imageScanner.workloads.buttons.downloadWorkloadDetailCsv'),
       }"
-      :csv-report-data1="activeTab === 'images' ? imagesReport : workloadDetailReport"
-      :json-report-data="vulnerabilityJsonReport"
+      :csv-report-data1="workloadDetailReport"
     />
   </div>
   <div v-if="showSubTabs">
@@ -340,7 +354,9 @@ export default {
         <Tab :weight="1" :label="t('imageScanner.workloads.tabs.affectingCVEs')" name="affectingCVEs">
           <VulnerabilityTableSet
             :vulnerabilityDetails="vulnerabilities"
+            :totalCveCount="totalCveCount"
             :isInWorkloadContext="true"
+            :assetName="workloadName"
             :severity="this.$route.query.severity?.toLowerCase() || 'any'"
           />
         </Tab>

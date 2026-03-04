@@ -133,8 +133,6 @@ describe('ImageDetails.vue', () => {
 
   it('initializes reportMeta with csv and json filenames', () => {
     expect(wrapper.vm.reportMeta.csvReportFileName1).toMatch(/^test-image-route-image-detail-report_\d{8}_\d{6}\.csv$/);
-    expect(wrapper.vm.reportMeta.csvReportFileName2).toMatch(/^test-image-route-workloads-report_\d{8}_\d{6}\.csv$/);
-    expect(wrapper.vm.reportMeta.jsonReportFileName).toMatch(/^test-image-route-vulnerability-report_\d{8}_\d{6}\.json$/);
   });
 
   it('switches mainResourceIndex based on selected report tab', () => {

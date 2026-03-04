@@ -77,7 +77,7 @@
       :namespaced="false"
       :search="false"
       :paging="true"
-      :row-actions="!isGrouped"
+      :row-actions="!isGrouped && !isInWorkloadContext"
       :table-actions="true"
       :sub-expandable="isGrouped"
       :sub-rows="isGrouped"
@@ -158,7 +158,6 @@ import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import Papa from 'papaparse';
 import _ from 'lodash';
 import day from 'dayjs';
-import { WORKLOAD_ANNOTATION_PREFIX } from "@sbomscanner-ui-ext/constants";
 
 export default {
   name:  'ImageOverview',
@@ -439,16 +438,18 @@ export default {
 
         const imageList = imagesData.map((row) => {
           return {
-            'IMAGE REFERENCE': isDataGrouped ? constructImageName(row.imageMetadata) : row.imageReference,
+            'IMAGE REFERENCE': isDataGrouped ? row.imageReference : constructImageName(row.imageMetadata),
             'CVEs(Critical)':  isDataGrouped ? row.scanResult.critical : row.report.summary.critical,
             'CVEs(High)':      isDataGrouped ? row.scanResult.high : row.report.summary.high,
             'CVEs(Medium)':    isDataGrouped ? row.scanResult.medium : row.report.summary.medium,
             'CVEs(Low)':       isDataGrouped ? row.scanResult.low : row.report.summary.low,
             'CVEs(None)':      isDataGrouped ? row.scanResult.unknown : row.report.summary.unknown,
-            'IMAGE ID':        row.imageMetadata.digest,
+            'IN USE':          row.workloadCount && row.workloadCount > 0 ? 'Yes' : 'No',
+            'WORKLOAD COUNT':  row.workloadCount || 0,
             REGISTRY:          row.imageMetadata.registry,
             REPOSITORY:        row.imageMetadata.repository,
             PLATFORM:          row.imageMetadata.platform,
+            DIGEST:            row.imageMetadata.digest,
           };
         });
         const csvBlob = new Blob([Papa.unparse(imageList)], { type: 'text/csv;charset=utf-8' });

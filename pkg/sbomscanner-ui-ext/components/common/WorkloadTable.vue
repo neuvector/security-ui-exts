@@ -45,11 +45,13 @@ import { WORKLOADS_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import { downloadCSV } from '@sbomscanner-ui-ext/utils/report';
 import SortableTable from '@shell/components/SortableTable';
+import ActionMenu from '@shell/components/ActionMenuShell.vue';
 import day from 'dayjs';
 export default {
   name:       'WorkloadTable',
   components: {
     SortableTable,
+    ActionMenu,
   },
   props: {
     workloads: {
@@ -145,7 +147,7 @@ export default {
           `"${ critical }"`,
           `"${ high }"`,
           `"${ medium }"`,
-          `"${ low }"`,
+          `"${ low }"`, 
           `"${ unknown }"`,
         ];
 
@@ -153,6 +155,22 @@ export default {
       });
 
       return csvRows.join('\n');
+    },
+    downloadCsv(res) {
+      const target = (res && res.length ? res[0] : null);
+
+      if (!target) {
+        this.$store.dispatch('growl/error', {
+          title:   'Error',
+          message: 'No workload data available for download'
+        }, { root: true });
+
+        return;
+      }
+
+      const csvData = this.generateCSVFromFilteredWorkloads();
+
+      downloadCSV(csvData, `${ target.workloadName || target.name }-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`);
     },
   },
 };

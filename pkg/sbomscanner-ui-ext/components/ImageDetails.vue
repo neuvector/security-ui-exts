@@ -30,11 +30,8 @@
           <DownloadFullReportBtn
             :image-name="imageName"
             :vulnerability-details="vulnerabilityDetails"
-            :vulnerability-report="vulnerabilityReport"
             :reportMeta="reportMeta"
             :csv-report-data1="generateCSVFromVulnerabilityReport(vulnerabilityDetails)"
-            :csv-report-data2="generateCSVFromWorkloadsReport(workloads)"
-            :json-report-data="vulnerabilityReport?.report"
           />
         </div>
       </div>
@@ -75,9 +72,9 @@
         <VulnerabilityTableSet
           :vulnerabilityDetails="vulnerabilityDetails"
           :severity="severity"
-          :image-name="imageName"
+          :asset-name="imageName"
           :current-image="currentImage"
-          :workload-count="workloads ? workloads.length : 0"
+          :is-in-image-context="true"
         />
       </Tab>
       <Tab
@@ -118,6 +115,7 @@ import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import RancherMeta from './common/RancherMeta.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 import WorkloadTableSet from './common/WorkloadTableSet.vue';
+import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
 
 export default {
   name:       'ImageDetails',
@@ -150,14 +148,14 @@ export default {
       RESOURCE,
       PAGE,
       reportMeta:                    {
-        csvReportBtnName1: this.t('imageScanner.images.downloadImageDetailReport'),
-        csvReportBtnName2: this.t('imageScanner.images.downloadWorkloadsReport'),
+        csvReportBtnName1:  this.t('imageScanner.images.downloadImageDetailReport'),
+        // csvReportBtnName2:  this.t('imageScanner.images.downloadWorkloadsReport'),
         csvReportFileName1: `${ this.$route.params.id }-image-detail-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`,
-        csvReportFileName2: `${ this.$route.params.id }-workloads-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`,
-        jsonReportBtnName: this.t('imageScanner.images.downloadVulnerabilityReport'),
-        jsonReportFileName: `${ this.$route.params.id }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`,
-        resourceName1:     this.$route.params.id,
-        mainResourceIndex: 1,
+        // csvReportFileName2: `${ this.$route.params.id }-workloads-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`,
+        // jsonReportBtnName:  this.t('imageScanner.images.downloadVulnerabilityReport'),
+        // jsonReportFileName: `${ this.$route.params.id }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`,
+        resourceName1:      this.$route.params.id,
+        mainResourceIndex:  1,
       }
     };
   },
@@ -172,6 +170,7 @@ export default {
 
     // Load the image resource and its associated data
     await this.loadImageData();
+    this.loadWorkloads();
   },
 
   computed: {
@@ -379,6 +378,26 @@ export default {
       this.severity = severity;
     },
 
+    loadWorkloads() {
+      const workloads = [workloadsVulnerabilityreports];
+
+      this.workloads = this.parseWorkloadTableData(workloads);
+    },
+
+    parseWorkloadTableData(workloads) {
+      return workloads.map((workload) => {
+        const summary = workload.summary || {};
+
+        return {
+          name:       workload.metadata.ownerReferences ? workload.metadata.ownerReferences[0]?.name : '',
+          type:       workload.metadata.ownerReferences ? workload.metadata.ownerReferences[0]?.kind : '',
+          namespace:  workload.metadata.namespace,
+          imagesUsed: workload.spec.containers ? workload.spec.containers.length : 0,
+          summary:    workload.summary,
+        };
+      });
+    },
+
     async loadImageData() {
       try {
         // Try multiple approaches to load the image
@@ -417,45 +436,7 @@ export default {
           const matchingSbom = sboms.find((sbom) => sbom.metadata?.name === this.imageName
           );
 
-          // Mock annotations for workloads data - start
-          matchingVulnReport.metadata.annotations = {
-            'sbomscanner.kubewarden.io/capi-controller-manager': JSON.stringify({
-              name: 'capi-controller-manager',
-              namespace: 'cattle-capi-system',
-              containers: 3,
-              type: 'Deployment',
-              imagesUsed: 5,
-              summary: {
-                critical: 2,
-                high: 5,
-                medium: 10,
-                low: 20,
-                suppress: 4,
-                unknown: 1
-              }
-            }),
-            'sbomscanner.kubewarden.io/cert-manager': JSON.stringify({
-              name: 'cert-manager',
-              namespace: 'cert-manager',
-              containers: 2,
-              type: 'Deployment',
-              imagesUsed: 14,
-              summary: {
-                critical: 1,
-                high: 3,
-                medium: 5,
-                low: 10,
-                suppress: 2,
-                unknown: 0
-              }
-            })
-          };
-
-          // Mock annotations for workloads data - end
-
-          // Set the loaded resources directly
           this.loadedVulnerabilityReport = matchingVulnReport;
-          this.workloads = Object.values(matchingVulnReport.metadata.annotations || {}).map(annotation => JSON.parse(annotation));
           this.loadedSbom = matchingSbom;
 
           // Force component to re-render after data properties are set
