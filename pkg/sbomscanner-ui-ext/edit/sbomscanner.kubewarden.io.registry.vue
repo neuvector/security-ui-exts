@@ -15,29 +15,8 @@ import {
 } from '@sbomscanner-ui-ext/constants';
 import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@sbomscanner-ui-ext/types';
 import { SECRET_TYPES } from '@shell/config/secret';
-
-const VALID_PLATFORMS = {
-  linux:     ['amd64', 'arm', 'arm64', 's390x','386', 'loong64', 'mips', 'mipsle', 'mips64', 'mips64le', 'ppc64', 'ppc64le', 'riscv64'],
-  aix:       ['ppc64'],
-  android:   ['amd64', 'arm', 'arm64','386'],
-  darwin:    ['amd64', 'arm64'],
-  dragonfly: ['amd64'],
-  freebsd:   ['amd64', 'arm', '386'],
-  illumos:   ['amd64'],
-  ios:       ['arm64'],
-  js:        ['wasm'],
-  netbsd:    ['amd64', 'arm', '386'],
-  openbsd:   ['amd64', 'arm', 'arm64', '386'],
-  plan9:     ['amd64', 'arm', '386'],
-  solaris:   ['amd64'],
-  wasip1:    ['wasm'],
-  windows:   ['amd64', 'arm', 'arm64', '386']
-};
-
-const ALLOWED_VARIANTS = {
-  arm:   ['v6', 'v7', 'v8'],
-  arm64: ['v8']
-};
+import { filterUnique } from "@sbomscanner-ui-ext/utils/app";
+import { VALID_PLATFORMS, ALLOWED_VARIANTS } from '@sbomscanner-ui-ext/constants/securityConstants';
 
 export default {
   name: 'CruRegistry',
@@ -97,7 +76,7 @@ export default {
       PAGE,
       PRODUCT_NAME,
       authLoading:     false,
-      osOptions:       osOptions,
+      osOptions,
     };
   },
 
@@ -307,21 +286,12 @@ export default {
 
     cleanPlatforms() {
       if (!this.value.spec.platforms) return;
-      const uniqueSet = new Set();
 
-      this.value.spec.platforms = this.value.spec.platforms.filter((p) => {
-        if (!p.os || !p.arch) {
-          return false;
-        }
-        const key = `${p.os}-${p.arch}-${p.variant || ''}`;
-
-        if (uniqueSet.has(key)) {
-          return false;
-        }
-        uniqueSet.add(key);
-
-        return true;
-      });
+      this.value.spec.platforms = filterUnique(
+          this.value.spec.platforms,
+          (p) => p.os && p.arch,
+          (p) => `${p.os}-${p.arch}-${p.variant || ''}`
+      );
     }
   }
 };
