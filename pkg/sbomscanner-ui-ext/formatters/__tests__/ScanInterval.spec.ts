@@ -11,12 +11,11 @@ describe('ScanIntervalCell.vue', () => {
     });
   }
 
-  test('renders n/a when value is empty string', () => {
+  test('renders manual when value is empty string', () => {
     const wrapper = factory({ value: '' });
 
     expect(wrapper.find('.scan-interval-none').exists()).toBe(true);
-    expect(wrapper.find('.scan-interval-none').text()).toBe('n/a');
-  });
+    expect(wrapper.find('.scan-interval-none').text()).toBe('%imageScanner.registries.configuration.cru.scan.schedule.manualScan%');  });
 
   test('parses full h/m/s (e.g., "1h30m20s")', () => {
     const wrapper = factory({ value: '1h30m20s' });

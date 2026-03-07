@@ -134,7 +134,7 @@ imageScanner:
             nocatalog: Add at least one repository. Type and press Enter to add.
           schedule:
             label: Scan Interval
-            manualScan: Manual scan
+            manualScan: Manual
             placeholder: Selecting '{manualScan}' disables automatic scanning
         filters:
           label: Filter by
