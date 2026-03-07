@@ -7,7 +7,7 @@
     <span
       v-else
       class="scan-interval-text scan-interval-none"
-    >n/a</span>
+    >{{ t('imageScanner.registries.configuration.cru.scan.schedule.manualScan') }}</span>
   </div>
 </template>
 <script>

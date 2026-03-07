@@ -15,7 +15,7 @@ export const SCAN_INTERVAL_OPTIONS = [
   { label: 'Every 6 hours', value: SCAN_INTERVALS.SIX_HOURS },
   { label: 'Every 12 hours', value: SCAN_INTERVALS.TWELVE_HOURS },
   { label: 'Every 24 hours', value: SCAN_INTERVALS.TWENTY_FOUR_HOURS },
-  { label: 'Manual Scan', value: SCAN_INTERVALS.MANUAL } // backend disables auto-scan
+  { label: 'Manual', value: SCAN_INTERVALS.MANUAL } // backend disables auto-scan
 ];
 
 export const REGISTRY_TYPE = {
