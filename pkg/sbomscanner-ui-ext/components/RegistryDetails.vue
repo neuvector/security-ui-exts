@@ -22,8 +22,10 @@
               :status="registry?.scanRec.currStatus"
             />
           </h1>
-          <span class="resource-header-description">
-            {{ t('imageScanner.registries.detail.description') }}
+          <span
+              v-if="registry?.description"
+              class="resource-header-description">
+            {{  registry.description }}
           </span>
         </div>
         <div class="resource-header-actions">
