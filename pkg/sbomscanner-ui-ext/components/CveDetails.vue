@@ -335,12 +335,7 @@ export default {
 }
 
 .description {
-  display: flex;
-  max-width: 900px;
-  max-height: calc(21px * 3);
-  flex-direction: column;
-  justify-content: center;
-  overflow-y: auto;
+  display: block;
   color: var(--disabled-text);
   font-family: Lato;
   font-size: 14px;
