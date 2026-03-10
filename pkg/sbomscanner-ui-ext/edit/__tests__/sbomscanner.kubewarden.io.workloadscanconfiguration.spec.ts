@@ -10,6 +10,14 @@ jest.mock('@shell/mixins/create-edit-view', () => ({
       mode: { type: String, default: 'edit' },
       value: { type: Object, required: true }
     },
+    computed: {
+      isCreate() {
+        return this.mode === 'create';
+      },
+      isView() {
+        return this.mode === 'view';
+      }
+    },
     methods: {
       save: jest.fn().mockResolvedValue(true),
       done: jest.fn()
@@ -22,7 +30,7 @@ describe('CruWorkloadScanConfiguration.vue', () => {
   let mockDispatch;
   let mockGetters;
 
-  const createWrapper = (valueOverrides = {}) => {
+  const createWrapper = (valueOverrides = {}, mode = 'edit') => {
     mockDispatch = jest.fn().mockResolvedValue([]);
 
     mockGetters = {
@@ -56,7 +64,7 @@ describe('CruWorkloadScanConfiguration.vue', () => {
       // Pass props properly
       props: {
         value: baseValue,
-        mode: 'edit',
+        mode: mode,
       },
       // 2. In Vue 3 / VTU v2, ALL mocks and stubs MUST be inside `global`
       global: {
@@ -66,6 +74,7 @@ describe('CruWorkloadScanConfiguration.vue', () => {
             getters: mockGetters
           },
           $route: { params: { cluster: 'local' } },
+          t: (key) => key, // Provide simple mock translation for the component
         },
         stubs: {
           CruResource: { template: '<div><slot></slot><slot name="form-footer"></slot></div>' },
@@ -99,6 +108,32 @@ describe('CruWorkloadScanConfiguration.vue', () => {
 
       expect(mockDispatch).toHaveBeenCalledWith('cluster/findAll', { type: 'secret' });
       expect(mockDispatch).toHaveBeenCalledWith('cluster/findAll', { type: 'namespace' });
+    });
+  });
+
+  describe('Computed Properties', () => {
+    describe('isArtifactsNamespaceLocked', () => {
+      it('returns true when mode is edit', () => {
+        wrapper = createWrapper({}, 'edit');
+        expect(wrapper.vm.isArtifactsNamespaceLocked).toBe(true);
+      });
+
+      it('returns false when mode is create', () => {
+        wrapper = createWrapper({}, 'create');
+        expect(wrapper.vm.isArtifactsNamespaceLocked).toBe(false);
+      });
+    });
+
+    describe('artifactsNamespaceTooltipText', () => {
+      it('returns locked tooltip translation when locked (edit mode)', () => {
+        wrapper = createWrapper({}, 'edit');
+        expect(wrapper.vm.artifactsNamespaceTooltipText).toBe('imageScanner.workloads.configuration.cru.general.artifactsNamespaceLockedTooltip');
+      });
+
+      it('returns general tooltip translation when not locked (create mode)', () => {
+        wrapper = createWrapper({}, 'create');
+        expect(wrapper.vm.artifactsNamespaceTooltipText).toBe('imageScanner.workloads.configuration.cru.general.artifactsNamespaceTooltip');
+      });
     });
   });
 
@@ -210,7 +245,10 @@ describe('CruWorkloadScanConfiguration.vue', () => {
 
       expect(mockDispatch).toHaveBeenCalledWith(
         'growl/success',
-        expect.any(Object),
+        {
+          title: 'imageScanner.general.saved',
+          message: 'imageScanner.workloads.configuration.cru.general.successMessage'
+        },
         { root: true }
       );
     });

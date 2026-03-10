@@ -346,7 +346,7 @@ export default {
           <LabeledInput
               v-model:value="value.spec.caBundle"
               type="multiline"
-              label="CA Cert Bundle"
+              :label="t('imageScanner.registries.configuration.cru.registry.caBundle.label')"
               style="max-height: 110px; overflow-y: auto;"
               data-testid="auth-ca-bundle-input"
               :placeholder="t('imageScanner.registries.configuration.cru.registry.caBundle.placeholder')"

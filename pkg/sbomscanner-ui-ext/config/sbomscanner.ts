@@ -6,7 +6,7 @@ import {
 
 export function init($plugin: any, store: any) {
   const {
-    product, virtualType, basicType, weightType
+    product, virtualType, basicType, weightType, configureType
   } = $plugin.DSL(store, PRODUCT_NAME);
 
   product({
@@ -50,6 +50,10 @@ export function init($plugin: any, store: any) {
   //     meta: { pkg: PRODUCT_NAME, product: PRODUCT_NAME },
   //   },
   // });
+
+  configureType(RESOURCE.WORKLOAD_SCAN_CONFIGURATION, {
+    resourceEditMasthead: false
+  })
 
   weightType(PAGE.DASHBOARD, 98, true);
   weightType(PAGE.IMAGES, 97, true);

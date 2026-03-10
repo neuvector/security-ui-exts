@@ -93,6 +93,19 @@ export default {
   computed: {
     SCAN_INTERVAL_OPTIONS() { return SCAN_INTERVAL_OPTIONS; },
 
+    isArtifactsNamespaceLocked() {
+      // Lock the field if we are editing an existing configuration
+      return this.mode === 'edit';
+    },
+
+    artifactsNamespaceTooltipText() {
+      if (this.isArtifactsNamespaceLocked) {
+        return this.t('imageScanner.workloads.configuration.cru.general.artifactsNamespaceLockedTooltip');
+      } else {
+        return this.t('imageScanner.workloads.configuration.cru.general.artifactsNamespaceTooltip');
+      }
+    },
+
     namespaceOptions() {
       const namespaces = this.$store.getters['cluster/all']('namespace') || [];
       const options = namespaces.map(n => n.id);
@@ -175,6 +188,7 @@ export default {
       }
 
       this.saveLoading = true;
+      this.errors = [];
 
       if (this.value.spec.scanInterval === SCAN_INTERVALS.MANUAL) {
         delete this.value.spec.scanInterval;
@@ -190,7 +204,10 @@ export default {
       } finally {
         this.saveLoading = false;
         if (!this.errors || this.errors.length === 0) {
-          this.$store.dispatch('growl/success', { title: 'Saved', message: 'Workload scan configuration updated successfully.' }, { root: true });
+          this.$store.dispatch('growl/success', {
+            title: this.t('imageScanner.general.saved'),
+            message: this.t('imageScanner.workloads.configuration.cru.general.successMessage')
+          }, { root: true });
         }
       }
     },
@@ -266,6 +283,23 @@ export default {
 
 <template>
   <div class="filled-height workload-scan-config">
+
+    <div class="custom-page-header">
+      <h1 class="page-title">
+        {{ t('imageScanner.workloads.configuration.title') }}
+        <span
+            class="badge-state"
+            :class="{
+              'bg-info': isCreate,
+              'bg-success': !isCreate && value.spec.enabled,
+              'bg-error': !isCreate && !value.spec.enabled
+            }"
+        >
+          {{ isCreate ? t('generic.create') : (value.spec.enabled ? t('imageScanner.general.active') : t('imageScanner.general.inactive')) }}
+        </span>
+      </h1>
+    </div>
+
     <CruResource
         :done-route="doneRoute"
         :mode="mode"
@@ -318,7 +352,8 @@ export default {
               :options="namespaceOptions"
               :mode="mode"
               :searchable="true"
-              :tooltip="t('imageScanner.workloads.configuration.cru.general.artifactsNamespaceTooltip')"
+              :disabled="isArtifactsNamespaceLocked"
+              :tooltip="artifactsNamespaceTooltipText"
           />
         </div>
 
@@ -326,14 +361,26 @@ export default {
           {{ t('imageScanner.registries.configuration.cru.authentication.label') }}
         </div>
 
-        <div class="w-half mt-16">
-          <LabeledSelect
-              v-model:value="value.spec.authSecret"
-              :label="t('imageScanner.registries.configuration.cru.authentication.label')"
-              :mode="mode"
-              :options="authOptions"
-              :loading="authLoading"
-          />
+        <div class="row-half mt-16">
+          <div>
+            <LabeledSelect
+                v-model:value="value.spec.authSecret"
+                :label="t('imageScanner.registries.configuration.cru.authentication.label')"
+                :mode="mode"
+                :options="authOptions"
+                :loading="authLoading"
+            />
+          </div>
+          <div>
+            <div class="checkbox-align">
+              <Checkbox
+                  v-model:value="value.spec.insecure"
+                  :label="t('imageScanner.registries.configuration.cru.registry.insecure.label')"
+                  :tooltip="t('imageScanner.registries.configuration.cru.registry.insecure.tooltip')"
+                  :mode="mode"
+              />
+            </div>
+          </div>
         </div>
 
         <div v-if="value.spec.authSecret === 'create'" class="row mt-16">
@@ -355,28 +402,16 @@ export default {
           </div>
         </div>
 
-        <div class="row-half mt-16">
-          <div>
-            <LabeledInput
-                v-model:value="value.spec.caBundle"
-                type="multiline"
-                label="CA Cert Bundle"
-                style="max-height: 110px; overflow-y: auto;"
-                :placeholder="t('imageScanner.registries.configuration.cru.registry.caBundle.placeholder')"
-            />
-            <div class="mt-16">
-              <FileSelector class="btn btn-sm role-tertiary" :label="t('generic.readFromFile')" @selected="onFileSelected" />
-            </div>
-          </div>
-          <div>
-            <div class="checkbox-align">
-              <Checkbox
-                  v-model:value="value.spec.insecure"
-                  :label="t('imageScanner.registries.configuration.cru.registry.insecure.label')"
-                  :tooltip="t('imageScanner.registries.configuration.cru.registry.insecure.tooltip')"
-                  :mode="mode"
-              />
-            </div>
+        <div class="w-half mt-16">
+          <LabeledInput
+              v-model:value="value.spec.caBundle"
+              type="multiline"
+              :label="t('imageScanner.registries.configuration.cru.registry.caBundle.label')"
+              style="max-height: 110px; overflow-y: auto;"
+              :placeholder="t('imageScanner.registries.configuration.cru.registry.caBundle.placeholder')"
+          />
+          <div class="mt-16">
+            <FileSelector class="btn btn-sm role-tertiary" :label="t('generic.readFromFile')" @selected="onFileSelected" />
           </div>
         </div>
 
@@ -454,16 +489,17 @@ export default {
 
       <template #form-footer>
         <div class="custom-footer">
-          <button type="button" class="btn role-secondary" @click="done">
-            {{ t('generic.cancel') }}
-          </button>
+<!--          <button type="button" class="btn role-secondary" @click="done">-->
+<!--            {{ t('generic.cancel') }}-->
+<!--          </button>-->
           <button
               type="button"
               class="btn role-primary"
               :disabled="!validationPassed || saveLoading"
               @click="finish"
           >
-            Apply
+            {{ t('imageScanner.general.apply') }}
+<!--            {{ isCreate ? t('generic.create') : t('generic.save') }}-->
           </button>
         </div>
       </template>
@@ -625,5 +661,40 @@ export default {
   .mb-10 { margin-bottom: 10px; }
   .mb-16 { margin-bottom: 16px; }
   .mb-24 { margin-bottom: 24px; }
+}
+.custom-page-header {
+  margin-bottom: 20px;
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .badge-state {
+    font-size: 12px;
+    line-height: normal;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+
+    &.bg-info {
+      color: var(--on-info-banner, var(--info-text));
+      background: var(--info-badge, var(--info));
+    }
+
+    &.bg-success {
+      color: var(--on-success-banner, var(--success-text));
+      background: var(--success-badge, var(--success));
+    }
+
+    &.bg-error {
+      color: var(--on-error-banner, var(--error-text));
+      background: var(--error-badge, var(--error));
+    }
+  }
 }
 </style>

@@ -110,6 +110,7 @@ imageScanner:
             label: URI
             placeholder: "The registry address URI"
           caBundle:
+            label: CA Cert Bundle
             placeholder: "You can enter this manually or import it from a file using the button below."
           insecure:
             label: "Allow insecure connections"
@@ -365,6 +366,7 @@ imageScanner:
       description: VEX management hub description, if any
   workloads:
     configuration:
+      title: Workloads Scan Configuration
       cru:
         name:
           label: Name
@@ -379,6 +381,8 @@ imageScanner:
           artifactsNamespace: Artifacts Namespace
           artifactsNamespacePlaceholder: e.g. cattle-sbomscanner-system
           artifactsNamespaceTooltip: Artifacts Namespace is the namespace where the SBOM Scanner will create the SBOM and the Vulnerability Report.
+          artifactsNamespaceLockedTooltip: The Artifacts Namespace is locked after creation. To change it, please deactivate the configuration, update it via the CLI, or recreate it.
+          successMessage: Workloads Scan successfully configured
         resourceLocation:
           label: Resource Location
           description: Changing the Artifacts Namespace is an expensive operation and might cause rescans. If the Artifacts Namespace is not specified, artifacts will be created in the same namespace as the discovered workloads.
@@ -440,6 +444,10 @@ imageScanner:
     unknown: Unknown
     noActions: No actions
     learnMore: Learn more
+    saved: Saved
+    active: Active
+    inactive: Inactive
+    apply: Apply
     yes: Yes
     no: No
 
