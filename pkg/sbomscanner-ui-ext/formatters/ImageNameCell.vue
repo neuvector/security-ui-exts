@@ -30,10 +30,11 @@ export default {
     },
     imageDetailLink() {
       return {
-        name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-id`,
+        name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-namespace-id`,
         params: {
-          cluster: this.$route.params.cluster,
-          id:      this.row.metadata.name,
+          cluster:   this.$route.params.cluster,
+          namespace: this.row.metadata.namespace,
+          id:        this.row.metadata.name,
         }
       };
     }

@@ -17,6 +17,7 @@ jest.mock('@sbomscanner-ui-ext/types', () => ({
   PRODUCT_NAME: 'mockProduct',
   RESOURCE:     {
     IMAGE:                'image',
+    WORKLOAD:             'workload',
     SBOM:                 'sbom',
     VULNERABILITY_REPORT: 'vulnerabilityReport',
     REGISTRY:             'registry'
@@ -72,9 +73,31 @@ describe('ImageDetails.vue', () => {
     });
 
     await flushPromises();
+
+    wrapper.vm.image = {
+      metadata: {
+        namespace:         'default',
+        creationTimestamp: new Date().toISOString(),
+      },
+      imageMetadata: {
+        registry:    'demo-02',
+        registryURI: 'docker.io',
+        repository:  'nginx',
+        tag:         'latest',
+        platform:    'linux/amd64',
+        digest:      'sha256:test',
+      },
+      layers: [],
+    };
   });
 
   it('gets registryDetailLink', async() => {
+    wrapper.vm.image = {
+      metadata:      { namespace: 'default' },
+      imageMetadata: { registry: 'demo-02' },
+    };
+    await nextTick();
+
     const _registryDetailLink = wrapper.vm.registryDetailLink;
 
     // Assertions
@@ -88,19 +111,23 @@ describe('ImageDetails.vue', () => {
 
   it('calls loadImageData when route param id exists', async() => {
     const mockLoadImageData = jest.fn();
+    const mockLoadWorkloads = jest.fn();
 
     // Override the component method so we can spy on it
     wrapper.vm.loadImageData = mockLoadImageData;
+    wrapper.vm.loadWorkloads = mockLoadWorkloads;
     // Run the fetch method
     await wrapper.vm.$options.fetch.call(wrapper.vm);
 
     // Assertions
     expect(wrapper.vm.imageName).toBe('test-image-route');
     expect(mockLoadImageData).toHaveBeenCalledTimes(1);
+    expect(mockLoadWorkloads).toHaveBeenCalledTimes(1);
   });
 
   it('does not call loadImageData when no route param id', async() => {
     const mockLoadImageData = jest.fn();
+    const mockLoadWorkloads = jest.fn();
     const wrapper = shallowMount(ImageDetails, {
       global: {
         mocks: {
@@ -118,11 +145,13 @@ describe('ImageDetails.vue', () => {
     });
 
     wrapper.vm.loadImageData = mockLoadImageData;
+    wrapper.vm.loadWorkloads = mockLoadWorkloads;
     // Run the fetch method
     await wrapper.vm.$options.fetch.call(wrapper.vm);
 
     expect(wrapper.vm.imageName).toBeUndefined();
     expect(mockLoadImageData).not.toHaveBeenCalled();
+    expect(mockLoadWorkloads).not.toHaveBeenCalled();
   });
 
   it('renders the page and basic structure', () => {
@@ -317,6 +346,89 @@ describe('ImageDetails.vue', () => {
   //   expect(wrapper.vm.filters.severity).toBe('critical');
   // });
 
+  it('filters by severity via filterBySeverity method', () => {
+    wrapper.vm.filterBySeverity('critical');
+    expect(wrapper.vm.severity).toBe('critical');
+  });
+
+  it('loadWorkloads filters matching workloads and updates table data', async() => {
+    wrapper.vm.image = {
+      metadata:      { namespace: 'default' },
+      imageMetadata: { repository: 'nginx', tag: 'latest' },
+    };
+    wrapper.vm.images = [
+      { imageMetadata: { repository: 'nginx', tag: 'latest' } },
+      { imageMetadata: { repository: 'busybox', tag: '1.0' } },
+    ];
+
+    const reportOk: any = {
+      metadata: { namespace: 'default', ownerReferences: [{ name: 'wk-ok', kind: 'Deployment' }] },
+      summary:  { critical: 1 },
+    };
+
+    const imageRefOk = {
+      namespace:  'default',
+      repository: 'nginx',
+      tag:        'latest'
+    };
+    const okContainer: any = {};
+
+    okContainer.imageRef = imageRefOk;
+    reportOk.spec = {};
+    reportOk.spec.containers = [okContainer];
+
+    const reportNo: any = {
+      metadata: { namespace: 'other', ownerReferences: [{ name: 'wk-no', kind: 'Deployment' }] },
+      summary:  { critical: 0 },
+    };
+
+    const imageRefNo = {
+      namespace:  'other',
+      repository: 'nginx',
+      tag:        'latest'
+    };
+    const noContainer: any = {};
+
+    noContainer.imageRef = imageRefNo;
+    reportNo.spec = {};
+    reportNo.spec.containers = [noContainer];
+
+    const reports = [reportOk, reportNo];
+
+    mockStore.dispatch.mockResolvedValue(reports);
+
+    await wrapper.vm.loadWorkloads();
+
+    expect(mockStore.dispatch).toHaveBeenCalledWith('cluster/findAll', { type: 'workload' });
+    expect(wrapper.vm.workloads).toHaveLength(1);
+    expect(wrapper.vm.workloads[0].name).toBe('wk-ok');
+  });
+
+  it('parseWorkloadTableData handles missing ownerReferences and computes imagesUsed', () => {
+    wrapper.vm.images = [
+      { imageMetadata: { repository: 'nginx', tag: 'latest' } },
+      { imageMetadata: { repository: 'nginx', tag: 'latest' } },
+      { imageMetadata: { repository: 'busybox', tag: '1.0' } },
+    ];
+
+    const workloads = [
+      {
+        metadata: { namespace: 'default' },
+        spec:     { containers: [{ imageRef: { repository: 'nginx', tag: 'latest' } }] },
+        summary:  { high: 2 },
+      }
+    ];
+
+    const out = wrapper.vm.parseWorkloadTableData(workloads);
+
+    expect(out).toHaveLength(1);
+    expect(out[0].name).toBe('');
+    expect(out[0].type).toBe('');
+    expect(out[0].namespace).toBe('default');
+    expect(out[0].imagesUsed).toBe(2);
+    expect(out[0].summary).toEqual({ high: 2 });
+  });
+
   it('calls loadImageData without errors', async() => {
     mockStore.getters['cluster/all']
       .mockReturnValueOnce(() => [{ metadata: { name: 'test-image' }, imageMetadata: {} }])
@@ -325,6 +437,66 @@ describe('ImageDetails.vue', () => {
 
     await wrapper.vm.loadImageData();
     expect(mockStore.dispatch).toHaveBeenCalled();
+  });
+
+  it('loadImageData assigns matching vulnerability report and sbom when image exists', async() => {
+    wrapper.vm.imageName = 'test-image-route';
+
+    const image = {
+      metadata:      { namespace: 'default', name: 'test-image-route' },
+      imageMetadata: { repository: 'nginx', tag: 'latest' },
+    };
+
+    mockStore.dispatch = jest.fn().mockImplementation((action, payload) => {
+      if (action === 'cluster/findAll' && payload?.opt?.namespace === 'sbomscanner') {
+        return Promise.resolve([]);
+      }
+      if (action === 'cluster/findAll' && payload?.type === 'image' && !payload?.opt) {
+        return Promise.resolve([image]);
+      }
+      if (action === 'cluster/find') {
+        return Promise.resolve(image);
+      }
+
+      return Promise.resolve([]);
+    });
+
+    mockStore.getters['cluster/all'] = jest.fn().mockImplementation((resource) => {
+      if (resource === 'vulnerabilityReport') {
+        return [{ metadata: { name: 'test-image-route' }, report: { summary: {} } }];
+      }
+      if (resource === 'sbom') {
+        return [{ metadata: { name: 'test-image-route' }, spec: {} }];
+      }
+
+      return [];
+    });
+
+    wrapper.vm.$store = mockStore;
+
+    await wrapper.vm.loadImageData();
+
+    expect(wrapper.vm.image).toEqual(image);
+    expect(wrapper.vm.loadedVulnerabilityReport).toEqual(expect.objectContaining({ metadata: { name: 'test-image-route' } }));
+    expect(wrapper.vm.loadedSbom).toEqual(expect.objectContaining({ metadata: { name: 'test-image-route' } }));
+  });
+
+  it('loadImageData dispatches growl error when loading fails', async() => {
+    mockStore.dispatch = jest.fn().mockImplementation((action) => {
+      if (action === 'cluster/findAll') {
+        return Promise.reject(new Error('boom'));
+      }
+
+      return Promise.resolve();
+    });
+    wrapper.vm.$store = mockStore;
+
+    await wrapper.vm.loadImageData();
+
+    expect(mockStore.dispatch).toHaveBeenCalledWith('growl/error', expect.objectContaining({
+      title:   'Error',
+      message: expect.stringContaining('Failed to load image data: boom')
+    }), { root: true });
   });
 
   it('computes overallSeverity based on vulnerability distribution', () => {

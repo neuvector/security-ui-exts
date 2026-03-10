@@ -9,7 +9,7 @@
             class="resource-link"
             :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.IMAGES}`"
           >
-            {{ t('imageScanner.images.title') }}:
+            {{ t('imageScanner.images.titleSingle') }}:
           </RouterLink>
           <span class="resource-header-name">
             {{ displayImageName }}
@@ -73,7 +73,7 @@
           :vulnerabilityDetails="vulnerabilityDetails"
           :severity="severity"
           :asset-name="imageName"
-          :current-image="currentImage"
+          :current-image="image"
           :is-in-image-context="true"
         />
       </Tab>
@@ -85,7 +85,7 @@
         <WorkloadTableSet
           :workloads="workloads"
           :image-name="imageName"
-          :current-image="currentImage"
+          :current-image="image"
           :is-in-image-context="true"
         />
       </Tab>
@@ -115,7 +115,6 @@ import MostSevereVulnerabilities from './common/MostSevereVulnerabilities.vue';
 import RancherMeta from './common/RancherMeta.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 import WorkloadTableSet from './common/WorkloadTableSet.vue';
-import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
 
 export default {
   name:       'ImageDetails',
@@ -134,6 +133,8 @@ export default {
   },
   data() {
     return {
+      image:                         null,
+      images:                        [],
       imageName:                     '',
       severity:                      '',
       loadedVulnerabilityReport:     null,
@@ -174,21 +175,11 @@ export default {
   },
 
   computed: {
-    // Get the current image resource from Steve API
-    currentImage() {
-      if (!this.imageName) return null;
-
-      // Get all images and find the one with matching name
-      const allImages = this.$store.getters['cluster/all'](RESOURCE.IMAGE) || [];
-
-      return allImages.find((img) => img.metadata.name === this.imageName);
-    },
-
     // Display human-readable image name
     displayImageName() {
-      if (!this.currentImage) return this.imageName;
+      if (!this.image) return this.imageName;
 
-      return constructImageName(this.currentImage.imageMetadata) || this.imageName;
+      return constructImageName(this.image.imageMetadata) || this.imageName;
     },
 
     // Get the vulnerability report for this image
@@ -203,7 +194,7 @@ export default {
 
     // Get image details from the current image resource
     imageDetails() {
-      if (!this.currentImage) return [];
+      if (!this.image) return [];
 
       return [
         {
@@ -214,38 +205,38 @@ export default {
         {
           type:  'text',
           label: this.t('imageScanner.imageDetails.repository'),
-          value: this.currentImage.imageMetadata?.repository || this.t('imageScanner.general.unknown'),
+          value: this.image.imageMetadata?.repository || this.t('imageScanner.general.unknown'),
         },
         {
           type:  'route',
           label: this.t('imageScanner.imageDetails.registry'),
-          value: this.currentImage.imageMetadata?.registry && this.currentImage.metadata?.namespace ? `${this.currentImage.metadata.namespace}/${this.currentImage.imageMetadata.registry}` : this.t('imageScanner.general.unknown'),
-          route: this.currentImage.imageMetadata?.registry && this.currentImage.metadata?.namespace ? this.registryDetailLink : null,
+          value: this.image.imageMetadata?.registry && this.image.metadata?.namespace ? `${this.image.metadata.namespace}/${this.image.imageMetadata.registry}` : this.t('imageScanner.general.unknown'),
+          route: this.image.imageMetadata?.registry && this.image.metadata?.namespace ? this.registryDetailLink : null,
         },
         {
           type:  'text',
           label: this.t('imageScanner.imageDetails.architecture'),
-          value: this.currentImage.imageMetadata?.platform?.split('/')[0] || this.t('imageScanner.general.unknown'),
+          value: this.image.imageMetadata?.platform?.split('/')[0] || this.t('imageScanner.general.unknown'),
         },
         {
           type:  'text',
           label: this.t('imageScanner.imageDetails.operatingSystem'),
-          value: this.currentImage.imageMetadata?.platform?.split('/')[1] || this.t('imageScanner.general.unknown'),
+          value: this.image.imageMetadata?.platform?.split('/')[1] || this.t('imageScanner.general.unknown'),
         },
         {
           type:  'text',
           label: this.t('imageScanner.imageDetails.created'),
-          value: this.currentImage.metadata ? `${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('MMM D, YYYY') } ${ day(new Date(this.currentImage.metadata?.creationTimestamp).getTime()).format('h:mm a') }` : this.t('imageScanner.general.unknown'),
+          value: this.image.metadata ? `${ day(new Date(this.image.metadata?.creationTimestamp).getTime()).format('MMM D, YYYY') } ${ day(new Date(this.image.metadata?.creationTimestamp).getTime()).format('h:mm a') }` : this.t('imageScanner.general.unknown'),
         },
         {
           type:  'text',
           label: this.t('imageScanner.imageDetails.imageId'),
-          value: this.currentImage.imageMetadata?.digest || this.t('imageScanner.general.unknown'),
+          value: this.image.imageMetadata?.digest || this.t('imageScanner.general.unknown'),
         },
         {
           type:  'text',
           label: this.t('imageScanner.imageDetails.layers'),
-          value: this.currentImage.layers?.length || this.currentImage.spec?.layers?.length || this.t('imageScanner.general.unknown'),
+          value: this.image.layers?.length || this.image.spec?.layers?.length || this.t('imageScanner.general.unknown'),
         }
       ];
     },
@@ -360,8 +351,8 @@ export default {
           cluster:   this.$route.params.cluster,
           product:   PRODUCT_NAME,
           resource:  RESOURCE.REGISTRY,
-          namespace: this.currentImage.metadata.namespace,
-          id:        this.currentImage.imageMetadata?.registry,
+          namespace: this.image.metadata.namespace,
+          id:        this.image.imageMetadata?.registry,
         }
       };
     }
@@ -378,22 +369,30 @@ export default {
       this.severity = severity;
     },
 
-    loadWorkloads() {
-      const workloads = [workloadsVulnerabilityreports];
+    async loadWorkloads() {
+      const workloads = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.WORKLOAD }).then((reports) => {
+        return reports.filter((report) => {
+          return report.spec.containers?.some((container) => {
+            return container.imageRef.namespace === this.image.metadata.namespace && container.imageRef.repository === this.image.imageMetadata.repository && container.imageRef.tag === this.image.imageMetadata.tag;
+          });
+        });
+      });
+
+      console.log('Workloads using this image', workloads); // Debug log to verify workloads data
 
       this.workloads = this.parseWorkloadTableData(workloads);
     },
 
     parseWorkloadTableData(workloads) {
       return workloads.map((workload) => {
-        const summary = workload.summary || {};
-
         return {
           name:       workload.metadata.ownerReferences ? workload.metadata.ownerReferences[0]?.name : '',
           type:       workload.metadata.ownerReferences ? workload.metadata.ownerReferences[0]?.kind : '',
           namespace:  workload.metadata.namespace,
-          imagesUsed: workload.spec.containers ? workload.spec.containers.length : 0,
-          summary:    workload.summary,
+          imagesUsed: this.images.filter((img) => {
+            return workload.spec.containers.some((container) => container.imageRef.repository === img.imageMetadata.repository && container.imageRef.tag === img.imageMetadata.tag);
+          }).length,
+          summary: workload.summary,
         };
       });
     },
@@ -421,11 +420,12 @@ export default {
         // Force component to re-render after data is loaded
         await this.$nextTick();
 
-        // Find the specific image
-        const allImages = this.$store.getters['cluster/all'](RESOURCE.IMAGE) || [];
-        const foundImage = allImages.find((img) => img.metadata.name === this.imageName);
+        this.images = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.IMAGE }) || [];
 
-        if (foundImage) {
+        // Find the specific image
+        this.image = await this.$store.dispatch('cluster/find', { type: RESOURCE.IMAGE, id: `${this.$route.params.namespace}/${this.$route.params.id}` });
+
+        if (this.image) {
           // Find matching vulnerability report and SBOM
           const vulnReports = this.$store.getters['cluster/all'](RESOURCE.VULNERABILITY_REPORT) || [];
           const sboms = this.$store.getters['cluster/all'](RESOURCE.SBOM) || [];
@@ -456,10 +456,10 @@ export default {
       vulnerabilityDetails.forEach((vuln) => {
         const row = [
           `"${ this.displayImageName }"`,
-          `"${ this.currentImage.imageMetadata?.registry || '' }"`,
-          `"${ this.currentImage.imageMetadata?.repository || '' }"`,
-          `"${ this.currentImage.imageMetadata?.platform || '' }"`,
-          `"${ this.currentImage.imageMetadata?.digest || '' }"`,
+          `"${ this.image.imageMetadata?.registry || '' }"`,
+          `"${ this.image.imageMetadata?.repository || '' }"`,
+          `"${ this.image.imageMetadata?.platform || '' }"`,
+          `"${ this.image.imageMetadata?.digest || '' }"`,
           `"${ this.workloads && this.workloads.length > 0 ? 'Yes' : 'No' }"`,
           `"${ this.workloads ? this.workloads.length : 0 }"`,
           `"${ vuln.cveId || '' }"`,
@@ -494,10 +494,10 @@ export default {
 
         const row = [
           `"${ this.displayImageName }"`,
-          `"${ this.currentImage?.imageMetadata?.registry || '' }"`,
-          `"${ this.currentImage?.imageMetadata?.repository || '' }"`,
-          `"${ this.currentImage?.imageMetadata?.platform || '' }"`,
-          `"${ this.currentImage?.imageMetadata?.digest || '' }"`,
+          `"${ this.image?.imageMetadata?.registry || '' }"`,
+          `"${ this.image?.imageMetadata?.repository || '' }"`,
+          `"${ this.image?.imageMetadata?.platform || '' }"`,
+          `"${ this.image?.imageMetadata?.digest || '' }"`,
           `"${ workload?.name || '' }"`,
           `"${ workload?.type || '' }"`,
           `"${ workload?.namespace || '' }"`,

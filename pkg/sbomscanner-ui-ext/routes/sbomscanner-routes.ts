@@ -31,8 +31,8 @@ const routes = [
         component: ImageOverview,
       },
       {
-        name:      `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-id`,
-        path:      `:id`,
+        name:      `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-namespace-id`,
+        path:      `:namespace/:id`,
         component: ImageDetails,
       },
       {

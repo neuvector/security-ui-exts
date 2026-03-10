@@ -164,6 +164,7 @@ imageScanner:
       registryScanComplete: Registry scan is started successfully
   images:
     title: Images
+    titleSingle: Image
     downloadReport: Download full report
     downloadSBOM: Download SBOM
     downloadImageDetailReport: Image detail report (CSV)
