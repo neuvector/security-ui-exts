@@ -21,7 +21,7 @@
             :propertyName="properties.repositories.label"
             :rows="repositories"
             type="active"
-            @show-configuration="(returnFocusSelector) => emit('show-configuration', returnFocusSelector, 'labels-and-annotations')"
+            @show-configuration="(returnFocusSelector) => $emit('show-configuration', returnFocusSelector, 'labels-and-annotations')"
           />
         </div>
         <div class="column column-3">

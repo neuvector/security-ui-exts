@@ -3,7 +3,7 @@ import RcTag from '@components/Pill/RcTag/RcTag.vue';
 import RcButton from '@components/RcButton/RcButton.vue';
 import CopyToClipboard from '@shell/components/Resource/Detail/CopyToClipboard.vue';
 import { Row } from '@shell/components/Resource/Detail/Metadata/KeyValue.vue';
-import { nextTick, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import Preview from './Preview.vue';
 // import { Type } from '@components/Pill/types';
 import { useI18n } from '@shell/composables/useI18n';
@@ -25,6 +25,7 @@ const i18n = useI18n(store);
 const showPreview = ref(false);
 const element = ref<HTMLElement | null>(null);
 const button = ref<HTMLElement | null>(null);
+const previewAnchorElement = computed(() => element.value as unknown as HTMLElement | null);
 
 const onClose = (keyboardExit: boolean) => {
   showPreview.value = false;
@@ -66,7 +67,7 @@ const previewId = randomStr();
       class="preview"
       :title="row.key"
       :value="row.value"
-      :anchor-element="element"
+      :anchor-element="previewAnchorElement"
       aria-live="polite"
       @close="onClose"
     />
