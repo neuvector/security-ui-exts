@@ -65,17 +65,17 @@ export default {
     const workloadVulnerabilityReport = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.WORKLOAD }).then((reports) => {
       if (this.$route.params.resource === POD) {
         // For pods, we need to match the workload report based on the owner reference name which should match the pod name
-        return reports.find((report) => report.metadata.namespace === namespace && workload.includes(report.metadata.ownerReferences[0]?.name));
+        return reports.find((report) => report.metadata.namespace === namespace && workload.includes(report.metadata.ownerReferences?.[0]?.name));
       } else {
         // For other workloads, we can match based on the workload name and namespace as before
-        return reports.find((report) => report.metadata.namespace === namespace && report.metadata.ownerReferences[0]?.name === workload);
+        return reports.find((report) => report.metadata.namespace === namespace && report.metadata.ownerReferences?.[0]?.name === workload);
       }
     });
     const matchedContainers = workloadVulnerabilityReport?.containers || [];
 
     this.workloadName = workloadVulnerabilityReport.metadata.name;
     this.containerSpec = workloadVulnerabilityReport.spec.containers;
-    this.workloadType = workloadVulnerabilityReport.metadata.ownerReferences[0]?.kind || '';
+    this.workloadType = workloadVulnerabilityReport.metadata.ownerReferences?.[0]?.kind || '';
     this.imagesReportFileName = `workload-images-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`;
     this.affactingCvesReportFileName = `workload-affecting-cves-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`;
     this.workloadVulnerabilityReportFileName = `${ this.workloadName }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`;
