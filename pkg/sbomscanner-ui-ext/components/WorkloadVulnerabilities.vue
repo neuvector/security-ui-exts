@@ -16,6 +16,7 @@ import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import ImageTableSet from './common/ImageTableSet.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
 import { useTabCountUpdater } from '@shell/components/form/ResourceTabs/composable';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -57,12 +58,17 @@ export default {
     return { updateTabCount };
   },
   // Make up mock data for container name in imageMetadata
-  fetch() {
-    const matchedContainers = this.workloadsVulnerabilityreports.containers;
+  async fetch() {
+    const namespace = this.$route.params.namespace;
+    const workload = this.$route.params.id;
+    const worloadVulnerabilityReport = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.WORKLOAD}).then((reports) => {
+      return reports.find((report) => report.metadata.namespace === namespace && report.metadata.ownerReferences[0]?.name === workload);
+    });
+    const matchedContainers = worloadVulnerabilityReport?.containers || [];
 
-    this.workloadName = this.workloadsVulnerabilityreports.metadata.name;
-    this.containerSpec = this.workloadsVulnerabilityreports.spec.containers;
-    this.workloadType = this.workloadsVulnerabilityreports.metadata.ownerReferences[0]?.kind || '';
+    this.workloadName = worloadVulnerabilityReport.metadata.name;
+    this.containerSpec = worloadVulnerabilityReport.spec.containers;
+    this.workloadType = worloadVulnerabilityReport.metadata.ownerReferences[0]?.kind || '';
     this.imagesReportFileName = `workload-images-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`;
     this.affactingCvesReportFileName = `workload-affecting-cves-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.csv`;
     this.workloadVulnerabilityReportFileName = `${ this.workloadName }-vulnerability-report_${ day(new Date().getTime()).format('MMDDYYYY_HHmmss') }.json`;
@@ -72,7 +78,7 @@ export default {
     this.imagesReport = this.getImagesReport(this.images, this.workloadType);
     this.workloadDetailReport = this.getWorkloadDetailReport(matchedContainers);
     this.updateTabCount(undefined);
-    this.totalCveCount = (this.workloadsVulnerabilityreports.summary?.critical || 0) + (this.workloadsVulnerabilityreports.summary?.high || 0) + (this.workloadsVulnerabilityreports.summary?.medium || 0) + (this.workloadsVulnerabilityreports.summary?.low || 0) + (this.workloadsVulnerabilityreports.summary?.unknown || 0);
+    this.totalCveCount = (worloadVulnerabilityReport.summary?.critical || 0) + (worloadVulnerabilityReport.summary?.high || 0) + (worloadVulnerabilityReport.summary?.medium || 0) + (worloadVulnerabilityReport.summary?.low || 0) + (worloadVulnerabilityReport.summary?.unknown || 0);
     this.updateTabCount(this.totalCveCount);
   },
   methods: {
@@ -106,7 +112,7 @@ export default {
 
             imageRefs.push(imageRef);
 
-            result.vulnerabilities.forEach((vul) => {
+            result.vulnerabilities?.forEach((vul) => {
               const key = `${ vul.cve }-${ vul.packageName }-${ vul.installedVersion }`;
 
               if (this.vulnerabilityMap.has(key)) {
@@ -230,11 +236,11 @@ export default {
 
       containers.forEach((container) => {
 
-        container.vulnerabilityReports.forEach((report) => {
+        container.vulnerabilityReports?.forEach((report) => {
           const imageRef = `${report.imageMetadata.registryURI}/${report.imageMetadata.repository}:${report.imageMetadata.tag}`;
 
           report.report.results.forEach((result) => {
-            result.vulnerabilities.forEach((vul) => {
+            result.vulnerabilities?.forEach((vul) => {
               rec.push({
                 workloadName:   this.workloadName,
                 namespace:      this.containerMap.get(container.name)?.namespace || this.t('imageScanner.general.unknown'),
