@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import KeyValue from '../rancher-rewritten/shell/components/KeyValue.vue';
 import jsyaml from 'js-yaml';
+import KeyValue from '../rancher-rewritten/shell/components/KeyValue.vue';
 export default {
   name:       'RegistryDetailsMeta',
   components: { KeyValue },
@@ -140,7 +140,7 @@ export default {
 }
 
 .vendor-tag:hover, .vendor-tag.active {
-  background-color: #EDEFF3;
+  background-color: var(--sortable-table-hover-bg);
 }
 .hover-panel {
   position: absolute;
