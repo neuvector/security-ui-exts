@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import CopyToClipboard from '@shell/components/Resource/Detail/CopyToClipboard.vue';
-import { Row } from '@shell/components/Resource/Detail/Metadata/KeyValue.vue';
-import Preview from './Preview.vue';
-import { nextTick, ref } from 'vue';
 import RcTag from '@components/Pill/RcTag/RcTag.vue';
 import RcButton from '@components/RcButton/RcButton.vue';
+import CopyToClipboard from '@shell/components/Resource/Detail/CopyToClipboard.vue';
+import { Row } from '@shell/components/Resource/Detail/Metadata/KeyValue.vue';
+import { nextTick, ref } from 'vue';
+import Preview from './Preview.vue';
 // import { Type } from '@components/Pill/types';
-import { useStore } from 'vuex';
 import { useI18n } from '@shell/composables/useI18n';
 import { randomStr } from '@shell/utils/string';
+import { useStore } from 'vuex';
 
 export interface KeyValueRowProps {
     row: Row;
@@ -158,8 +158,11 @@ const previewId = randomStr();
     height: 12px;
     margin-top: 2px;
     margin-left: 8px;
-    background: url('../../../../assets/img/filter.svg') no-repeat center center;
-    background-size: contain;
+    background-color: var(--body-text);
+    -webkit-mask: url('../../../../assets/img/filter.svg') no-repeat center center;
+    mask: url('../../../../assets/img/filter.svg') no-repeat center center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
   }
 }
 </style>
