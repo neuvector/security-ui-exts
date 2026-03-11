@@ -33,7 +33,7 @@
         <div class="severity-list">
           <div v-for="severity in severities" :key="severity.key" class="severity-row">
             <RouterLink
-                :to="getSeverityLink(severity.label)"
+                :to="getSeverityLink(severity.key)"
                 class="label"
                 :class="{ 'disabled-link': !cveAmount[severity.key] }"
             >
