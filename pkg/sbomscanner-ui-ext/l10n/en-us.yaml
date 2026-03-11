@@ -377,7 +377,7 @@ imageScanner:
           documentationLink: documentation
           enabled: Enabled
           enabledTooltip: Toggle workload scanning on or off.
-          scanOnChange: Scan on registry change
+          scanOnChange: Scan on workload change
           scanOnChangeTooltip: When enabled, the Workloads Scan will scan for new images and vulnerabilities when a new image is discovered in a running pod.
           namespaces: Leave empty to scan all namespaces
           artifactsNamespace: Artifacts Namespace
@@ -391,7 +391,7 @@ imageScanner:
         scanning:
           label: Scanning
           namespaces: Namespace selectors
-          namespacesTooltip: Select the namespaces where the Workloads Scan will scan for workloads.
+          namespacesTooltip: Namespace selectors filter which namespaces are scanned for workloads. If not specified, workloads in all namespaces are scanned.
     tabs:
       images: Images
       affectingCVEs: Affecting CVEs
