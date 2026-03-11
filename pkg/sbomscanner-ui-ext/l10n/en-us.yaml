@@ -366,6 +366,8 @@ imageScanner:
       description: VEX management hub description, if any
   workloads:
     configuration:
+      menu:
+        title: Workloads Scan
       title: Workloads Scan Configuration
       cru:
         name:
@@ -381,11 +383,11 @@ imageScanner:
           artifactsNamespace: Artifacts Namespace
           artifactsNamespacePlaceholder: e.g. cattle-sbomscanner-system
           artifactsNamespaceTooltip: Artifacts Namespace is the namespace where the SBOM Scanner will create the SBOM and the Vulnerability Report.
-          artifactsNamespaceLockedTooltip: The Artifacts Namespace is locked after creation. To change it, please deactivate the configuration, update it via the CLI, or recreate it.
           successMessage: Workloads Scan successfully configured
         resourceLocation:
           label: Resource Location
           description: Changing the Artifacts Namespace is an expensive operation and might cause rescans. If the Artifacts Namespace is not specified, artifacts will be created in the same namespace as the discovered workloads.
+          lockedWarning: If you want to change the Artifacts Namespace, first you have to disable the current configuration and save any other changes you have made.
         scanning:
           label: Scanning
           namespaces: Namespace selectors
@@ -454,7 +456,7 @@ imageScanner:
 typeLabel:
   sbomscanner.kubewarden.io.registry: Registries configuration
   sbomscanner.kubewarden.io.vexhub: Vex Management
-  sbomscanner.kubewarden.io.workloadscanconfiguration: Workloads scan
+  sbomscanner.kubewarden.io.workloadscanconfiguration: Workloads Scan
   storage.sbomscanner.kubewarden.io.image: Image
   storage.sbomscanner.kubewarden.io.vulnerabilityreport: Vulnerability Report
   storage.sbomscanner.kubewarden.io.sbom: SBOM
@@ -478,4 +480,3 @@ resources:
   image: storage.sbomscanner.kubewarden.io.image
   vulnerabilityreport: storage.sbomscanner.kubewarden.io.vulnerabilityreport
   sbom: storage.sbomscanner.kubewarden.io.sbom
-  storage.sbomscanner.kubewarden.io.workloadscanconfiguration: Workloads scan

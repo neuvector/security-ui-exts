@@ -75,6 +75,8 @@ export default {
       this.value.spec.scanInterval = '3h';
     }
 
+    const savedEnabledState = this.value.spec.enabled;
+
     const osOptions = Object.keys(VALID_PLATFORMS).map((k) => ({ label: k, value: k }));
 
     return {
@@ -87,6 +89,7 @@ export default {
       PRODUCT_NAME,
       saveLoading:   false,
       WORKLOAD_SCAN_DOCS_URL,
+      savedEnabledState
     };
   },
 
@@ -95,15 +98,7 @@ export default {
 
     isArtifactsNamespaceLocked() {
       // Lock the field if we are editing an existing configuration
-      return this.mode === 'edit';
-    },
-
-    artifactsNamespaceTooltipText() {
-      if (this.isArtifactsNamespaceLocked) {
-        return this.t('imageScanner.workloads.configuration.cru.general.artifactsNamespaceLockedTooltip');
-      } else {
-        return this.t('imageScanner.workloads.configuration.cru.general.artifactsNamespaceTooltip');
-      }
+      return this.mode === 'edit' && this.savedEnabledState;
     },
 
     namespaceOptions() {
@@ -154,12 +149,9 @@ export default {
 
       if (!this.allSecrets) return headerOptions;
 
-      const currentNamespace = this.value?.spec?.artifactsNamespace;
-
       const secretOptions = this.allSecrets
           .filter((secret) => {
-            return secret._type === SECRET_TYPES.DOCKER_JSON &&
-                secret.metadata?.namespace === currentNamespace;
+            return secret._type === SECRET_TYPES.DOCKER_JSON;
           })
           .map((secret) => ({
             label: `${secret.metadata.namespace}/${secret.metadata.name}`,
@@ -199,6 +191,7 @@ export default {
 
       try {
         await this.save();
+        this.savedEnabledState = this.value.spec.enabled;
       } catch (e) {
         this.errors = [e];
       } finally {
@@ -291,11 +284,11 @@ export default {
             class="badge-state"
             :class="{
               'bg-info': isCreate,
-              'bg-success': !isCreate && value.spec.enabled,
-              'bg-error': !isCreate && !value.spec.enabled
+              'bg-success': !isCreate && savedEnabledState,
+              'bg-error': !isCreate && !savedEnabledState
             }"
         >
-          {{ isCreate ? t('generic.create') : (value.spec.enabled ? t('imageScanner.general.active') : t('imageScanner.general.inactive')) }}
+          {{ isCreate ? t('generic.create') : (savedEnabledState ? t('imageScanner.general.active') : t('imageScanner.general.inactive')) }}
         </span>
       </h1>
     </div>
@@ -333,173 +326,172 @@ export default {
         </div>
       </div>
 
-      <template v-if="value.spec.enabled">
+      <div class="input-label mt-24">
+        {{ t('imageScanner.workloads.configuration.cru.resourceLocation.label') }}
+      </div>
 
-        <div class="input-label mt-24">
-          {{ t('imageScanner.workloads.configuration.cru.resourceLocation.label') }}
-        </div>
+      <Banner v-if="!isArtifactsNamespaceLocked" color="warning" class="mt-16">
+        {{ t('imageScanner.workloads.configuration.cru.resourceLocation.description') }}
+      </Banner>
 
-        <Banner color="warning" class="mt-16">
-          {{ t('imageScanner.workloads.configuration.cru.resourceLocation.description') }}
-        </Banner>
+      <Banner v-if="isArtifactsNamespaceLocked" color="info" class="mt-16 mb-16">
+        <span v-html="t('imageScanner.workloads.configuration.cru.resourceLocation.lockedWarning')"></span>
+      </Banner>
 
-        <div class="w-half">
+      <div class="w-half" :class="{ 'mt-16': !isArtifactsNamespaceLocked }">
+        <LabeledSelect
+            v-model:value="value.spec.artifactsNamespace"
+            @update:value="value.spec.authSecret = ''"
+            :label="t('imageScanner.workloads.configuration.cru.general.artifactsNamespace')"
+            :placeholder="t('imageScanner.workloads.configuration.cru.general.artifactsNamespacePlaceholder')"
+            :options="namespaceOptions"
+            :mode="mode"
+            :searchable="true"
+            :disabled="isArtifactsNamespaceLocked"
+            :tooltip="t('imageScanner.workloads.configuration.cru.general.artifactsNamespaceTooltip')"
+        />
+      </div>
+
+      <div class="input-label mt-24">
+        {{ t('imageScanner.registries.configuration.cru.authentication.label') }}
+      </div>
+
+      <div class="row-half mt-16">
+        <div>
           <LabeledSelect
-              v-model:value="value.spec.artifactsNamespace"
-              @update:value="value.spec.authSecret = ''"
-              :label="t('imageScanner.workloads.configuration.cru.general.artifactsNamespace')"
-              :placeholder="t('imageScanner.workloads.configuration.cru.general.artifactsNamespacePlaceholder')"
-              :options="namespaceOptions"
+              v-model:value="value.spec.authSecret"
+              :label="t('imageScanner.registries.configuration.cru.authentication.label')"
               :mode="mode"
-              :searchable="true"
-              :disabled="isArtifactsNamespaceLocked"
-              :tooltip="artifactsNamespaceTooltipText"
+              :options="authOptions"
+              :loading="authLoading"
           />
         </div>
-
-        <div class="input-label mt-24">
-          {{ t('imageScanner.registries.configuration.cru.authentication.label') }}
-        </div>
-
-        <div class="row-half mt-16">
-          <div>
-            <LabeledSelect
-                v-model:value="value.spec.authSecret"
-                :label="t('imageScanner.registries.configuration.cru.authentication.label')"
-                :mode="mode"
-                :options="authOptions"
-                :loading="authLoading"
-            />
-          </div>
-          <div>
-            <div class="checkbox-align">
-              <Checkbox
-                  v-model:value="value.spec.insecure"
-                  :label="t('imageScanner.registries.configuration.cru.registry.insecure.label')"
-                  :tooltip="t('imageScanner.registries.configuration.cru.registry.insecure.tooltip')"
-                  :mode="mode"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div v-if="value.spec.authSecret === 'create'" class="row mt-16">
-          <div class="col span-12">
-            <Banner color="info" class="m-0">
-              <div>
-                <p class="m-0 mb-5">
-                  {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine1_start') }}
-                  <a :href="secretCreateUrl" target="_blank">{{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine1_link') }}</a>
-                  {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine1_end') }}
-                </p>
-                <p class="m-0">
-                  {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine2_start') }}
-                  <a href="#" @click.prevent="refreshList">{{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine2_link') }}</a>
-                  {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine2_end') }}
-                </p>
-              </div>
-            </Banner>
-          </div>
-        </div>
-
-        <div class="w-half mt-16">
-          <LabeledInput
-              v-model:value="value.spec.caBundle"
-              type="multiline"
-              :label="t('imageScanner.registries.configuration.cru.registry.caBundle.label')"
-              style="max-height: 110px; overflow-y: auto;"
-              :placeholder="t('imageScanner.registries.configuration.cru.registry.caBundle.placeholder')"
-          />
-          <div class="mt-16">
-            <FileSelector class="btn btn-sm role-tertiary" :label="t('generic.readFromFile')" @selected="onFileSelected" />
-          </div>
-        </div>
-
-        <div class="input-label mt-24">
-          {{ t('imageScanner.workloads.configuration.cru.scanning.label') }}
-        </div>
-
-        <div class="row-half mt-16">
-          <div>
-            <LabeledSelect
-                v-model:value="selectedScanInterval"
-                :options="SCAN_INTERVAL_OPTIONS"
-                option-key="value"
-                option-label="label"
-                :label="t('imageScanner.registries.configuration.cru.scan.schedule.label')"
+        <div>
+          <div class="checkbox-align">
+            <Checkbox
+                v-model:value="value.spec.insecure"
+                :label="t('imageScanner.registries.configuration.cru.registry.insecure.label')"
+                :tooltip="t('imageScanner.registries.configuration.cru.registry.insecure.tooltip')"
                 :mode="mode"
             />
           </div>
-          <div>
-            <div class="checkbox-align">
-              <Checkbox
-                  v-model:value="value.spec.scanOnChange"
-                  :label="t('imageScanner.workloads.configuration.cru.general.scanOnChange')"
-                  :tooltip="t('imageScanner.workloads.configuration.cru.general.scanOnChangeTooltip')"
-                  :mode="mode"
-              />
+        </div>
+      </div>
+
+      <div v-if="value.spec.authSecret === 'create'" class="row mt-16">
+        <div class="col span-12">
+          <Banner color="info" class="m-0">
+            <div>
+              <p class="m-0 mb-5">
+                {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine1_start') }}
+                <a :href="secretCreateUrl" target="_blank">{{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine1_link') }}</a>
+                {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine1_end') }}
+              </p>
+              <p class="m-0">
+                {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine2_start') }}
+                <a href="#" @click.prevent="refreshList">{{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine2_link') }}</a>
+                {{ t('imageScanner.registries.configuration.cru.authentication.createDescriptionLine2_end') }}
+              </p>
             </div>
+          </Banner>
+        </div>
+      </div>
+
+      <div class="w-half mt-16">
+        <LabeledInput
+            v-model:value="value.spec.caBundle"
+            type="multiline"
+            :label="t('imageScanner.registries.configuration.cru.registry.caBundle.label')"
+            style="max-height: 110px; overflow-y: auto;"
+            :placeholder="t('imageScanner.registries.configuration.cru.registry.caBundle.placeholder')"
+        />
+        <div class="mt-16">
+          <FileSelector class="btn btn-sm role-tertiary" :label="t('generic.readFromFile')" @selected="onFileSelected" />
+        </div>
+      </div>
+
+      <div class="input-label mt-24">
+        {{ t('imageScanner.workloads.configuration.cru.scanning.label') }}
+      </div>
+
+      <div class="row-half mt-16">
+        <div>
+          <LabeledSelect
+              v-model:value="selectedScanInterval"
+              :options="SCAN_INTERVAL_OPTIONS"
+              option-key="value"
+              option-label="label"
+              :label="t('imageScanner.registries.configuration.cru.scan.schedule.label')"
+              :mode="mode"
+          />
+        </div>
+        <div>
+          <div class="checkbox-align">
+            <Checkbox
+                v-model:value="value.spec.scanOnChange"
+                :label="t('imageScanner.workloads.configuration.cru.general.scanOnChange')"
+                :tooltip="t('imageScanner.workloads.configuration.cru.general.scanOnChangeTooltip')"
+                :mode="mode"
+            />
           </div>
         </div>
+      </div>
 
-        <div class="input-label mt-24 tooltip-label">
-          {{ t('imageScanner.workloads.configuration.cru.scanning.namespaces') }}
-          <i
-              v-clean-tooltip="{ content: t('imageScanner.workloads.configuration.cru.scanning.namespacesTooltip'), triggers: ['hover', 'touch', 'focus'] }"
-              class="icon icon-info icon-lg custom-info-icon"
-              tabindex="0"
-              role="tooltip"
-          />
-        </div>
+      <div class="input-label mt-24 tooltip-label">
+        {{ t('imageScanner.workloads.configuration.cru.scanning.namespaces') }}
+        <i
+            v-clean-tooltip="{ content: t('imageScanner.workloads.configuration.cru.scanning.namespacesTooltip'), triggers: ['hover', 'touch', 'focus'] }"
+            class="icon icon-info icon-lg custom-info-icon"
+            tabindex="0"
+            role="tooltip"
+        />
+      </div>
 
-        <div class="namespace-selector-row">
-          <MatchExpressions
-              v-model:value="matchExpressions"
-              :mode="mode"
-              type="namespace"
-          />
-        </div>
+      <div class="namespace-selector-row">
+        <MatchExpressions
+            v-model:value="matchExpressions"
+            :mode="mode"
+            type="namespace"
+        />
+      </div>
 
-        <div class="input-label mt-24">
-          {{ t('imageScanner.registries.configuration.cru.filters.label') }}
-        </div>
+      <div class="input-label mt-24">
+        {{ t('imageScanner.registries.configuration.cru.filters.label') }}
+      </div>
 
-        <div v-if="value.spec.platforms && value.spec.platforms.length > 0" class="row-platforms mt-6">
-          <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.os') }}</label>
-          <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.arch') }}</label>
-          <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.variant') }}</label>
-          <div></div> </div>
+      <div v-if="value.spec.platforms && value.spec.platforms.length > 0" class="row-platforms mt-6">
+        <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.os') }}</label>
+        <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.arch') }}</label>
+        <label class="text-label">{{ t('imageScanner.registries.configuration.cru.filters.variant') }}</label>
+        <div></div> </div>
 
-        <div v-for="(platform, index) in value.spec.platforms" :key="index" class="row-platforms mb-10">
-          <LabeledSelect v-model:value="platform.os" @update:value="updateOS(platform, $event)" :options="osOptions" :mode="mode" />
-          <LabeledSelect v-model:value="platform.arch" @update:value="updateArch(platform, $event)" :options="getArchOptions(platform.os)" :disabled="!platform.os" :mode="mode" />
-          <LabeledSelect v-model:value="platform.variant" :options="getVariantOptions(platform.arch)" :disabled="!isVariantSupported(platform.arch)" :mode="mode" />
-          <button v-if="!isView" type="button" class="btn role-link" style="padding: 0;" @click="removePlatform(index)">
-            {{ t('generic.remove') }}
-          </button>
-        </div>
+      <div v-for="(platform, index) in value.spec.platforms" :key="index" class="row-platforms mb-10">
+        <LabeledSelect v-model:value="platform.os" @update:value="updateOS(platform, $event)" :options="osOptions" :mode="mode" />
+        <LabeledSelect v-model:value="platform.arch" @update:value="updateArch(platform, $event)" :options="getArchOptions(platform.os)" :disabled="!platform.os" :mode="mode" />
+        <LabeledSelect v-model:value="platform.variant" :options="getVariantOptions(platform.arch)" :disabled="!isVariantSupported(platform.arch)" :mode="mode" />
+        <button v-if="!isView" type="button" class="btn role-link" style="padding: 0;" @click="removePlatform(index)">
+          {{ t('generic.remove') }}
+        </button>
+      </div>
 
-        <div :class="['platform-add-row', value.spec.platforms && value.spec.platforms.length > 0 ? 'mt-6' : 'mt-16']">
-          <button v-if="!isView" type="button" class="btn role-tertiary add" @click="addPlatform">
-            {{ t('imageScanner.registries.configuration.cru.filters.add') }}
-          </button>
-        </div>
-
-      </template>
+      <div :class="['platform-add-row', value.spec.platforms && value.spec.platforms.length > 0 ? 'mt-6' : 'mt-16']">
+        <button v-if="!isView" type="button" class="btn role-tertiary add" @click="addPlatform">
+          {{ t('imageScanner.registries.configuration.cru.filters.add') }}
+        </button>
+      </div>
 
       <template #form-footer>
         <div class="custom-footer">
-<!--          <button type="button" class="btn role-secondary" @click="done">-->
-<!--            {{ t('generic.cancel') }}-->
-<!--          </button>-->
+          <button type="button" class="btn role-secondary" @click="done">
+            {{ t('generic.cancel') }}
+          </button>
           <button
               type="button"
               class="btn role-primary"
               :disabled="!validationPassed || saveLoading"
               @click="finish"
           >
-            {{ t('imageScanner.general.apply') }}
-<!--            {{ isCreate ? t('generic.create') : t('generic.save') }}-->
+            {{ isCreate ? t('generic.create') : t('imageScanner.general.apply') }}
           </button>
         </div>
       </template>
