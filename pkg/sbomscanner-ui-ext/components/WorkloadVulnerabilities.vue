@@ -6,18 +6,17 @@ import {
   WORKLOAD_DETAIL_REPORT_HEADERS,
   WORKLOADS_REPORT_HEADERS,
 } from '@sbomscanner-ui-ext/config/csv-report';
-import { workloadsVulnerabilityreports } from '@sbomscanner-ui-ext/tmp/workloads';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
 import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import { getHighestScore, getPackagePath, getScoreNum, getSeverityNum } from '@sbomscanner-ui-ext/utils/report';
 import Tab from '@shell/components/Tabbed/Tab.vue';
 import Tabbed from '@shell/components/Tabbed/index.vue';
+import { useTabCountUpdater } from '@shell/components/form/ResourceTabs/composable';
+import { POD } from '@shell/config/types';
 import day from 'dayjs';
 import DownloadFullReportBtn from './common/DownloadFullReportBtn.vue';
 import ImageTableSet from './common/ImageTableSet.vue';
 import VulnerabilityTableSet from './common/VulnerabilityTableSet.vue';
-import { useTabCountUpdater } from '@shell/components/form/ResourceTabs/composable';
-import { RESOURCE } from '@sbomscanner-ui-ext/types';
-import { POD } from '@shell/config/types';
 
 export default {
   name:       'WorkloadVulnerabilitiesGrid',
@@ -36,7 +35,6 @@ export default {
       imagesReport:                        [],
       workloadDetailReport:                [],
       vulnerabilityJsonReport:             {},
-      workloadsVulnerabilityreports:       workloadsVulnerabilityreports,
       totalCveCount:                       0,
       containerSpec:                       null,
       activeTab:                           'images',
