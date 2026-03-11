@@ -1,8 +1,8 @@
 import { importTypes } from '@rancher/auto-import';
 import imageScanRoutes from '@sbomscanner-ui-ext/routes/sbomscanner-routes';
+import { getWorkloadScanReportValue } from '@sbomscanner-ui-ext/utils/workload-scan-report';
 import { POD, WORKLOAD_TYPES } from '@shell/config/types';
 import { IPlugin, TableColumnLocation, TabLocation } from '@shell/core/types';
-import { workloadsVulnerabilityreports } from './tmp/workloads';
 
 // Init the package
 export default function(plugin: IPlugin): void {
@@ -22,6 +22,7 @@ export default function(plugin: IPlugin): void {
     TableColumnLocation.RESOURCE,
     {
       resource: [
+        POD,
         WORKLOAD_TYPES.CRON_JOB,
         WORKLOAD_TYPES.DAEMON_SET,
         WORKLOAD_TYPES.DEPLOYMENT,
@@ -38,26 +39,7 @@ export default function(plugin: IPlugin): void {
       weight:    7,
       width:     150,
       formatter: 'IdentifiedCVEsPercentagePopupCell',
-      getValue:  (pod: any) => {
-        if (pod?.type === 'pod') {
-          // TODO: Replace workloadScanReport mockdata with API data
-          // const owner = pod.metadata?.ownerReferences?.[0];
-          // const targetId = owner ? owner.name : pod.metadata?.name;
-          // const allReports = store.getters['cluster/all']('storage.sbomscanner.kubewarden.io.v1alpha1.workloadscanreport');
-          // const matchingReport = allReports.find((report: any) => {
-          //   return report.metadata?.name.includes(targetId);
-          // });
-          const matchingReport = workloadsVulnerabilityreports;
-          const link = pod?.$rootState?.targetRoute.path + '#vulnerabilities';
-
-          return {
-            cveAmount: matchingReport?.summary || null,
-            link:      link || null,
-          } as any;
-        }
-
-        return undefined;
-      }
+      getValue:  getWorkloadScanReportValue,
     }
   );
 
