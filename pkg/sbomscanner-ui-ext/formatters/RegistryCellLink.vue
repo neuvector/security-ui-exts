@@ -41,7 +41,14 @@ export default {
 </script>
 
 <template>
-  <RouterLink :to="registryDetailLink">
+  <RouterLink class="text-wrap" :to="registryDetailLink">
     {{ `${row.metadata.namespace}/${value}` }}
   </RouterLink>
 </template>
+
+<style lang="scss" scoped>
+.text-wrap {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+</style>

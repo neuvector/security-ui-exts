@@ -1,5 +1,5 @@
 <template>
-  <RouterLink :to="imageDetailLink">
+  <RouterLink class="text-wrap" :to="imageDetailLink">
     {{ displayName }}
   </RouterLink>
 </template>
@@ -41,3 +41,10 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.text-wrap {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+</style>

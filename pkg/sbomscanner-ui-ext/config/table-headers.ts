@@ -5,6 +5,7 @@ export const REGISTRY_SCAN_TABLE = [
     value:     'metadata.name',
     sort:      'metadata.name',
     formatter: 'RegistryNameCell',
+    width:     200,
   },
   {
     name:     'namespace',
@@ -176,7 +177,7 @@ export const IMAGE_LIST_TABLE = [
     value:     'workloadCount',
     sort:      'workloadCount',
     formatter: 'ImageInUsePopupCell',
-    width:     120
+    width:     100,
   },
   {
     name:     'repository',
@@ -189,6 +190,7 @@ export const IMAGE_LIST_TABLE = [
     value:     'imageMetadata.registry',
     formatter: 'RegistryCellLink',
     sort:      ['metadata.namespace','imageMetadata.registry'],
+    width:     200,
   },{
     name:     'platform',
     labelKey: 'imageScanner.images.listTable.headers.platform',
@@ -376,12 +378,13 @@ export const VULNERABILITY_DETAILS_TABLE = [
     width:     '16%',
   },
   {
-    name:      'score',
-    labelKey:  'imageScanner.imageDetails.table.headers.score',
-    value:     'score',
-    formatter: 'ScoreCell',
-    sort:      ['scoreNum', 'severityNum'],
-    width:     '12%',
+    name:        'score',
+    labelKey:    'imageScanner.imageDetails.table.headers.score',
+    value:       'score',
+    formatter:   'ScoreCell',
+    sort:        ['scoreNum:desc', 'severityNum:desc'],
+    defaultSort: true,
+    width:       '12%',
   },
   {
     name:     'package',
@@ -438,11 +441,12 @@ export const WORKLOAD_VULNERABILITY_DETAILS_TABLE = [
     sort:      'cveId',
   },
   {
-    name:      'score',
-    labelKey:  'imageScanner.imageDetails.table.headers.score',
-    value:     'score',
-    formatter: 'ScoreCell',
-    sort:      ['scoreNum', 'severityNum'],
+    name:        'score',
+    labelKey:    'imageScanner.imageDetails.table.headers.score',
+    value:       'score',
+    formatter:   'ScoreCell',
+    sort:        ['scoreNum:desc', 'severityNum:desc'],
+    defaultSort: true,
   },
   {
     name:     'package',

@@ -295,19 +295,8 @@ export default {
           if (filters.severitySearch === 'any') {
             return true;
           }
-          let result = false;
-          const severityLevels = ['critical', 'high', 'medium', 'low', 'unknown'];
 
-          for (const level of severityLevels) {
-            if (level === filters.severitySearch.toLowerCase() && row.report.summary[level] > 0) {
-              result = true;
-              break;
-            } else if (level !== filters.severitySearch.toLowerCase() && row.report.summary[level] > 0) {
-              break;
-            }
-          }
-
-          return result;
+          return row.report.summary[filters.severitySearch] && row.report.summary[filters.severitySearch] > 0;
         })();
         const inUseMatch = (()=>{
           if (filters.inUseSearch === 'Any') return true;
@@ -554,7 +543,7 @@ export default {
             {
               id:             report.id,
               imageMetadata:  report.imageMetadata,
-              metadata:       { name: report.metadata.name },
+              metadata:       { name: report.metadata.name, namespace: report.metadata.namespace },
               imageReference: constructImageName(report.imageMetadata),
               scanResult:     currImageScanResult,
             }
@@ -571,7 +560,7 @@ export default {
               {
                 id:             report.id,
                 imageMetadata:  report.imageMetadata,
-                metadata:       { name: report.metadata.name },
+                metadata:       { name: report.metadata.name, namespace: report.metadata.namespace },
                 imageReference: constructImageName(report.imageMetadata),
                 scanResult:     currImageScanResult,
               }
