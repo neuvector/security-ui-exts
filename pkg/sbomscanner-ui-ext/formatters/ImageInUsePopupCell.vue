@@ -29,11 +29,13 @@ export default {
       // Safely grab the cluster ID from the current route, fallback to local
       const clusterId = this.$route?.params?.cluster || this.$store.getters['currentCluster']?.id || 'local';
       const imageId = this.row?.metadata?.name || '';
+      const imageNamespace = this.row?.metadata?.namespace || '';
 
       return {
-        name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-id`,
+        name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-namespace-id`,
         params: {
           cluster: clusterId,
+          namespace: imageNamespace,
           id:      imageId
         },
         hash: '#workloads'

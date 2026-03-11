@@ -6,7 +6,8 @@ import { PRODUCT_NAME, PAGE } from '@sbomscanner-ui-ext/types';
 describe('ImageInUsePopupCell.vue', () => {
   const mockRow = {
     metadata: {
-      name: 'test-image-id'
+      name:      'test-image-id',
+      namespace: 'test-namespace',
     }
   };
 
@@ -14,7 +15,7 @@ describe('ImageInUsePopupCell.vue', () => {
     return shallowMount(ImageInUsePopupCell, {
       props: {
         value: 5,
-        row: mockRow
+        row:   mockRow
       },
       global: {
         mocks: {
@@ -46,10 +47,11 @@ describe('ImageInUsePopupCell.vue', () => {
     const childComponent = wrapper.findComponent(ImageInUsePoppedDetail);
 
     expect(childComponent.props('link')).toEqual({
-      name: `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-id`,
+      name:   `c-cluster-${PRODUCT_NAME}-${PAGE.IMAGES}-namespace-id`,
       params: {
-        cluster: 'route-cluster-id',
-        id: 'test-image-id'
+        cluster:   'route-cluster-id',
+        namespace: 'test-namespace',
+        id:        'test-image-id'
       },
       hash: '#workloads'
     });
@@ -81,7 +83,7 @@ describe('ImageInUsePopupCell.vue', () => {
     const wrapper = shallowMount(ImageInUsePopupCell, {
       props: {
         value: 1,
-        row: {}
+        row:   {}
       },
       global: {
         mocks: {

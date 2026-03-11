@@ -27,14 +27,13 @@
 </template>
 
 <script>
-import { IMAGE_LIST_TABLE, REPO_BASED_TABLE, REPO_BASED_IMAGE_LIST_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
-import { RESOURCE } from '@sbomscanner-ui-ext/types';
-import { saveAs } from 'file-saver';
-import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import ImageTableSet from '@sbomscanner-ui-ext/components/common/ImageTableSet.vue';
-import Papa from 'papaparse';
-import _ from 'lodash';
+import { IMAGE_LIST_TABLE, REPO_BASED_IMAGE_LIST_TABLE, REPO_BASED_TABLE } from '@sbomscanner-ui-ext/config/table-headers';
+import { RESOURCE } from '@sbomscanner-ui-ext/types';
+import { constructImageName } from '@sbomscanner-ui-ext/utils/image';
 import day from 'dayjs';
+import { saveAs } from 'file-saver';
+import Papa from 'papaparse';
 
 export default {
   name:       'ImageOverview',
@@ -54,27 +53,6 @@ export default {
   async fetch() {
     this.rows = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.VULNERABILITY_REPORT });
     let scannedImages = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.IMAGE });
-
-    // Mocking workloadScanReports for demonstration, remove this when the actual data is available - start
-    scannedImages = scannedImages.map((image, index) => {
-      if (index % 8 !== 1) {
-        image.status = {
-          workloadScanReports: [
-            {
-              name:      'deployment-nginx',
-              namespace: 'production'
-            },
-            {
-              name:      'deployment-web-frontend',
-              namespace: 'staging'
-            }
-          ]
-        };
-      }
-
-      return image;
-    });
-    // Mocking workloadScanReports for demonstration, remove this when the actual data is available - end
 
     this.rows = this.rows.map((report) => {
       const status = scannedImages.find((image) => image.name === report.metadata.name)?.status || {};
