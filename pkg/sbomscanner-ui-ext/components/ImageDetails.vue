@@ -139,7 +139,7 @@ export default {
       severity:                      '',
       loadedVulnerabilityReport:     null,
       loadedSbom:                    null,
-      workloads:                     null,
+      workloads:                     [],
       // Cache filtered results to prevent selection issues
       cachedFilteredVulnerabilities: [],
       // Download dropdown state
@@ -171,7 +171,9 @@ export default {
 
     // Load the image resource and its associated data
     await this.loadImageData();
-    this.loadWorkloads();
+    if (this.image) {
+      await this.loadWorkloads();
+    }
   },
 
   computed: {
@@ -377,8 +379,6 @@ export default {
           });
         });
       });
-
-      console.log('Workloads using this image', workloads); // Debug log to verify workloads data
 
       this.workloads = this.parseWorkloadTableData(workloads);
     },
