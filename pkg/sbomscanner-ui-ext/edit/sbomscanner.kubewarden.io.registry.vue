@@ -46,7 +46,6 @@ export default {
         authSecret:   '',
         uri:          '',
         repositories: [],
-        scanInterval: SCAN_INTERVALS.MANUAL,
         caBundle:     '',
         insecure:     false,
       };
@@ -59,9 +58,6 @@ export default {
     if (this.value.spec.insecure === undefined) this.value.spec.insecure = false;
     if (this.value.spec.caBundle === undefined) this.value.spec.caBundle = '';
 
-    if ( this.value.spec.scanInterval === null) {
-      this.value.spec.scanInterval = SCAN_INTERVALS.MANUAL;
-    }
 
     const osOptions = Object.keys(VALID_PLATFORMS).map((k) => ({
       label: k,
@@ -151,7 +147,11 @@ export default {
         return currentInterval;
       },
       set(newValue) {
-        this.value.spec.scanInterval = newValue;
+        if (newValue === SCAN_INTERVALS.MANUAL) {
+          delete this.value.spec.scanInterval;
+        } else {
+          this.value.spec.scanInterval = newValue;
+        }
       }
     },
 
@@ -190,9 +190,6 @@ export default {
 
   methods: {
     async finish(event) {
-      if (this.value.spec.scanInterval === SCAN_INTERVALS.MANUAL) {
-        delete this.value.spec.scanInterval;
-      }
 
       this.cleanPlatforms();
 
