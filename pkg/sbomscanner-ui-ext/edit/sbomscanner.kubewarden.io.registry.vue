@@ -66,7 +66,6 @@ export default {
 
     return {
       inStore:         this.$store.getters['currentProduct'].inStore,
-      errors:          null,
       allSecrets:      null,
       filteredSecrets: null,
       PAGE,
@@ -303,6 +302,7 @@ export default {
       :subtypes="[]"
       :errors="errors"
       :validation-passed="validationPassed"
+      @error="e => errors = Array.isArray(e) ? e : [e]"
       @finish="finish"
       @cancel="done"
     >
