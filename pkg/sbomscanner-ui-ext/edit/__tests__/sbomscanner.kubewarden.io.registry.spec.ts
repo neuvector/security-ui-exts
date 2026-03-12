@@ -133,6 +133,31 @@ describe('CruRegistry', () => {
     });
   });
 
+  describe('computed: selectedScanInterval', () => {
+    beforeEach(() => {
+      wrapper = createWrapper({});
+    });
+
+    it('should return MANUAL if scanInterval is undefined or set to MANUAL', () => {
+      wrapper.vm.value.spec.scanInterval = undefined;
+      expect(wrapper.vm.selectedScanInterval).toBe(SCAN_INTERVALS.MANUAL);
+
+      wrapper.vm.value.spec.scanInterval = SCAN_INTERVALS.MANUAL;
+      expect(wrapper.vm.selectedScanInterval).toBe(SCAN_INTERVALS.MANUAL);
+    });
+
+    it('should delete scanInterval from spec when set to MANUAL', () => {
+      wrapper.vm.value.spec.scanInterval = '12h';
+      wrapper.vm.selectedScanInterval = SCAN_INTERVALS.MANUAL;
+      expect(wrapper.vm.value.spec.scanInterval).toBeUndefined();
+    });
+
+    it('should set scanInterval to the selected value if not MANUAL', () => {
+      wrapper.vm.selectedScanInterval = '24h';
+      expect(wrapper.vm.value.spec.scanInterval).toBe('24h');
+    });
+  });
+
   describe('computed: repoNames (Object <-> String mapping)', () => {
     beforeEach(() => {
       wrapper = createWrapper({});
