@@ -53,4 +53,4 @@ export const ALLOWED_VARIANTS = {
   arm64: ['v8']
 };
 
-export const WORKLOAD_SCAN_DOCS_URL = 'https://docs.kubewarden.io';
+export const WORKLOAD_SCAN_DOCS_URL = 'https://github.com/kubewarden/sbomscanner/blob/main/docs/user-guide/scanning-workloads.md';

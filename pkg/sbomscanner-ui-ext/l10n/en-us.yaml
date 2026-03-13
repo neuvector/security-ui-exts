@@ -376,13 +376,13 @@ imageScanner:
           descriptionStart: The Workloads Scan automatically discovers images in running pods and generates consolidated reports for workload vulnerabilities. Want to learn more? Read our
           documentationLink: documentation
           enabled: Enabled
-          enabledTooltip: Toggle workload scanning on or off.
+          enabledTooltip: Enable or disable workload scanning
           scanOnChange: Scan on workload change
-          scanOnChangeTooltip: When enabled, the Workloads Scan will scan for new images and vulnerabilities when a new image is discovered in a running pod.
+          scanOnChangeTooltip: Automatically scan for vulnerabilities whenever a new container image is detected in your running workloads.
           namespaces: Leave empty to scan all namespaces
           artifactsNamespace: Artifacts Namespace
           artifactsNamespacePlaceholder: e.g. cattle-sbomscanner-system
-          artifactsNamespaceTooltip: Artifacts Namespace is the namespace where the SBOM Scanner will create the SBOM and the Vulnerability Report.
+          artifactsNamespaceTooltip: Namespace where managed Registry, ScanJob, Image, SBOM, and VulnerabilityReport resources are created. If omitted or empty, managed artifacts are created in the workload's namespace.
           successMessage: Workloads Scan successfully configured
         resourceLocation:
           label: Resource Location
@@ -391,7 +391,7 @@ imageScanner:
         scanning:
           label: Scanning
           namespaces: Namespace selectors
-          namespacesTooltip: Namespace selectors filter which namespaces are scanned for workloads. If not specified, workloads in all namespaces are scanned.
+          namespacesTooltip: A standard Kubernetes label selector. Only workloads in namespaces matching the selector are scanned. If omitted, workloads in all namespaces are scanned.
     tabs:
       images: Images
       affectingCVEs: Affecting CVEs
