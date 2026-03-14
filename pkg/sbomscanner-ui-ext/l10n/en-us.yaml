@@ -433,6 +433,7 @@ imageScanner:
       complete: Finished at
       failed: Failed at
   general:
+    product: SBOMScanner
     refresh: Refresh data
     ago: ago
     justNow: Just now
@@ -452,7 +453,14 @@ imageScanner:
     apply: Apply
     yes: Yes
     no: No
-
+    workloadBanner:
+      text1: Data provided by
+      text2: Want to learn more about this extension? 
+      text3: Read our
+      product: SBOMScanner
+      documentation: documentation
+    cvesPanel:
+      text1: Provided by
 typeLabel:
   sbomscanner.kubewarden.io.registry: Registries configuration
   sbomscanner.kubewarden.io.vexhub: Vex Management

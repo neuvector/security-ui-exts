@@ -6,8 +6,6 @@ const mockUpdateTabCount = jest.fn();
 
 jest.mock('@shell/components/form/ResourceTabs/composable', () => ({ useTabCountUpdater: () => ({ updateTabCount: mockUpdateTabCount }) }));
 
-jest.mock('@sbomscanner-ui-ext/tmp/workloads', () => ({ workloadsVulnerabilityreports: [] }));
-
 jest.mock('@sbomscanner-ui-ext/utils/image', () => ({
   constructImageName: jest.fn((metadata) => {
     if (!metadata) {

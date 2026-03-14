@@ -53,7 +53,7 @@
         </div>
 
         <div class="footer">
-          Provided by 
+          {{ t('imageScanner.general.cvesPanel.text1') }}
           <a href="/" target="_blank" rel="noopener noreferrer" class="provider-name">
             {{ footerProvider }}
           </a>

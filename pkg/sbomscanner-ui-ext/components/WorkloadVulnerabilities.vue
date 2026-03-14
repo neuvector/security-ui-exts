@@ -326,14 +326,15 @@ export default {
 <template>
   <div class="vul-header">
     <Banner color="info" class="vul-banner">
-      <span>Data provided by</span>
-      <span class="text-underline">SBOMScanner</span>
-      <span>, Want to learn more about this extension? Read our</span>
+      <span>{{ t('imageScanner.general.workloadBanner.text1') }}</span>
+      <a href="/" target="_blank" rel="noopener noreferrer" class="text-underline">{{ t('imageScanner.general.workloadBanner.product') }}</a>
+      <span>, {{ t('imageScanner.general.workloadBanner.text2') }}</span>
       <a
-        href="https://docs.rancher.com/security/sbom-scanner-extension"
+        href="/"
         class="text-underline"
+        rel="noopener noreferrer"
         target="_blank">
-        documentation
+        {{ t('imageScanner.general.workloadBanner.documentation') }}
         <i class="icon icon-external-link icon-underline"></i>
       </a>
     </Banner>

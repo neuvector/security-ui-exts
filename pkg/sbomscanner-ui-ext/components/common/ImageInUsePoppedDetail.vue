@@ -36,6 +36,7 @@
               class="learn-more-link"
               :href="learnMoreLink"
               target="_blank"
+              rel="noopener noreferrer"
           >
             {{ t('imageScanner.general.learnMore') }}
           </a>
@@ -65,7 +66,7 @@ export default {
   data() {
     return {
       showOnTop:     false,
-      learnMoreLink: '',
+      learnMoreLink: '/',
     };
   },
   computed: {
