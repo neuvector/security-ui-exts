@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     async loadData() {
-      this.scanJobCRD = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.SCAN_JOB });
+      await this.$store.dispatch('cluster/findAll', { type: RESOURCE.SCAN_JOB });
       await this.preprocessData();
       clearInterval(this.keepAliveTimer);
       this.keepAliveTimer = setInterval(async() => {
@@ -84,6 +84,11 @@ export default {
     async preprocessData() {
       this.registryStatusList = [];
       this.statusSummary = {};
+      const globalNs = Object.keys(this.$store.getters['activeNamespaceCache']);
+
+      this.scanJobCRD = this.$store.getters['cluster/all'](RESOURCE.SCAN_JOB).filter((job) => {
+        return globalNs.includes(job.metadata.namespace);
+      });
       const summaryData = this.getSummaryData(this.scanJobCRD);
 
       this.registryStatusList = summaryData.registryStatusList;
@@ -280,7 +285,16 @@ export default {
     canPaginate() {
       return this.$store.getters[`cluster/paginationEnabled`](RESOURCE.REGISTRY);
     },
+    globalNamespace() {
+      return this.$store.getters['activeNamespaceCache'];
+    }
   },
+
+  watch: {
+    globalNamespace(newVal) {
+      this.preprocessData();
+    }
+  }
 };
 </script>
 

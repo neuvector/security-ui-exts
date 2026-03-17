@@ -10,8 +10,9 @@ export function init($plugin: any, store: any) {
   } = $plugin.DSL(store, PRODUCT_NAME);
 
   product({
-    icon:    'pod_security',
-    inStore: 'cluster',
+    icon:                'pod_security',
+    inStore:             'cluster',
+    showNamespaceFilter: true,
   });
 
   virtualType({
