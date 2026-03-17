@@ -263,6 +263,67 @@ describe('ImageDetails.vue', () => {
     expect(result.unknown).toBe(0);
   });
 
+  it('deduplicates vulnerabilities by cve, packageName, and installedVersion', () => {
+    wrapper.vm.loadedVulnerabilityReport = {
+      report: {
+        summary: {
+          critical: 2, high: 1, medium: 0, low: 0, unknown: 0
+        },
+        results: [
+          {
+            vulnerabilities: [
+              {
+                cve:              'CVE-2025-0001',
+                packageName:      'openssl',
+                installedVersion: '1.0.2',
+                severity:         'High',
+                cvss:             [{ metrics: { baseScore: 7.5 } }],
+                fixedVersions:    ['1.0.3'],
+                purl:             'pkg:deb/debian/openssl@1.0.2'
+              },
+              {
+                cve:              'CVE-2025-0001',
+                packageName:      'openssl',
+                installedVersion: '1.0.2',
+                severity:         'High',
+                cvss:             [{ metrics: { baseScore: 7.5 } }],
+                fixedVersions:    ['1.0.3'],
+                purl:             'pkg:deb/debian/openssl@1.0.2'
+              },
+            ]
+          },
+          {
+            vulnerabilities: [
+              {
+                cve:              'CVE-2025-0002',
+                packageName:      'nginx',
+                installedVersion: '1.23.0',
+                severity:         'Critical',
+                cvss:             [{ metrics: { baseScore: 9.8 } }],
+                fixedVersions:    ['1.23.1'],
+                purl:             'pkg:deb/debian/nginx@1.23.0'
+              },
+              {
+                cve:              'CVE-2025-0001',
+                packageName:      'openssl',
+                installedVersion: '1.0.2',
+                severity:         'High',
+                cvss:             [{ metrics: { baseScore: 7.5 } }],
+                fixedVersions:    ['1.0.3'],
+                purl:             'pkg:deb/debian/openssl@1.0.2'
+              },
+            ]
+          }
+        ],
+      },
+    };
+
+    const details = wrapper.vm.vulnerabilityDetails;
+
+    expect(details).toHaveLength(2);
+    expect(details.map((item: any) => item.cveId)).toEqual(expect.arrayContaining(['CVE-2025-0001', 'CVE-2025-0002']));
+  });
+
   // it('updates cachedFilteredVulnerabilities when filters are applied', async() => {
   //   Object.defineProperty(wrapper.vm, 'vulnerabilityDetails', {
   //     get: () => [

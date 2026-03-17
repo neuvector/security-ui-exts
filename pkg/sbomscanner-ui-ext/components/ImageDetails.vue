@@ -268,11 +268,19 @@ export default {
 
       // Try to access vulnerabilities directly from the report data
       let vulnerabilities = [];
+      const vulnerabilityMap = new Map();
 
       if (this.vulnerabilityReport.report && this.vulnerabilityReport.report.results) {
         this.vulnerabilityReport.report.results.forEach((result) => {
           if (result && result.vulnerabilities) {
-            vulnerabilities = vulnerabilities.concat(result.vulnerabilities);
+            result.vulnerabilities.forEach((vuln) => {
+              const key = `${ vuln.cve }-${ vuln.packageName }-${ vuln.installedVersion }`;
+
+              if ( !vulnerabilityMap.has(key) ) {
+                vulnerabilityMap.set(key, vuln);
+              }
+            });
+            vulnerabilities = Array.from(vulnerabilityMap.values());
           }
         });
       }
