@@ -67,7 +67,7 @@ export default {
       PRODUCT_NAME,
       WORKLOAD_SCAN_DOCS_URL,
       SCAN_INTERVAL_OPTIONS,
-      OS_OPTIONS
+      osOptions: OS_OPTIONS
     };
   },
 
@@ -77,7 +77,6 @@ export default {
     },
 
     isArtifactsNamespaceLocked() {
-      // Lock the field if we are editing an existing configuration that is currently enabled
       return this.mode === 'edit' && this.savedEnabledState;
     },
 
@@ -93,7 +92,6 @@ export default {
         options.push({ label: currentNs, value: currentNs });
       }
 
-      // Default empty option maps to the Workload's specific namespace
       options.unshift({
         label: 'None',
         value: ''
@@ -188,19 +186,16 @@ export default {
         scanInterval:       '3h',
       };
 
-      // Safely apply defaults for undefined values
       for (const [key, val] of Object.entries(defaultSpec)) {
         if (this.value.spec[key] === undefined) {
           this.value.spec[key] = val;
         }
       }
 
-      // Ensure platforms array exists
       if (!this.value.spec.platforms) {
         this.value.spec.platforms = [];
       }
 
-      // Capture initial state for the namespace lock logic
       this.savedEnabledState = this.value.spec.enabled;
     },
 
@@ -232,7 +227,6 @@ export default {
           }
         }
 
-        // Remove matchLabels so the UI is powered strictly by MatchExpressions
         delete selector.matchLabels;
       }
     },
@@ -264,7 +258,6 @@ export default {
     cleanBeforeSave() {
       const spec = this.value.spec;
 
-      // Clean default / empty values to avoid polluting the YAML
       if (spec.scanInterval === SCAN_INTERVALS.MANUAL) delete spec.scanInterval;
       if (spec.caBundle === '') delete spec.caBundle;
       if (spec.insecure === false) delete spec.insecure;

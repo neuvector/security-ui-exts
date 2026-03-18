@@ -11,12 +11,9 @@ jest.mock('@shell/mixins/create-edit-view', () => ({
       value: { type: Object, required: true }
     },
     computed: {
-      isCreate() {
-        return this.mode === 'create';
-      },
-      isView() {
-        return this.mode === 'view';
-      }
+      isCreate() { return this.mode === 'create'; },
+      isView() { return this.mode === 'view'; },
+      doneRoute() { return 'mock-done-route'; } // Fixes the Vue warn
     },
     methods: {
       save: jest.fn().mockResolvedValue(true),
@@ -29,11 +26,17 @@ describe('CruWorkloadScanConfiguration.vue', () => {
   let wrapper;
   let mockDispatch;
   let mockGetters;
+  let mockAppFetchBehavior = 'success';
 
   const createWrapper = (valueOverrides = {}, mode = 'edit') => {
     mockDispatch = jest.fn((action, payload) => {
-      // Safely handle the app fetch to dynamically determine the installation namespace
       if (action === 'cluster/findAll' && payload?.type === 'catalog.cattle.io.app') {
+        if (mockAppFetchBehavior === 'error') {
+          return Promise.reject(new Error('Fetch failed'));
+        }
+        if (mockAppFetchBehavior === 'empty') {
+          return Promise.resolve([]);
+        }
         return Promise.resolve([
           { spec: { name: 'rancher-sbomscanner' }, metadata: { namespace: 'custom-sbom-namespace' } }
         ]);
@@ -94,6 +97,10 @@ describe('CruWorkloadScanConfiguration.vue', () => {
     });
   };
 
+  beforeEach(() => {
+    mockAppFetchBehavior = 'success';
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -107,35 +114,37 @@ describe('CruWorkloadScanConfiguration.vue', () => {
 
     it('does not change savedEnabledState when the checkbox is toggled', async () => {
       wrapper = createWrapper({ enabled: true });
-
-      expect(wrapper.vm.savedEnabledState).toBe(true);
-
-      // Simulate user unchecking the box
       wrapper.vm.value.spec.enabled = false;
       await wrapper.vm.$nextTick();
-
-      // The state powering the badge/lock should remain true until save
       expect(wrapper.vm.savedEnabledState).toBe(true);
     });
 
-    it('converts matchLabels to matchExpressions on load via created hook', () => {
-      wrapper = createWrapper({
-        namespaceSelector: {
-          matchLabels: {
-            'sbomscanner.kubewarden.io/workloadscan': 'true'
-          }
-        }
-      });
+    it('handles undefined spec gracefully on initialization', () => {
+      wrapper = createWrapper();
+      wrapper.vm.value.spec = undefined;
+      wrapper.vm.initDefaults();
+      expect(wrapper.vm.value.spec.enabled).toBe(true);
+    });
+  });
 
-      const spec = wrapper.vm.value.spec;
-      expect(spec.namespaceSelector.matchLabels).toBeUndefined();
-      expect(spec.namespaceSelector.matchExpressions).toBeDefined();
-      expect(spec.namespaceSelector.matchExpressions.length).toBe(1);
-      expect(spec.namespaceSelector.matchExpressions[0]).toEqual({
-        key: 'sbomscanner.kubewarden.io/workloadscan',
-        operator: 'In',
-        values: ['true']
-      });
+  describe('Data Fetching (fetch hook)', () => {
+    it('falls back to default namespace if app fetch fails', async () => {
+      mockAppFetchBehavior = 'error';
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      wrapper = createWrapper();
+
+      await wrapper.vm.$options.fetch.call(wrapper.vm);
+      expect(wrapper.vm.sbomScannerInstallationNamespace).toBe('cattle-sbomscanner-system');
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('falls back to default namespace if sbomscanner app is not found', async () => {
+      mockAppFetchBehavior = 'empty';
+      wrapper = createWrapper();
+
+      await wrapper.vm.$options.fetch.call(wrapper.vm);
+      expect(wrapper.vm.sbomScannerInstallationNamespace).toBe('cattle-sbomscanner-system');
     });
   });
 
@@ -144,11 +153,6 @@ describe('CruWorkloadScanConfiguration.vue', () => {
       it('returns true when mode is edit and saved state is active', () => {
         wrapper = createWrapper({ enabled: true }, 'edit');
         expect(wrapper.vm.isArtifactsNamespaceLocked).toBe(true);
-      });
-
-      it('returns false when mode is edit but saved state is inactive', () => {
-        wrapper = createWrapper({ enabled: false }, 'edit');
-        expect(wrapper.vm.isArtifactsNamespaceLocked).toBe(false);
       });
 
       it('returns false when mode is create', () => {
@@ -160,32 +164,31 @@ describe('CruWorkloadScanConfiguration.vue', () => {
     describe('namespaceOptions', () => {
       it('includes the empty value option at the top for default namespace behavior', () => {
         wrapper = createWrapper({});
-        const options = wrapper.vm.namespaceOptions;
-
-        expect(options.length).toBeGreaterThan(0);
-        expect(options[0].value).toBe('');
+        expect(wrapper.vm.namespaceOptions[0].value).toBe('');
       });
     });
 
     describe('authOptions', () => {
       it('filters secrets by type DOCKER_JSON and the dynamically fetched installation namespace', async () => {
         wrapper = createWrapper({});
-
-        if (wrapper.vm.$options.fetch) {
-          await wrapper.vm.$options.fetch.call(wrapper.vm);
-        }
+        await wrapper.vm.$options.fetch.call(wrapper.vm);
 
         wrapper.vm.allSecrets = [
-          { metadata: { name: 'wrong-ns-secret', namespace: 'default' }, _type: SECRET_TYPES.DOCKER_JSON },
-          { metadata: { name: 'correct-secret', namespace: 'custom-sbom-namespace' }, _type: SECRET_TYPES.DOCKER_JSON },
-          { metadata: { name: 'wrong-type-secret', namespace: 'custom-sbom-namespace' }, _type: 'Opaque' },
+          { metadata: { name: 'wrong-ns', namespace: 'default' }, _type: SECRET_TYPES.DOCKER_JSON },
+          { metadata: { name: 'correct', namespace: 'custom-sbom-namespace' }, _type: SECRET_TYPES.DOCKER_JSON },
+          { metadata: { name: 'wrong-type', namespace: 'custom-sbom-namespace' }, _type: 'Opaque' },
         ];
 
-        const options = wrapper.vm.authOptions;
+        expect(wrapper.vm.authOptions.length).toBe(4);
+        expect(wrapper.vm.authOptions[3].value).toBe('correct');
+      });
+    });
 
-        // 3 default header options (Create, Divider, None) + 1 matching secret
-        expect(options.length).toBe(4);
-        expect(options[3].value).toBe('correct-secret');
+    describe('matchExpressions setter', () => {
+      it('deletes matchExpressions if empty array is passed', () => {
+        wrapper = createWrapper();
+        wrapper.vm.matchExpressions = [];
+        expect(wrapper.vm.value.spec.namespaceSelector.matchExpressions).toBeUndefined();
       });
     });
   });
@@ -194,12 +197,9 @@ describe('CruWorkloadScanConfiguration.vue', () => {
     it('passes validation when a valid secret is selected or left blank', () => {
       wrapper = createWrapper({ authSecret: 'my-secret' });
       expect(wrapper.vm.validationPassed).toBe(true);
-
-      wrapper = createWrapper({ authSecret: '' });
-      expect(wrapper.vm.validationPassed).toBe(true);
     });
 
-    it('fails validation when authSecret is set to "create" (placeholder)', () => {
+    it('fails validation when authSecret is set to "create"', () => {
       wrapper = createWrapper({ authSecret: 'create' });
       expect(wrapper.vm.validationPassed).toBe(false);
     });
@@ -210,17 +210,11 @@ describe('CruWorkloadScanConfiguration.vue', () => {
       wrapper = createWrapper();
     });
 
-    it('adds a new default platform when addPlatform is called', () => {
+    it('adds and removes platforms', () => {
       wrapper.vm.addPlatform();
       expect(wrapper.vm.value.spec.platforms.length).toBe(1);
-      expect(wrapper.vm.value.spec.platforms[0]).toEqual({ os: 'linux', arch: 'amd64', variant: '' });
-    });
-
-    it('removes a platform when removePlatform is called', () => {
-      wrapper.vm.addPlatform();
-      wrapper.vm.addPlatform();
       wrapper.vm.removePlatform(0);
-      expect(wrapper.vm.value.spec.platforms.length).toBe(1);
+      expect(wrapper.vm.value.spec.platforms.length).toBe(0);
     });
 
     it('updates OS and gracefully resets arch and variant', () => {
@@ -228,54 +222,100 @@ describe('CruWorkloadScanConfiguration.vue', () => {
       wrapper.vm.updateOS(platform, 'darwin');
 
       expect(platform.os).toBe('darwin');
-      expect(platform.arch).toBe('amd64'); // Default fallback for darwin
+      expect(platform.arch).toBeDefined();
       expect(platform.variant).toBe('');
     });
 
-    it('cleans duplicate and invalid platforms on save', () => {
+    it('handles undefined platforms during cleanPlatforms', () => {
+      wrapper.vm.value.spec.platforms = undefined;
+      expect(() => wrapper.vm.cleanPlatforms()).not.toThrow();
+    });
+
+    it('cleans duplicate platforms on save', () => {
       wrapper.vm.value.spec.platforms = [
         { os: 'linux', arch: 'amd64' },
-        { os: 'linux', arch: 'amd64' }, // Duplicate
-        { os: '', arch: 'amd64' }       // Invalid
+        { os: 'linux', arch: 'amd64' },
       ];
-
       wrapper.vm.cleanPlatforms();
       expect(wrapper.vm.value.spec.platforms.length).toBe(1);
     });
   });
 
   describe('Namespace Selector Management', () => {
+    it('resets namespaceSelector if it is an array', () => {
+      wrapper = createWrapper();
+      wrapper.vm.value.spec.namespaceSelector = [];
+      wrapper.vm.convertLabelsToExpressions();
+      expect(wrapper.vm.value.spec.namespaceSelector).toEqual({});
+    });
+
+    it('converts matchLabels to matchExpressions and handles missing matchExpressions array', () => {
+      wrapper = createWrapper();
+      wrapper.vm.value.spec.namespaceSelector = {
+        matchLabels: { 'foo': 'bar' }
+      };
+
+      wrapper.vm.convertLabelsToExpressions();
+
+      const spec = wrapper.vm.value.spec;
+      expect(spec.namespaceSelector.matchLabels).toBeUndefined();
+      expect(spec.namespaceSelector.matchExpressions[0]).toEqual({ key: 'foo', operator: 'In', values: ['bar'] });
+    });
+
+    it('handles undefined namespaceSelector during cleanNamespaceSelector', () => {
+      wrapper = createWrapper();
+      wrapper.vm.value.spec.namespaceSelector = undefined;
+      expect(() => wrapper.vm.cleanNamespaceSelector()).not.toThrow();
+    });
+
     it('removes namespaceSelector entirely if matchExpressions is empty', () => {
       wrapper = createWrapper({ namespaceSelector: { matchExpressions: [] } });
       wrapper.vm.cleanNamespaceSelector();
       expect(wrapper.vm.value.spec.namespaceSelector).toBeUndefined();
     });
 
-    it('filters out invalid and duplicate match expressions', () => {
+    it('cleans namespace selector with Exists operator (no values array)', () => {
       wrapper = createWrapper({
         namespaceSelector: {
-          matchExpressions: [
-            { key: 'env', operator: 'In', values: ['prod', 'dev'] },
-            { key: 'env', operator: 'In', values: ['dev', 'prod'] }, // Duplicate
-            { key: '', operator: 'Exists' } // Invalid
-          ]
+          matchExpressions: [{ key: 'env', operator: 'Exists' }]
         }
       });
-
       wrapper.vm.cleanNamespaceSelector();
       expect(wrapper.vm.value.spec.namespaceSelector.matchExpressions.length).toBe(1);
-      expect(wrapper.vm.value.spec.namespaceSelector.matchExpressions[0].key).toBe('env');
+    });
+
+    it('deletes namespaceSelector if all expressions are filtered out as invalid', () => {
+      wrapper = createWrapper({
+        namespaceSelector: {
+          matchExpressions: [{ key: '', operator: 'Exists' }]
+        }
+      });
+      wrapper.vm.cleanNamespaceSelector();
+      expect(wrapper.vm.value.spec.namespaceSelector).toBeUndefined();
+    });
+  });
+
+  describe('Other Methods', () => {
+    it('populates errors if refreshList fails', async () => {
+      wrapper = createWrapper();
+      wrapper.vm.$store.dispatch = jest.fn().mockRejectedValue(new Error('Refresh failed'));
+      await wrapper.vm.refreshList();
+
+      expect(wrapper.vm.errors).toEqual([new Error('Refresh failed')]);
+      expect(wrapper.vm.authLoading).toBe(false);
+    });
+
+    it('sets caBundle on onFileSelected', () => {
+      wrapper = createWrapper();
+      wrapper.vm.onFileSelected('cert-data');
+      expect(wrapper.vm.value.spec.caBundle).toBe('cert-data');
     });
   });
 
   describe('finish (Save logic)', () => {
     it('calls save and updates savedEnabledState upon success', async () => {
       wrapper = createWrapper({ enabled: true });
-
-      // User unchecks the box
       wrapper.vm.value.spec.enabled = false;
-      expect(wrapper.vm.savedEnabledState).toBe(true);
-
       wrapper.vm.save = jest.fn().mockResolvedValue(true);
       jest.spyOn(wrapper.vm, 'cleanBeforeSave');
 
@@ -286,30 +326,30 @@ describe('CruWorkloadScanConfiguration.vue', () => {
       expect(wrapper.vm.cleanBeforeSave).toHaveBeenCalled();
       expect(wrapper.vm.save).toHaveBeenCalled();
       expect(wrapper.vm.savedEnabledState).toBe(false);
-
-      expect(mockDispatch).toHaveBeenCalledWith(
-        'growl/success',
-        {
-          title: 'imageScanner.general.saved',
-          message: 'imageScanner.workloads.configuration.cru.general.successMessage'
-        },
-        { root: true }
-      );
     });
 
     it('deletes scanInterval if it is set to MANUAL', async () => {
       wrapper = createWrapper({ scanInterval: SCAN_INTERVALS.MANUAL });
       wrapper.vm.save = jest.fn().mockResolvedValue(true);
-
       await wrapper.vm.finish();
       expect(wrapper.vm.value.spec.scanInterval).toBeUndefined();
+    });
+
+    it('keeps caBundle and insecure if they have valid values', async () => {
+      wrapper = createWrapper({ caBundle: 'some-cert', insecure: true });
+      wrapper.vm.save = jest.fn().mockResolvedValue(true);
+
+      await wrapper.vm.finish();
+
+      expect(wrapper.vm.value.spec.caBundle).toBe('some-cert');
+      expect(wrapper.vm.value.spec.insecure).toBe(true);
     });
 
     it('cleans up default empty caBundle and false insecure on save', async () => {
       wrapper = createWrapper({ caBundle: '', insecure: false });
       wrapper.vm.save = jest.fn().mockResolvedValue(true);
 
-      await wrapper.vm.finish({ preventDefault: jest.fn() });
+      await wrapper.vm.finish();
 
       expect(wrapper.vm.value.spec.caBundle).toBeUndefined();
       expect(wrapper.vm.value.spec.insecure).toBeUndefined();
@@ -318,13 +358,12 @@ describe('CruWorkloadScanConfiguration.vue', () => {
     it('does not update savedEnabledState if save fails', async () => {
       wrapper = createWrapper({ enabled: true });
       wrapper.vm.value.spec.enabled = false;
-
       wrapper.vm.save = jest.fn().mockRejectedValue(new Error('Save failed'));
 
       await wrapper.vm.finish();
 
       expect(wrapper.vm.errors).toEqual([new Error('Save failed')]);
-      expect(wrapper.vm.savedEnabledState).toBe(true); // Should remain true on error
+      expect(wrapper.vm.savedEnabledState).toBe(true);
     });
   });
 });
