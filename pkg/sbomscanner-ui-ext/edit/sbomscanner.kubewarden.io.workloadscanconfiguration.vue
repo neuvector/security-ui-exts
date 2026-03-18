@@ -7,12 +7,14 @@ import CruResource from '@shell/components/CruResource';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import MatchExpressions from '@shell/components/form/MatchExpressions';
 import Banner from '@components/Banner/Banner.vue';
-import { SECRET } from '@shell/config/types';
+import { CATALOG, NAMESPACE, SECRET } from '@shell/config/types';
 import { SECRET_TYPES } from '@shell/config/secret';
-import { SCAN_INTERVAL_OPTIONS, SCAN_INTERVALS } from '@sbomscanner-ui-ext/constants';
+import { SBOMSCANNER_INSTALLATION_NAMESPACE, SCAN_INTERVAL_OPTIONS, SCAN_INTERVALS } from '@sbomscanner-ui-ext/constants';
 import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@sbomscanner-ui-ext/types';
 import { filterUnique } from '@sbomscanner-ui-ext/utils/app';
 import { VALID_PLATFORMS, ALLOWED_VARIANTS, WORKLOAD_SCAN_DOCS_URL } from '@sbomscanner-ui-ext/constants/securityConstants';
+
+const OS_OPTIONS = Object.keys(VALID_PLATFORMS).map((k) => ({ label: k, value: k }));
 
 export default {
   name: 'CruWorkloadScanConfiguration',
@@ -30,85 +32,72 @@ export default {
   mixins: [CreateEditView],
 
   async fetch() {
+    const inStore = this.$store.getters['currentProduct'].inStore;
+
     await Promise.all([
-      this.$store.dispatch(`${ this.inStore }/findAll`, { type: SECRET }),
-      this.$store.dispatch('cluster/findAll', { type: 'namespace' })
+      this.$store.dispatch(`${ inStore }/findAll`, { type: SECRET }),
+      this.$store.dispatch('cluster/findAll', { type: NAMESPACE })
     ]);
-    this.allSecrets = this.$store.getters[`${ this.inStore }/all`](SECRET);
+
+    this.allSecrets = this.$store.getters[`${ inStore }/all`](SECRET);
+
+    try {
+      const apps = await this.$store.dispatch('cluster/findAll', { type: CATALOG.APP });
+      const sbomApp = apps.find(a => a.spec?.name?.includes('sbomscanner'));
+
+      if (sbomApp?.metadata?.namespace) {
+        this.sbomScannerInstallationNamespace = sbomApp.metadata.namespace;
+      }
+    } catch (e) {
+      console.warn('Could not fetch apps to determine SBOMScanner namespace, falling back to default.', e);
+    }
   },
 
   data() {
-    if (!this.value.metadata) {
-      this.value.metadata = {};
-    }
-    this.value.metadata.name = 'default';
-
-    if (!this.value.spec) {
-      this.value.spec = {
-        enabled:            true,
-        scanOnChange:       true,
-        artifactsNamespace: '',
-        namespaceSelector:  {},
-        authSecret:         '',
-        caBundle:           '',
-        insecure:           false,
-        platforms:          [],
-        scanInterval:       '3h',
-      };
-    }
-
-    if (!this.value.spec.namespaceSelector || Array.isArray(this.value.spec.namespaceSelector)) {
-      this.value.spec.namespaceSelector = {};
-    }
-
-    if (this.value.spec.enabled === undefined) this.value.spec.enabled = true;
-    if (this.value.spec.scanOnChange === undefined) this.value.spec.scanOnChange = true;
-    if (this.value.spec.insecure === undefined) this.value.spec.insecure = false;
-    if (this.value.spec.caBundle === undefined) this.value.spec.caBundle = '';
-    if (!this.value.spec.platforms) this.value.spec.platforms = [];
-
-    if (!this.value.spec.artifactsNamespace) {
-      this.value.spec.artifactsNamespace = 'cattle-sbomscanner-system';
-    }
-
-    if (!this.value.spec.scanInterval) {
-      this.value.spec.scanInterval = '3h';
-    }
-
-    const savedEnabledState = this.value.spec.enabled;
-
-    const osOptions = Object.keys(VALID_PLATFORMS).map((k) => ({ label: k, value: k }));
-
     return {
-      inStore:       this.$store.getters['currentProduct'].inStore,
       errors:        null,
       allSecrets:    null,
       authLoading:   false,
-      osOptions:     osOptions,
+      saveLoading:   false,
+      savedEnabledState: true,
+      sbomScannerInstallationNamespace: SBOMSCANNER_INSTALLATION_NAMESPACE,
+
+      // Exported constants for the template
       PAGE,
       PRODUCT_NAME,
-      saveLoading:   false,
       WORKLOAD_SCAN_DOCS_URL,
-      savedEnabledState
+      SCAN_INTERVAL_OPTIONS,
+      OS_OPTIONS
     };
   },
 
   computed: {
-    SCAN_INTERVAL_OPTIONS() { return SCAN_INTERVAL_OPTIONS; },
+    inStore() {
+      return this.$store.getters['currentProduct'].inStore;
+    },
 
     isArtifactsNamespaceLocked() {
-      // Lock the field if we are editing an existing configuration
+      // Lock the field if we are editing an existing configuration that is currently enabled
       return this.mode === 'edit' && this.savedEnabledState;
     },
 
     namespaceOptions() {
-      const namespaces = this.$store.getters['cluster/all']('namespace') || [];
-      const options = namespaces.map(n => n.id);
+      const namespaces = this.$store.getters['cluster/all'](NAMESPACE) || [];
+      const options = namespaces.map(n => ({
+        label: n.id,
+        value: n.id
+      }));
 
       const currentNs = this.value?.spec?.artifactsNamespace;
-      if (currentNs && !options.includes(currentNs)) {
-        options.push(currentNs);
+      if (currentNs && !options.find(o => o.value === currentNs)) {
+        options.push({ label: currentNs, value: currentNs });
       }
+
+      // Default empty option maps to the Workload's specific namespace
+      options.unshift({
+        label: 'None',
+        value: ''
+      });
 
       return options;
     },
@@ -121,6 +110,7 @@ export default {
         if (!this.value.spec.namespaceSelector) {
           this.value.spec.namespaceSelector = {};
         }
+
         if (val && val.length > 0) {
           this.value.spec.namespaceSelector.matchExpressions = val;
         } else {
@@ -150,9 +140,7 @@ export default {
       if (!this.allSecrets) return headerOptions;
 
       const secretOptions = this.allSecrets
-          .filter((secret) => {
-            return secret._type === SECRET_TYPES.DOCKER_JSON;
-          })
+          .filter((secret) => secret._type === SECRET_TYPES.DOCKER_JSON && secret.metadata.namespace === this.sbomScannerInstallationNamespace)
           .map((secret) => ({
             label: `${secret.metadata.namespace}/${secret.metadata.name}`,
             value: secret.metadata.name,
@@ -163,82 +151,133 @@ export default {
 
     validationPassed() {
       const spec = this.value?.spec || {};
-      const validSecret = spec.authSecret !== 'create';
-      return validSecret;
+      return spec.authSecret !== 'create';
     },
 
     secretCreateUrl() {
       const clusterId = this.$route.params.cluster;
-      return `${ LOCAT_HOST.includes(window.location.host) ? '' : '/dashboard' }/c/${ clusterId }/explorer/secret/create?scope=namespaced`;
+      return `${ LOCAT_HOST.includes(window.location.host) ? '' : '/dashboard' }/c/${ clusterId }/explorer/secret/create?namespace=${this.sbomScannerInstallationNamespace}`;
     },
   },
 
+  created() {
+    this.initDefaults();
+    this.convertLabelsToExpressions();
+  },
+
   methods: {
-    async finish(event) {
-      if (event) {
-        event.preventDefault();
+    initDefaults() {
+      if (!this.value.metadata) {
+        this.value.metadata = {};
       }
+      this.value.metadata.name = 'default';
+
+      if (!this.value.spec) {
+        this.value.spec = {};
+      }
+
+      const defaultSpec = {
+        enabled:            true,
+        scanOnChange:       true,
+        artifactsNamespace: '',
+        namespaceSelector:  {},
+        authSecret:         '',
+        caBundle:           '',
+        insecure:           false,
+        platforms:          [],
+        scanInterval:       '3h',
+      };
+
+      // Safely apply defaults for undefined values
+      for (const [key, val] of Object.entries(defaultSpec)) {
+        if (this.value.spec[key] === undefined) {
+          this.value.spec[key] = val;
+        }
+      }
+
+      // Ensure platforms array exists
+      if (!this.value.spec.platforms) {
+        this.value.spec.platforms = [];
+      }
+
+      // Capture initial state for the namespace lock logic
+      this.savedEnabledState = this.value.spec.enabled;
+    },
+
+    convertLabelsToExpressions() {
+      const selector = this.value.spec.namespaceSelector;
+
+      if (!selector || Array.isArray(selector)) {
+        this.value.spec.namespaceSelector = {};
+        return;
+      }
+
+      if (selector.matchLabels) {
+        const labels = selector.matchLabels;
+        if (!selector.matchExpressions) {
+          selector.matchExpressions = [];
+        }
+
+        for (const key in labels) {
+          const exists = selector.matchExpressions.some(
+              e => e.key === key && e.operator === 'In' && e.values?.includes(labels[key])
+          );
+
+          if (!exists) {
+            selector.matchExpressions.push({
+              key,
+              operator: 'In',
+              values: [labels[key]]
+            });
+          }
+        }
+
+        // Remove matchLabels so the UI is powered strictly by MatchExpressions
+        delete selector.matchLabels;
+      }
+    },
+
+    async finish(event) {
+      if (event) event.preventDefault();
 
       this.saveLoading = true;
       this.errors = [];
 
-      if (this.value.spec.scanInterval === SCAN_INTERVALS.MANUAL) {
-        delete this.value.spec.scanInterval;
-      }
-
-      this.cleanNamespaceSelector()
-      this.cleanPlatforms();
+      this.cleanBeforeSave();
 
       try {
         await this.save();
         this.savedEnabledState = this.value.spec.enabled;
+
+        this.$store.dispatch('growl/success', {
+          title: this.t('imageScanner.general.saved'),
+          message: this.t('imageScanner.workloads.configuration.cru.general.successMessage')
+        }, { root: true });
+
       } catch (e) {
         this.errors = [e];
       } finally {
         this.saveLoading = false;
-        if (!this.errors || this.errors.length === 0) {
-          this.$store.dispatch('growl/success', {
-            title: this.t('imageScanner.general.saved'),
-            message: this.t('imageScanner.workloads.configuration.cru.general.successMessage')
-          }, { root: true });
-        }
       }
     },
 
-    async refreshList() {
-      this.authLoading = true;
-      try {
-        this.allSecrets = await this.$store.dispatch(`${ this.inStore }/findAll`, { type: SECRET }, { force: true });
-      } catch (e) {
-        this.errors = [e];
-      } finally {
-        this.authLoading = false;
-      }
-    },
+    cleanBeforeSave() {
+      const spec = this.value.spec;
 
-    onFileSelected(value) { this.value.spec.caBundle = value; },
-    addPlatform() { this.value.spec.platforms.push({ os: 'linux', arch: 'amd64', variant: '' }); },
-    removePlatform(index) { this.value.spec.platforms.splice(index, 1); },
-    getArchOptions(os) { return (VALID_PLATFORMS[os] || []).map((arch) => ({ label: arch, value: arch })); },
-    getVariantOptions(arch) { return (ALLOWED_VARIANTS[arch] || []).map((v) => ({ label: v, value: v })); },
-    updateOS(platform, newOS) {
-      platform.os = newOS;
-      const validArchs = VALID_PLATFORMS[newOS];
-      platform.arch = validArchs && validArchs.length > 0 ? (validArchs.includes('amd64') ? 'amd64' : validArchs[0]) : '';
-      platform.variant = '';
-    },
+      // Clean default / empty values to avoid polluting the YAML
+      if (spec.scanInterval === SCAN_INTERVALS.MANUAL) delete spec.scanInterval;
+      if (spec.caBundle === '') delete spec.caBundle;
+      if (spec.insecure === false) delete spec.insecure;
 
-    updateArch(platform, newArch) {
-      platform.arch = newArch;
-      if (!this.isVariantSupported(newArch)) platform.variant = '';
+      this.cleanNamespaceSelector();
+      this.cleanPlatforms();
     },
-
-    isVariantSupported(arch) { return !!ALLOWED_VARIANTS[arch]; },
 
     cleanNamespaceSelector() {
-      if (!this.value.spec.namespaceSelector) return;
+      const selector = this.value.spec.namespaceSelector;
+      if (!selector) return;
 
-      const { matchExpressions } = this.value.spec.namespaceSelector;
+      const matchExpressions = selector.matchExpressions;
 
       if (!matchExpressions || matchExpressions.length === 0) {
         delete this.value.spec.namespaceSelector;
@@ -257,7 +296,7 @@ export default {
       if (cleanedExpressions.length === 0) {
         delete this.value.spec.namespaceSelector;
       } else {
-        this.value.spec.namespaceSelector.matchExpressions = cleanedExpressions;
+        selector.matchExpressions = cleanedExpressions;
       }
     },
 
@@ -269,11 +308,60 @@ export default {
           (p) => p.os && p.arch,
           (p) => `${p.os}-${p.arch}-${p.variant || ''}`
       );
-    }
+    },
+
+    async refreshList() {
+      this.authLoading = true;
+      try {
+        this.allSecrets = await this.$store.dispatch(`${ this.inStore }/findAll`, { type: SECRET }, { force: true });
+      } catch (e) {
+        this.errors = [e];
+      } finally {
+        this.authLoading = false;
+      }
+    },
+
+    onFileSelected(value) {
+      this.value.spec.caBundle = value;
+    },
+
+    addPlatform() {
+      this.value.spec.platforms.push({ os: 'linux', arch: 'amd64', variant: '' });
+    },
+
+    removePlatform(index) {
+      this.value.spec.platforms.splice(index, 1);
+    },
+
+    getArchOptions(os) {
+      return (VALID_PLATFORMS[os] || []).map((arch) => ({ label: arch, value: arch }));
+    },
+
+    getVariantOptions(arch) {
+      return (ALLOWED_VARIANTS[arch] || []).map((v) => ({ label: v, value: v }));
+    },
+
+    updateOS(platform, newOS) {
+      platform.os = newOS;
+
+      const validArchs = VALID_PLATFORMS[newOS];
+      platform.arch = validArchs && validArchs.length > 0 ? (validArchs.includes('amd64') ? 'amd64' : validArchs[0]) : '';
+      platform.variant = '';
+    },
+
+    updateArch(platform, newArch) {
+      platform.arch = newArch;
+      if (!this.isVariantSupported(newArch)) {
+        platform.variant = '';
+      }
+    },
+
+    isVariantSupported(arch) {
+      return !!ALLOWED_VARIANTS[arch];
+    },
   }
 };
 </script>
-
 <template>
   <div class="filled-height workload-scan-config">
 
@@ -330,11 +418,11 @@ export default {
         {{ t('imageScanner.workloads.configuration.cru.resourceLocation.label') }}
       </div>
 
-      <Banner v-if="!isArtifactsNamespaceLocked" color="warning" class="mt-16">
+      <Banner v-if="!isCreate && !isArtifactsNamespaceLocked" color="warning" class="mt-16">
         {{ t('imageScanner.workloads.configuration.cru.resourceLocation.description') }}
       </Banner>
 
-      <Banner v-if="isArtifactsNamespaceLocked" color="info" class="mt-16 mb-16">
+      <Banner v-if="!isCreate && isArtifactsNamespaceLocked" color="info" class="mt-16 mb-16">
         <span v-html="t('imageScanner.workloads.configuration.cru.resourceLocation.lockedWarning')"></span>
       </Banner>
 
@@ -345,6 +433,8 @@ export default {
             :label="t('imageScanner.workloads.configuration.cru.general.artifactsNamespace')"
             :placeholder="t('imageScanner.workloads.configuration.cru.general.artifactsNamespacePlaceholder')"
             :options="namespaceOptions"
+            option-label="label"
+            option-key="value"
             :mode="mode"
             :searchable="true"
             :disabled="isArtifactsNamespaceLocked"
