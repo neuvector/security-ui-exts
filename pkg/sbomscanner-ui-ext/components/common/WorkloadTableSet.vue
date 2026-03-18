@@ -28,15 +28,6 @@
           />
       </div>
       <div class="filter-item">
-          <label>{{ t('imageScanner.workloads.table.headers.namespace') }}</label>
-          <LabeledSelect
-          v-model:value="filters.namespace"
-          :options="filterNamespaceOptions"
-          :close-on-select="true"
-          :multiple="false"
-          />
-      </div>
-      <div class="filter-item">
           <label>{{ t('imageScanner.imageDetails.severity') }}</label>
           <LabeledSelect
           v-model:value="filters.severity"
@@ -83,6 +74,10 @@ export default {
         return {};
       }
     },
+    severity: {
+      type:    String,
+      default: 'any'
+    },
     isInImageContext: {
       type:     Boolean,
       required: false,
@@ -95,11 +90,11 @@ export default {
       filters: {
         workloadSearch: '',
         type:           'any',
-        namespace:      'any',
+        // namespace:      'any',
         severity:       'any',
       },
       filterTypeOptions:      [],
-      filterNamespaceOptions: [],
+      // filterNamespaceOptions: [],
       filterSeverityOptions:  [
         { label: this.t('imageScanner.imageDetails.severityFilterOptions.any'), value: 'any' },
         { label: this.t('imageScanner.imageDetails.severityFilterOptions.critical'), value: 'Critical' },
@@ -118,16 +113,9 @@ export default {
       if (!this.filterTypeOptions.some((opt) => opt.value === typeOption.value)) {
         this.filterTypeOptions.push(typeOption);
       }
-
-      const namespaceOption = { label: wl.namespace, value: wl.namespace };
-
-      if (!this.filterNamespaceOptions.some((opt) => opt.value === namespaceOption.value)) {
-        this.filterNamespaceOptions.push(namespaceOption);
-      }
     });
 
     this.filterTypeOptions.unshift({ label: this.t('imageScanner.imageDetails.severityFilterOptions.any'), value: 'any' });
-    this.filterNamespaceOptions.unshift({ label: this.t('imageScanner.imageDetails.severityFilterOptions.any'), value: 'any' });
     this.updateFilteredImages();
   },
 
@@ -153,13 +141,22 @@ export default {
         this.filterBySeverity();
       },
       deep: true
+    },
+    globalNamespace(newVal) {
+      this.updateFilteredImages();
+    }
+  },
+
+  computed: {
+    globalNamespace() {
+      return this.$store.getters['activeNamespaceCache'];
     }
   },
 
   methods: {
 
     filterBySeverity() {
-      this.filters.severity = this.severity;
+      this.filters.severity = this.severity || 'any';
     },
 
     updateFilteredImages() {
@@ -177,25 +174,26 @@ export default {
         filtered = filtered.filter((v) => v.type === this.filters.type);
       }
 
-      // namespace filter
-      if (this.filters.namespace !== 'any') {
-        filtered = filtered.filter((v) => v.namespace === this.filters.namespace);
-      }
+      //namespace filter
+      const globalNs = Object.keys(this.$store.getters['activeNamespaceCache']);
+
+      filtered = filtered.filter((v) => globalNs.includes(v.namespace));
 
       // severity filter
-      if (this.filters.severity !== 'any') {
+      if (this.filters.severity && this.filters.severity !== 'any') {
         filtered = filtered.filter((v) => {
-          if (this.filters.severity === 'any') {
-            return true;
+          if (!v.severity) {
+            return false;
           }
           let result = false;
           const severityLevels = ['critical', 'high', 'medium', 'low', 'unknown'];
+          const selectedSeverity = this.filters.severity.toLowerCase();
 
           for (const level of severityLevels) {
-            if (level === this.filters.severity.toLowerCase() && v.severity[level] > 0) {
+            if (level === selectedSeverity && v.severity[level] > 0) {
               result = true;
               break;
-            } else if (level !== this.filters.severity.toLowerCase() && v.severity[level] > 0) {
+            } else if (level !== selectedSeverity && v.severity[level] > 0) {
               break;
             }
           }
@@ -203,7 +201,6 @@ export default {
           return result;
         });
       }
-console.log('Filtered workloads:', filtered); // Debug log to check filtered results
       this.cachedFilteredWorkloads = filtered;
     },
   },

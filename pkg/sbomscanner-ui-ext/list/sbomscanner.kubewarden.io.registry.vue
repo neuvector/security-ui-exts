@@ -1,10 +1,4 @@
 <template>
-    <!-- <div class="state">
-      State as of
-      <span class="state-date-time">
-        {{ latestUpdateDateText }}&nbsp;&nbsp;&nbsp;&nbsp;{{ latestUpdateTimeText }}
-      </span>
-    </div> -->
     <RegistriesOverview :filter-fn="filterByStatus"/>
     <div class="search-filters">
       <div class="filter-row">
@@ -13,21 +7,6 @@
           <div class="filter-input-wrapper">
             <input
               v-model="filters.registrySearch"
-              type="text"
-              :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
-              class="filter-input"
-            />
-            <i
-              class="icon icon-search"
-              style="color: #6C6C76; margin-left: 8px;"
-            ></i>
-          </div>
-        </div>
-        <div class="filter-item">
-          <label>{{ t('imageScanner.registries.registrytable.header.namespace') }}</label>
-          <div class="filter-input-wrapper">
-            <input
-              v-model="filters.namespaceSearch"
               type="text"
               :placeholder="t('imageScanner.registries.registrytable.filters.placeholder.name')"
               class="filter-input"
@@ -138,8 +117,6 @@ import _ from 'lodash';
 import { getPermissions } from '@sbomscanner-ui-ext/utils/permissions';
 import { FilterArgs, PaginationFilterField, PaginationParamFilter } from '@shell/types/store/pagination.types';
 import RegistriesOverview from '@sbomscanner-ui-ext/pages/c/_cluster/sbomscanner/RegistriesConfiguration.vue';
-import Masthead from '@shell/components/ResourceList/Masthead.vue';
-import day from 'dayjs';
 
 export default {
   name:       'Registries',
@@ -148,7 +125,6 @@ export default {
     LabeledSelect,
     ScanButton,
     RegistriesOverview,
-    Masthead,
   },
   props: {
     statusFilterLink: {
@@ -173,14 +149,12 @@ export default {
       selectedRows:     [],
       filters:          {
         registrySearch:   '',
-        namespaceSearch:  '',
         uriSearch:        '',
         repositorySearch: '',
         statusSearch:     STATUS_OPTIONS[0],
       },
       debouncedFilters: {
         registrySearch:   '',
-        namespaceSearch:  '',
         uriSearch:        '',
         repositorySearch: '',
         statusSearch:     STATUS_OPTIONS[0],
@@ -261,9 +235,6 @@ export default {
         const registryMatch = !filters.registrySearch ||
             row.metadata?.name?.toLowerCase().includes(filters.registrySearch.toLowerCase());
 
-        const namespaceMatch = !filters.namespaceSearch ||
-            row.metadata?.namespace?.toLowerCase().includes(filters.namespaceSearch.toLowerCase());
-
         const uriMatch = !filters.uriSearch ||
             row.spec?.uri?.toLowerCase().includes(filters.uriSearch.toLowerCase());
 
@@ -277,7 +248,7 @@ export default {
             (typeof row.scanRec?.currStatus === 'object' && row.scanRec?.currStatus.value.toLowerCase() === filters.statusSearch.value.toLowerCase()) ||
             (typeof row.scanRec?.currStatus === 'string' && row.scanRec?.currStatus.toLowerCase() === filters.statusSearch.toLowerCase());
 
-        return registryMatch && namespaceMatch && uriMatch && repoMatch && statusMatch;
+        return registryMatch && uriMatch && repoMatch && statusMatch;
       });
     },
     filterRowsApi(pagination) {
@@ -285,12 +256,6 @@ export default {
       const colFields = [{
         field:  'metadata.name',
         value:  filters.registrySearch,
-        equals: true,
-        exact:  false,
-      },
-      {
-        field:  'metadata.namespace',
-        value:  filters.namespaceSearch,
         equals: true,
         exact:  false,
       },
@@ -329,12 +294,6 @@ export default {
 
       return this.$store.getters[`cluster/paginationEnabled`]?.(args);
     },
-    // latestUpdateDateText() {
-    //   return day(new Date(this.latestUpdateTime).getTime()).format('MMM D, YYYY');
-    // },
-    // latestUpdateTimeText() {
-    //   return day(new Date(this.latestUpdateTime).getTime()).format('h:mm a');
-    // },
   },
 };
 </script>

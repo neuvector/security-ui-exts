@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     async loadData() {
-      await this.$store.dispatch('cluster/findAll', { type: RESOURCE.SCAN_JOB });
+      this.scanJobCRD = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.SCAN_JOB }) || [];
       await this.preprocessData();
       clearInterval(this.keepAliveTimer);
       this.keepAliveTimer = setInterval(async() => {
@@ -85,10 +85,11 @@ export default {
       this.registryStatusList = [];
       this.statusSummary = {};
       const globalNs = Object.keys(this.$store.getters['activeNamespaceCache']);
+      const scanJobs = await this.$store.dispatch('cluster/findAll', { type: RESOURCE.SCAN_JOB }) || [];
 
-      this.scanJobCRD = this.$store.getters['cluster/all'](RESOURCE.SCAN_JOB).filter((job) => {
-        return globalNs.includes(job.metadata.namespace);
-      });
+      this.scanJobCRD = globalNs.length > 0 ? scanJobs.filter((job) => {
+        return globalNs.includes(job?.metadata?.namespace);
+      }) : scanJobs;
       const summaryData = this.getSummaryData(this.scanJobCRD);
 
       this.registryStatusList = summaryData.registryStatusList;

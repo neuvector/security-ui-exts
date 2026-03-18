@@ -28,6 +28,7 @@ const mockT = (key: string) => key;
 const mockStore = {
   dispatch: jest.fn().mockResolvedValue([]),
   getters:  {
+    'activeNamespaceCache':       {},
     'cluster/schemaFor':         jest.fn().mockReturnValue({ kind: 'Registry' }),
     'cluster/paginationEnabled': jest.fn().mockReturnValue(false),
     'management/byId':           jest.fn().mockReturnValue({ kind: 'Registry' }),
