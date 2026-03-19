@@ -182,11 +182,11 @@ export default {
         <div class="column column-1">
           <div class="stats-item">
             <div class="stat-item">
-              <span class="label">{{ t('imageScanner.vulnerabilities.details.score') }}:</span>
+              <span class="label">{{ t('imageScanner.vulnerabilities.details.score') }}</span>
               <span class="value">{{ cveDetail?.score || t('imageScanner.general.unknown') }}</span>
             </div>
             <div class="stat-item">
-              <span class="label">{{ t('imageScanner.vulnerabilities.details.imageIdentifiedIn') }}:</span>
+              <span class="label">{{ t('imageScanner.vulnerabilities.details.imageIdentifiedIn') }}</span>
               <span class="value">{{ cveDetail?.totalImages || t('imageScanner.general.unknown') }}</span>
             </div>
             <div class="stat-item">

@@ -390,7 +390,7 @@ export default {
     border-radius: 6px;
     border: solid var(--border-width) var(--input-border);
     background: var(--input-bg);
-    // margin: 24px 0 0 0;
+    margin-bottom: 24px;
   }
 
   .score-input {

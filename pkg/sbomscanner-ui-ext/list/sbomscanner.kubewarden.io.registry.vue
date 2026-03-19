@@ -1,6 +1,6 @@
 <template>
     <RegistriesOverview :filter-fn="filterByStatus"/>
-    <div class="search-filters">
+    <div>
       <div class="filter-row">
         <div class="filter-item">
           <label>{{ t('imageScanner.registries.registrytable.header.registry') }}</label>

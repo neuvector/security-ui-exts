@@ -88,6 +88,9 @@ export default {
     .link {
       color: #5696ce;
       text-decoration: none;
+      display: flex;
+      gap: 8px;
+      flex: 1 0 0;
       :hover {
         text-decoration: underline;
       }

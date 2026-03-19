@@ -218,8 +218,8 @@ describe('CveDetails.vue', () => {
 
       const statItems = wrapper.findAll('.stat-item');
 
-      expect(statItems[0].text()).toContain('imageScanner.vulnerabilities.details.score:9.8 (v3)');
-      expect(statItems[1].text()).toContain('imageScanner.vulnerabilities.details.imageIdentifiedIn:2');
+      expect(statItems[0].text()).toContain('imageScanner.vulnerabilities.details.score9.8 (v3)');
+      expect(statItems[1].text()).toContain('imageScanner.vulnerabilities.details.imageIdentifiedIn2');
 
       const sourceLinks = wrapper.findAll('.source-link');
 
@@ -250,7 +250,7 @@ describe('CveDetails.vue', () => {
 
       const statItems = wrapper.findAll('.stat-item');
 
-      expect(statItems[0].text()).toContain('imageScanner.vulnerabilities.details.score:imageScanner.general.unknown');
+      expect(statItems[0].text()).toContain('imageScanner.vulnerabilities.details.scoreimageScanner.general.unknown');
     });
   });
 
