@@ -30,7 +30,7 @@
                {{ t('imageScanner.images.listTable.popup.imageUsedBy') }}&nbsp;
             </span>
             <span class="popup-workload-count">
-              {{ t(count <= 1 ? 'imageScanner.images.listTable.popup.inUseTooltipSingle' : 'imageScanner.images.listTable.popup.inUseTooltipPlural', { count }) }}
+              {{ t('imageScanner.images.listTable.popup.inUseTooltip', { count }, true) }}
             </span>
             <a
               class="learn-more-link"

@@ -98,7 +98,7 @@
             v-if="selectedRows.length > 0"
             class="selected-count"
           >
-            {{ selectedRows.length }} {{ selectedRows.length > 1 ? t('imageScanner.registries.registrytable.selection.registries') : t('imageScanner.registries.registrytable.selection.registry') }}
+            {{ selectedRows.length }} {{ t('typeLabel.registrySelected', { count: selectedRows.length }, true) }}
           </div>
         </div>
       </template>

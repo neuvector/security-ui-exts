@@ -217,8 +217,11 @@ imageScanner:
           container: Container
       popup:
         imageUsedBy: Image used by
-        inUseTooltipSingle: "{count} workload."
-        inUseTooltipPlural: "{count} workloads."
+        inUseTooltip: |-
+          {count, plural,
+          =1 {{count} workload.}
+          other {{count} workloads.}
+          }
   imageDetails:
     status: Status
     vulnerabilities: Vulnerabilities
@@ -482,6 +485,56 @@ typeLabel:
     {count, plural,
     =1 {registry scan}
     other {registry scans}
+    }
+  error: |-
+    {count, plural,
+    =1 {error}
+    other {errors}
+    }
+  image: |-
+    {count, plural,
+    =1 {image}
+    other {images}
+    }
+  registrySelected: |-
+    {count, plural,
+    =1 {registry selected}
+    other {registries selected}
+    }
+  vulnerabilitySelected: |-
+    {count, plural,
+    =1 {vulnerability selected}
+    other {vulnerabilities selected}
+    }
+  workloadSelected: |-
+    {count, plural,
+    =1 {workload selected}
+    other {workloads selected}
+    }
+  affectedCVE: |-
+    {count, plural,
+    =1 {affected CVE}
+    other {affected CVEs}
+    }
+  second: |-
+    {count, plural,
+    =1 {second}
+    other {seconds}
+    }
+  minute: |-
+    {count, plural,
+    =1 {minute}
+    other {minutes}
+    }
+  hour: |-
+    {count, plural,
+    =1 {hour}
+    other {hours}
+    }
+  day: |-
+    {count, plural,
+    =1 {day}
+    other {days}
     }
 
 resources:

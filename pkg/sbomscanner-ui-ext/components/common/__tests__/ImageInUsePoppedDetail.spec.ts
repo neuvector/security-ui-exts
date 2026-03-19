@@ -67,7 +67,7 @@ describe('ImageInUsePoppedDetail.vue', () => {
     it('renders the hover popup with the singular tooltip translation', () => {
       const popupText = wrapper.find('.popup-text');
       expect(popupText.exists()).toBe(true);
-      expect(popupText.text()).toContain('imageScanner.images.listTable.popup.inUseTooltipSingle');
+      expect(popupText.text()).toContain('imageScanner.images.listTable.popup.inUseTooltip');
       expect(popupText.text()).toContain('count:1'); // Our mock t() appends this
     });
 
@@ -84,7 +84,7 @@ describe('ImageInUsePoppedDetail.vue', () => {
       const wrapper = createWrapper({ count: 5 });
       const popupText = wrapper.find('.popup-text');
 
-      expect(popupText.text()).toContain('imageScanner.images.listTable.popup.inUseTooltipPlural');
+      expect(popupText.text()).toContain('imageScanner.images.listTable.popup.inUseTooltip');
       expect(popupText.text()).toContain('count:5');
     });
   });

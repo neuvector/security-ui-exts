@@ -242,19 +242,13 @@ export default {
       return day(new Date().getTime()).format('h:mm a');
     },
     displayedDetectedErrorCnt() {
-      const suffix = this.scanningStats.detectedErrorCnt > 1 ? 'errors' : 'error';
-
-      return `${ this.scanningStats.detectedErrorCnt } ${ suffix }`;
+      return `${ this.scanningStats.detectedErrorCnt } ${ this.t('typeLabel.error', { count: this.scanningStats.detectedErrorCnt }, true) }`;
     },
     displayedFailedImagesCnt() {
-      const suffix = this.scanningStats.failedImagesCnt > 1 ? 'images' : 'image';
-
-      return `${ this.scanningStats.failedImagesCnt } ${ suffix }`;
+      return `${ this.scanningStats.failedImagesCnt } ${ this.t('typeLabel.image', { count: this.scanningStats.failedImagesCnt }, true) }`;
     },
     displayedTotalScannedImageCnt() {
-      const suffix = this.scanningStats.totalScannedImageCnt > 1 ? 'images' : 'image';
-
-      return `${ this.scanningStats.totalScannedImageCnt } ${ suffix }`;
+      return `${ this.scanningStats.totalScannedImageCnt } ${ this.t('typeLabel.image', { count: this.scanningStats.totalScannedImageCnt }, true) }`;
     },
     durationFromLastScan() {
       if (this.scanningStats.lastCompletionTimestamp === 0) {
@@ -265,25 +259,24 @@ export default {
       const diffSec = Math.floor(diffMs / 1000);
 
       if (Math.abs(diffSec) < 60) {
-        return diffSec > 1 ? `${ diffSec } seconds` : `${ diffSec } second`;
+        return `${ diffSec } ${ this.t('typeLabel.second', { count: diffSec }, true) }`;
       }
 
       const diffMin = Math.floor(diffSec / 60);
 
       if (Math.abs(diffMin) < 60) {
-        return diffMin > 1 ? `${ diffMin } minutes` : `${ diffMin } minute`;
+        return `${ diffMin } ${ this.t('typeLabel.minute', { count: diffMin }, true) }`;
       }
 
       const diffHours = Math.floor(diffMin / 60);
 
       if (Math.abs(diffHours) < 24) {
-        return diffHours > 1 ? `${ diffHours } hours` : `${ diffHours } hour`;
+        return `${ diffHours } ${ this.t('typeLabel.hour', { count: diffHours }, true) }`;
       }
 
       const diffDays = Math.floor(diffHours / 24);
 
-      return diffDays > 1 ? `${ diffDays } days` : `${ diffDays } day`;
-    },
+      return `${ diffDays } ${ this.t('typeLabel.day', { count: diffDays }, true) }`;    },
     // displayedVulnerabilities() {
     //   if (this.showAllVulnerabilities) {
     //     return this.topVulnerabilities;

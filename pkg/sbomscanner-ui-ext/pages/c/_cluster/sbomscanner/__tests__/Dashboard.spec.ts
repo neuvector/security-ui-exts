@@ -80,27 +80,27 @@ describe('Dashboard.vue full coverage', () => {
     const wrapper = factory();
 
     wrapper.vm.scanningStats.detectedErrorCnt = 1;
-    expect(wrapper.vm.displayedDetectedErrorCnt).toBe('1 error');
+    expect(wrapper.vm.displayedDetectedErrorCnt).toBe('1 typeLabel.error');
     wrapper.vm.scanningStats.detectedErrorCnt = 2;
-    expect(wrapper.vm.displayedDetectedErrorCnt).toBe('2 errors');
+    expect(wrapper.vm.displayedDetectedErrorCnt).toBe('2 typeLabel.error');
   });
 
   it('computed: displayedFailedImagesCnt pluralization', () => {
     const wrapper = factory();
 
     wrapper.vm.scanningStats.failedImagesCnt = 1;
-    expect(wrapper.vm.displayedFailedImagesCnt).toBe('1 image');
+    expect(wrapper.vm.displayedFailedImagesCnt).toBe('1 typeLabel.image');
     wrapper.vm.scanningStats.failedImagesCnt = 2;
-    expect(wrapper.vm.displayedFailedImagesCnt).toBe('2 images');
+    expect(wrapper.vm.displayedFailedImagesCnt).toBe('2 typeLabel.image');
   });
 
   it('computed: displayedTotalScannedImageCnt pluralization', () => {
     const wrapper = factory();
 
     wrapper.vm.scanningStats.totalScannedImageCnt = 1;
-    expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('1 image');
+    expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('1 typeLabel.image');
     wrapper.vm.scanningStats.totalScannedImageCnt = 3;
-    expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('3 images');
+    expect(wrapper.vm.displayedTotalScannedImageCnt).toBe('3 typeLabel.image');
   });
 
   it('computed: durationFromLastScan handles all ranges', () => {
@@ -112,19 +112,19 @@ describe('Dashboard.vue full coverage', () => {
 
     // seconds
     wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 10 * 1000;
-    expect(wrapper.vm.durationFromLastScan).toContain('seconds');
+    expect(wrapper.vm.durationFromLastScan).toContain('typeLabel.second');
 
     // minutes
     wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 10 * 60 * 1000;
-    expect(wrapper.vm.durationFromLastScan).toContain('minutes');
+    expect(wrapper.vm.durationFromLastScan).toContain('typeLabel.minute');
 
     // hours
     wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 2 * 60 * 60 * 1000;
-    expect(wrapper.vm.durationFromLastScan).toContain('hours');
+    expect(wrapper.vm.durationFromLastScan).toContain('typeLabel.hour');
 
     // days
     wrapper.vm.scanningStats.lastCompletionTimestamp = Date.now() - 3 * 24 * 60 * 60 * 1000;
-    expect(wrapper.vm.durationFromLastScan).toContain('days');
+    expect(wrapper.vm.durationFromLastScan).toContain('typeLabel.day');
   });
 
   it('computed: registryOptions returns unique list', async() => {

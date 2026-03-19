@@ -18,7 +18,7 @@
       <div class="popup-container">
         <div class="header">
           <div class="title">
-            {{ headerTitle || `${totalVulnerabilities} ${t('imageScanner.images.listTable.filters.placeholder.affectedCVEs')}` }}
+            {{ headerTitle || `${totalVulnerabilities} ${t('typeLabel.affectedCVE', { count: totalVulnerabilities }, true)}` }}
           </div>
           <RouterLink
               v-if="viewAllLink"

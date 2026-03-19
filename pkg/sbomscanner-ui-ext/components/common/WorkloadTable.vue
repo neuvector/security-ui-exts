@@ -27,7 +27,7 @@
             v-if="selectedWorkloadCount > 0"
             class="selected-count"
           >
-            {{ selectedWorkloadCount }} {{ selectedWorkloadCount > 1 ? t('imageScanner.imageDetails.selection.workloads') : t('imageScanner.imageDetails.selection.workload') }}
+            {{ selectedWorkloadCount }} {{ t('typeLabel.workloadSelected', { count: selectedWorkloadCount }, true) }}
           </span>
         </div>
       </template>

@@ -90,7 +90,7 @@ describe('VulnerabilityHoverCell.vue', () => {
       const title = wrapper.find('.title');
 
       expect(title.text()).toBe(
-        '50 imageScanner.images.listTable.filters.placeholder.affectedCVEs'
+        '50 typeLabel.affectedCVE'
       );
     });
 
