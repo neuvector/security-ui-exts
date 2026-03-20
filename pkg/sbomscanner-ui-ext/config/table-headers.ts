@@ -210,7 +210,7 @@ export const WORKLOAD_IMAGE_LIST_TABLE = [
     name:      'name',
     labelKey:  'imageScanner.images.listTable.headers.imageName',
     value:     'imageReference',
-    formatter: 'ImageNameCell',
+    // formatter: 'ImageNameCell',
     sort:      'imageReference',
     width:     200,
   },

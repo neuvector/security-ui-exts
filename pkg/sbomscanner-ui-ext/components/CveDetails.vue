@@ -193,11 +193,12 @@ export default {
               <span class="label">Sources</span>
               <span
                 v-if="cveDetail?.sources?.length"
-                class="value"
+                class="value sources-value"
               >
                 <span
                   v-for="(source, index) in cveDetail?.sources"
                   :key="index"
+                  class="source-item"
                 >
                   <template v-if="source.link">
                     <a
@@ -211,7 +212,7 @@ export default {
                   <template v-else>
                     {{ source.name }}
                   </template>
-                  <span v-if="index < cveDetail?.sources?.length - 1">, </span>
+                  <span v-if="index < cveDetail?.sources?.length - 1">,&nbsp;</span>
                 </span>
               </span>
               <span
@@ -481,7 +482,19 @@ export default {
 .source-link {
   color: #5696ce;
   text-decoration: none;
-  margin-bottom: 5px;
+  margin-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sources-value {
+  display: block;
+}
+
+.source-item {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .cvss-link:hover, .source-link:hover {

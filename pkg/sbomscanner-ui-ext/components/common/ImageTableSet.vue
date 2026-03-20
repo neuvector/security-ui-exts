@@ -314,6 +314,12 @@ export default {
         const containerMatch = filters.containerSearch === 'Any' || (row.metadata.container && row.metadata.container.toLowerCase().includes(filters.containerSearch.toLowerCase()));
 
         return imageMatch && severityMatch && inUseMatch && repositoryMatch && registryMatch && platformMatch && containerMatch;
+      }).map((row) => {
+        return {
+          ...row,
+          source:         'workload',
+          imageReference: constructImageName(row.imageMetadata)
+        };
       });
 
       this.rowsByRepo = this.preprocessData(filteredRows);

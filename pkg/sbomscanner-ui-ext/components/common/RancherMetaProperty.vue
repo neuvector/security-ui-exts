@@ -51,13 +51,17 @@ export default {
 
 <style lang="scss" scoped>
   .property {
+    display: flex;
+    flex-direction: column;
     padding-right: 16px;
     gap: 4px;
     flex: 1 0 0;
+    break-inside: avoid;
   }
 
   .text {
     display: flex;
+    flex-direction: row;
     align-items: flex-start;
     align-self: stretch;
 

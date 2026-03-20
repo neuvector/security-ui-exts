@@ -31,13 +31,14 @@ export default {
 
 <style lang="scss" scoped>
   .rancher-meta {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: flex-start;
-    row-gap: 4px;
+    column-count: 3;
     column-gap: 24px;
     align-self: stretch;
     > * {
+      display: inline-block;
+      width: 100%;
+      margin-bottom: 4px;
+      break-inside: avoid;
       min-width: 0;
       word-break: break-word;
     }

@@ -206,8 +206,28 @@ export default {
         },
         {
           type:  'text',
+          label: this.t('imageScanner.imageDetails.architecture'),
+          value: this.image.imageMetadata?.platform?.split('/')[0] || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.imageId'),
+          value: this.image.imageMetadata?.digest || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
           label: this.t('imageScanner.imageDetails.repository'),
           value: this.image.imageMetadata?.repository || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.operatingSystem'),
+          value: this.image.imageMetadata?.platform?.split('/')[1] || this.t('imageScanner.general.unknown'),
+        },
+        {
+          type:  'text',
+          label: this.t('imageScanner.imageDetails.layers'),
+          value: this.image.layers?.length || this.image.spec?.layers?.length || this.t('imageScanner.general.unknown'),
         },
         {
           type:  'route',
@@ -217,29 +237,9 @@ export default {
         },
         {
           type:  'text',
-          label: this.t('imageScanner.imageDetails.architecture'),
-          value: this.image.imageMetadata?.platform?.split('/')[0] || this.t('imageScanner.general.unknown'),
-        },
-        {
-          type:  'text',
-          label: this.t('imageScanner.imageDetails.operatingSystem'),
-          value: this.image.imageMetadata?.platform?.split('/')[1] || this.t('imageScanner.general.unknown'),
-        },
-        {
-          type:  'text',
           label: this.t('imageScanner.imageDetails.created'),
           value: this.image.metadata ? `${ day(new Date(this.image.metadata?.creationTimestamp).getTime()).format('MMM D, YYYY') } ${ day(new Date(this.image.metadata?.creationTimestamp).getTime()).format('h:mm a') }` : this.t('imageScanner.general.unknown'),
         },
-        {
-          type:  'text',
-          label: this.t('imageScanner.imageDetails.imageId'),
-          value: this.image.imageMetadata?.digest || this.t('imageScanner.general.unknown'),
-        },
-        {
-          type:  'text',
-          label: this.t('imageScanner.imageDetails.layers'),
-          value: this.image.layers?.length || this.image.spec?.layers?.length || this.t('imageScanner.general.unknown'),
-        }
       ];
     },
 
