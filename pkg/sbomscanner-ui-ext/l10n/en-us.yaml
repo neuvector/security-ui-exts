@@ -380,7 +380,7 @@ imageScanner:
           documentationLink: documentation
           enabled: Enabled
           enabledTooltip: Enable or disable workload scanning
-          scanOnChange: Scan on workload change
+          scanOnChange: Scan on registry change
           scanOnChangeTooltip: Automatically scan for vulnerabilities whenever a new container image is detected in your running workloads.
           namespaces: Leave empty to scan all namespaces
           artifactsNamespace: Artifacts Namespace
@@ -390,6 +390,7 @@ imageScanner:
         resourceLocation:
           label: Resource Location
           description: Changing the Artifacts Namespace is an expensive operation and might cause rescans. If the Artifacts Namespace is not specified, artifacts will be created in the same namespace as the discovered workloads.
+          defaultInfo: If the Artifacts Namespace is not specified, artifacts will be created in the same namespace as the discovered workloads.
           lockedWarning: If you want to change the Artifacts Namespace, first you have to disable the current configuration and save any other changes you have made.
         scanning:
           label: Scanning

@@ -140,7 +140,7 @@ export default {
       const secretOptions = this.allSecrets
           .filter((secret) => secret._type === SECRET_TYPES.DOCKER_JSON && secret.metadata.namespace === this.sbomScannerInstallationNamespace)
           .map((secret) => ({
-            label: `${secret.metadata.namespace}/${secret.metadata.name}`,
+            label: `${secret.metadata.name}`,
             value: secret.metadata.name,
           }));
 
@@ -177,13 +177,13 @@ export default {
       const defaultSpec = {
         enabled:            true,
         scanOnChange:       true,
-        artifactsNamespace: '',
+        artifactsNamespace: this.sbomScannerInstallationNamespace,
         namespaceSelector:  {},
         authSecret:         '',
         caBundle:           '',
         insecure:           false,
         platforms:          [],
-        scanInterval:       '3h',
+        scanInterval:       SCAN_INTERVALS.THREE_HOURS,
       };
 
       for (const [key, val] of Object.entries(defaultSpec)) {
@@ -411,15 +411,15 @@ export default {
         {{ t('imageScanner.workloads.configuration.cru.resourceLocation.label') }}
       </div>
 
-      <Banner v-if="!isCreate && !isArtifactsNamespaceLocked" color="warning" class="mt-16">
-        {{ t('imageScanner.workloads.configuration.cru.resourceLocation.description') }}
+      <Banner v-if="!isArtifactsNamespaceLocked" color="warning" class="mt-16 mb-16">
+        {{ isCreate ? t('imageScanner.workloads.configuration.cru.resourceLocation.defaultInfo') : t('imageScanner.workloads.configuration.cru.resourceLocation.description') }}
       </Banner>
 
       <Banner v-if="!isCreate && isArtifactsNamespaceLocked" color="info" class="mt-16 mb-16">
         <span v-html="t('imageScanner.workloads.configuration.cru.resourceLocation.lockedWarning')"></span>
       </Banner>
 
-      <div class="w-half" :class="{ 'mt-16': !isArtifactsNamespaceLocked }">
+      <div class="w-half">
         <LabeledSelect
             v-model:value="value.spec.artifactsNamespace"
             @update:value="value.spec.authSecret = ''"
@@ -574,7 +574,7 @@ export default {
               :disabled="!validationPassed || saveLoading"
               @click="finish"
           >
-            {{ isCreate ? t('generic.create') : t('imageScanner.general.apply') }}
+            {{ isCreate ? t('generic.create') : t('generic.save') }}
           </button>
         </div>
       </template>
