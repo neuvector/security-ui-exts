@@ -16,22 +16,24 @@
           v-if="vuln.cveId"
           class="row cve-row"
         >
-          <div class="col cve-cell" style="width: 200px;">
-            <RouterLink :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.VULNERABILITIES}/${vuln.cveId}`">
+          <div class="col cve-cell cve-id-cell">
+            <RouterLink class="cve-link" :to="`/c/${$route.params.cluster}/${ PRODUCT_NAME }/${PAGE.VULNERABILITIES}/${vuln.cveId}`">
               {{ vuln.cveId }}
             </RouterLink>
           </div>
-          <div class="col  cve-cell span-3">
+          <div class="col cve-cell cve-score-cell">
             <ScoreBadge
               :score="vuln.score ? vuln.score.split(' ')[0] : ''"
               :score-type="vuln.score ? vuln.score.split(' ')[1].replace(/[()]/g, '') : ''"
               :severity="vuln.severity"
             />
           </div>
-          <div class="col  cve-cell span-3">
-            {{ vuln.package }}
+          <div class="col  cve-cell span-3 cve-package-cell">
+            <span class="package-text" :title="vuln.package">
+              {{ vuln.package }}
+            </span>
           </div>
-          <div class="col  cve-cell span-2" style="text-align: center">
+          <div class="col cve-cell cve-fix-cell">
             <FixAvailableIcon :fix-available="vuln.fixAvailable" style="margin-top: 4px"/>
           </div>
         </div>
@@ -166,6 +168,7 @@ export default {
 .vulnerabilities-list {
   display: flex;
   flex-direction: column;
+  gap: 8px;
   width: 100%;
 }
 
@@ -197,17 +200,55 @@ export default {
 }
 
 .cve-row {
-  display: table-row;
-  padding: 4px;
-  height: 32px;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  width: 100%;
   &:hover {
     background-color: var(--sortable-table-selected-bg);
   }
 }
 
 .cve-cell {
-  display: table-cell;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.cve-id-cell {
+  flex: 0 0 170px;
+  max-width: 170px;
+}
+
+.cve-link {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cve-score-cell {
+  flex: 0 0 128px;
+}
+
+.cve-package-cell {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cve-fix-cell {
+  flex: 0 0 40px;
+  justify-content: center;
+}
+
+.package-text {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 </style>
