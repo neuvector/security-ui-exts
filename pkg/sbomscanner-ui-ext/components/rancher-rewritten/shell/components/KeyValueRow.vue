@@ -50,6 +50,7 @@ const previewId = randomStr();
       aria-haspopup="dialog"
       :aria-expanded="showPreview"
       :aria-controls="previewId"
+      class="ps-0"
       :aria-label="i18n.t('component.resource.detail.metadata.keyValue.ariaLabel.showPreview')"
       @click="() => showPreview = true"
     >
@@ -60,7 +61,7 @@ const previewId = randomStr();
         <div class="tag-data" :class="{'suffix-filter': props.row.value.includes('matchConditions')}">{{ props.row.key }}</div>
       </RcTag>
     </RcButton>
-    <CopyToClipboard :value="row.value" />
+    <CopyToClipboard class="cp-board" :value="row.value" />
     <Preview
       v-if="showPreview"
       :id="previewId"
@@ -164,6 +165,14 @@ const previewId = randomStr();
     mask: url('../../../../assets/img/filter.svg') no-repeat center center;
     -webkit-mask-size: contain;
     mask-size: contain;
+  }
+  .ps-0 {
+    padding-left: 0 !important;
+  }
+
+  .cp-board {
+    right: -16px;
+    top: -2px;
   }
 }
 </style>

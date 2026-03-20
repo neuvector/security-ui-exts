@@ -42,7 +42,7 @@
 
 <script>
 import jsyaml from 'js-yaml';
-import KeyValue from '../rancher-rewritten/shell/components/KeyValue.vue';
+import KeyValue from '../rancher-rewritten/shell/components/KeyValue.vue'; //'@shell/components/Resource/Detail/Metadata/KeyValue.vue';
 export default {
   name:       'RegistryDetailsMeta',
   components: { KeyValue },
@@ -118,8 +118,9 @@ export default {
   display: flex;
   margin-right: 5px;
   padding: 1px 6px;
-  background-color: transparent;
+  background-color: transparent !important;
   border-radius: 4px;
+  border: 1px solid var(--input-border) !important;
   user-select: none;
   height: 24px;
   min-height: auto;
@@ -201,6 +202,6 @@ export default {
 }
 
 .heading {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 </style>
