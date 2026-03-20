@@ -11,7 +11,7 @@ import { SECRET } from '@shell/config/types';
 import {
   REGISTRY_TYPE,
   REGISTRY_TYPE_OPTIONS,
-  SCAN_INTERVAL_OPTIONS, SCAN_INTERVALS
+  SCAN_INTERVAL_OPTIONS, SCAN_INTERVALS, DEFAULT_REG_URI
 } from '@sbomscanner-ui-ext/constants';
 import { PRODUCT_NAME, PAGE, LOCAT_HOST } from '@sbomscanner-ui-ext/types';
 import { SECRET_TYPES } from '@shell/config/secret';
@@ -44,7 +44,7 @@ export default {
       this.value.spec = {
         catalogType:  REGISTRY_TYPE.OCI_DISTRIBUTION,
         authSecret:   '',
-        uri:          '',
+        uri:          DEFAULT_REG_URI,
         repositories: [],
         caBundle:     '',
         insecure:     false,

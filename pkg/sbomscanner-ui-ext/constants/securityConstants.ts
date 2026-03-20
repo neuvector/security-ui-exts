@@ -56,3 +56,5 @@ export const ALLOWED_VARIANTS = {
 export const SBOMSCANNER_INSTALLATION_NAMESPACE = 'cattle-sbomscanner-system';
 
 export const WORKLOAD_SCAN_DOCS_URL = 'https://github.com/kubewarden/sbomscanner/blob/main/docs/user-guide/scanning-workloads.md';
+
+export const DEFAULT_REG_URI = 'ghcr.io';
