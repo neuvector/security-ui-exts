@@ -1,6 +1,6 @@
 import { importTypes } from '@rancher/auto-import';
 import imageScanRoutes from '@sbomscanner-ui-ext/routes/sbomscanner-routes';
-import { getWorkloadScanReportValue } from '@sbomscanner-ui-ext/utils/workload-scan-report';
+import { getPodListWorkloadScanReportValue, getWorkloadScanReportValue } from '@sbomscanner-ui-ext/utils/workload-scan-report';
 import { POD, WORKLOAD_TYPES } from '@shell/config/types';
 import { IPlugin, TableColumnLocation, TabLocation } from '@shell/core/types';
 
@@ -22,7 +22,6 @@ export default function(plugin: IPlugin): void {
     TableColumnLocation.RESOURCE,
     {
       resource: [
-        POD,
         WORKLOAD_TYPES.CRON_JOB,
         WORKLOAD_TYPES.DAEMON_SET,
         WORKLOAD_TYPES.DEPLOYMENT,
@@ -40,6 +39,23 @@ export default function(plugin: IPlugin): void {
       width:     150,
       formatter: 'IdentifiedCVEsPercentagePopupCell',
       getValue:  getWorkloadScanReportValue,
+    }
+  );
+
+  plugin.addTableColumn(
+    TableColumnLocation.RESOURCE,
+    {
+      resource: [POD],
+      mode:     ['list']
+    },
+    {
+      name:      'vulnerabilities',
+      labelKey:  'imageScanner.images.listTable.headers.vulnerabilities',
+      label:     'Vulnerabilities',
+      weight:    7,
+      width:     150,
+      formatter: 'IdentifiedCVEsPercentagePopupCell',
+      getValue:  getPodListWorkloadScanReportValue,
     }
   );
 
