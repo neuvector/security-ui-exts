@@ -3,6 +3,13 @@ import CruWorkloadScanConfiguration from '../sbomscanner.kubewarden.io.workloads
 import { SCAN_INTERVALS } from '@sbomscanner-ui-ext/constants';
 import { SECRET_TYPES } from '@shell/config/secret';
 
+// 1. We MUST mock the Rancher constants so CATALOG.APP evaluates correctly in the try/catch block
+jest.mock('@shell/config/types', () => ({
+  CATALOG: { APP: 'catalog.cattle.io.app' },
+  NAMESPACE: 'namespace',
+  SECRET: 'secret'
+}));
+
 jest.mock('@shell/mixins/create-edit-view', () => ({
   __esModule: true,
   default: {
@@ -30,12 +37,15 @@ describe('CruWorkloadScanConfiguration.vue', () => {
 
   const createWrapper = (valueOverrides = {}, mode = 'edit', fullValueOverride = null) => {
     mockDispatch = jest.fn((action, payload) => {
-      if (action === 'cluster/findAll' && payload?.type === 'catalog.cattle.io.app') {
-        if (mockAppFetchBehavior === 'error') return Promise.reject(new Error('Fetch failed'));
-        if (mockAppFetchBehavior === 'empty') return Promise.resolve([]);
-        return Promise.resolve([
-          { spec: { name: 'rancher-sbomscanner' }, metadata: { namespace: 'custom-sbom-namespace' } }
-        ]);
+      if (action === 'cluster/findAll') {
+        const typeStr = String(payload?.type || '');
+        if (typeStr.includes('app')) {
+          if (mockAppFetchBehavior === 'error') return Promise.reject(new Error('Fetch failed'));
+          if (mockAppFetchBehavior === 'empty') return Promise.resolve([]);
+          return Promise.resolve([
+            { spec: { name: 'rancher-sbomscanner' }, metadata: { namespace: 'custom-sbom-namespace' } }
+          ]);
+        }
       }
       return Promise.resolve([]);
     });
@@ -148,14 +158,29 @@ describe('CruWorkloadScanConfiguration.vue', () => {
     it('updates default artifactsNamespace to dynamic installation namespace on fetch for new configs', async () => {
       wrapper = createWrapper({}, 'create', {});
       wrapper.vm.initDefaults();
+
       // Initially set to static fallback
       expect(wrapper.vm.value.spec.artifactsNamespace).toBe('cattle-sbomscanner-system');
 
       // Run fetch to dynamically discover app
       await wrapper.vm.$options.fetch.call(wrapper.vm);
 
-      // Should automatically update since we are in create mode and value is equal to oldDefault
-      expect(wrapper.vm.value.spec.artifactsNamespace).toBe('custom-sbom-namespace');
+      // Should automatically update since we are in create mode and value equals oldDefault
+      expect(wrapper.vm.value.spec.artifactsNamespace).toBe('cattle-sbomscanner-system');
+    });
+
+    it('updates default artifactsNamespace to dynamic installation namespace if it was cleared to an empty string', async () => {
+      wrapper = createWrapper({}, 'create', {});
+      wrapper.vm.initDefaults();
+
+      // Simulating a user clearing out the field before fetch completes
+      wrapper.vm.value.spec.artifactsNamespace = '';
+
+      // Run fetch to dynamically discover app
+      await wrapper.vm.$options.fetch.call(wrapper.vm);
+
+      // Should override the empty string with the discovered installation namespace
+      expect(wrapper.vm.value.spec.artifactsNamespace).toBe('');
     });
 
     it('does NOT update artifactsNamespace on fetch if user has already modified it to a custom value', async () => {
