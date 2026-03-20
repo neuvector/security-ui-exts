@@ -496,6 +496,16 @@ typeLabel:
     =1 {image}
     other {images}
     }
+  imageSelected: |-
+    {count, plural,
+    =1 {image selected}
+    other {images selected}
+    }
+  repositorySelected: |-
+    {count, plural,
+    =1 {repository selected}
+    other {repositories selected}
+    }
   registrySelected: |-
     {count, plural,
     =1 {registry selected}

@@ -100,6 +100,9 @@
             <i class="icon icon-download me-3"></i>
             {{ isInWorkloadContext ? t('imageScanner.workloads.buttons.downloadReport') : t('imageScanner.images.buttons.downloadCustomReport')}}
           </button>
+          <span class="selected-count ms-4" v-if="selectedRows && selectedRows.length">
+            {{ selectedRows.length }} {{ isGrouped ? t('typeLabel.repositorySelected', { count: selectedRows.length }, true) : t('typeLabel.imageSelected', { count: selectedRows.length }, true) }}
+          </span>
         </div>
       </template>
       <template #header-right v-if="!isInWorkloadContext">
@@ -689,6 +692,14 @@ export default {
 
   .me-3 {
     margin-right: 12px;
+  }
+
+  .selected-count {
+    font-weight: 400;
+  }
+
+  .ms-4 {
+    margin-left: 16px;
   }
 
 </style>
