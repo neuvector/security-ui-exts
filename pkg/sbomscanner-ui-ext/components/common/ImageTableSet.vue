@@ -625,6 +625,7 @@ export default {
     flex-direction: column;
     gap: 8px;
     flex: 1;
+    max-width: calc(((100vw - 320px - 80px) / 6) - 8px);
   }
 
   .filter-item label {
