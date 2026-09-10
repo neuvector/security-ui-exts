@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from '@shell/composables/useI18n';
 import SortableTable from '@shell/components/SortableTable';
@@ -18,10 +18,12 @@ const { t } = useI18n(store);
 
 const selectedRows = ref<any[]>([]);
 
-const rows = computed(() => {
+const rows = ref<any[]>([]);
+
+watchEffect(() => {
   const violations = props.violations || [];
 
-  return violations.map((violation, index) => {
+  rows.value = violations.map((violation, index) => {
     const containerName = violation.containerName || '';
     const executablePath = violation.executablePath || '';
 

@@ -91,10 +91,6 @@ export default {
       }
     },
 
-    arrowImgSrc() {
-      return require('@runtime-enforcer/assets/img/arrow-right.svg');
-    },
-
     modetext(mode) {
       return this.t(`runtimeEnforcer.activePolicies.mode.${mode.toLowerCase()}`);
     },
@@ -155,13 +151,10 @@ export default {
               height="16"
               class="mode-icon"
             ><span class="mode-text" :class="transitionDirection.from.toLowerCase()">{{ modetext(transitionDirection.from) }}</span></span>
-          <img
-            :src="arrowImgSrc()"
-            alt=""
-            width="16"
-            height="16"
-            class="mode-icon"
-          >
+          <span
+            aria-hidden="true"
+            class="mode-arrow"
+          />
           <span
             class="text-wrap"
           ><img
@@ -258,6 +251,21 @@ export default {
 
   .mode-icon {
     margin-right: 8px;
+  }
+
+  .mode-arrow {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    background-image: url('~@runtime-enforcer/assets/img/arrow-right.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    flex: 0 0 auto;
+    body.theme-dark & {
+      filter: brightness(0) invert(1);
+    }
   }
 
   .mode-text {

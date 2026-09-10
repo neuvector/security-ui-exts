@@ -91,12 +91,6 @@ describe('ChangeModeDialog', () => {
       expect((wrapper.vm as any).modeIconImgSrc('enforce')).toBeNull();
     });
 
-    it('returns arrow icon path', () => {
-      const wrapper = mountDialog([createResource('monitor')]);
-
-      expect((wrapper.vm as any).arrowImgSrc()).toBeTruthy();
-    });
-
     it('localizes mode text by lowercasing the mode key', () => {
       const wrapper = mountDialog([createResource('monitor')]);
 
