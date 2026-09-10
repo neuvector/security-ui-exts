@@ -39,6 +39,10 @@ const InstallWizardStub = {
       <slot name="install" />
     </div>
   `,
+  methods: {
+    goToStep() {
+    },
+  },
 };
 
 const createRepo = (name: string, url: string) => ({
