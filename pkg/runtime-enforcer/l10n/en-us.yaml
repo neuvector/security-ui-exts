@@ -254,6 +254,7 @@ runtimeEnforcer:
     mode:
       monitor: Monitor
       protect: Protect
+      unprotected: Unprotected
     status:
       transitioning: Transitioning
       ready: Ready
@@ -429,4 +430,17 @@ runtimeEnforcer:
         message:
           single: '{path} has been added to the list of allowed executables.'
           bulk: '{count} executables have been added to the list of allowed executables.'
+  tableColumns:
+    runtimeSecurity:
+      header: Runtime Security
+      popover:
+        title: Runtime Security
+        activePolicy: Active Policy
+        protectionMode: Protection Mode
+        runtimeViolations: Runtime Violations
+        lastOccurrence: Last Occurrence
+        active: active
+        occurrences: occurrences
+        providedBy: Provided by
+        runtimeEnforcer: Runtime Enforcer
 
